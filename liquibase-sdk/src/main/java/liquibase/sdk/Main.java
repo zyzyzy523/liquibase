@@ -31,6 +31,7 @@ public class Main {
             System.out.println(userError.getMessage());
             System.out.print("\n\n");
             main.printHelp();
+            return;
         }
 
         Context context = Context.getInstance();
@@ -60,7 +61,8 @@ public class Main {
     }
 
     private static void printHeader(String header) {
-        System.out.println("Liquibase Extension SDK");
+        System.out.println("-------------------------------------------------");
+        System.out.println(header);
         System.out.println("-------------------------------------------------");
     }
 
