@@ -95,7 +95,11 @@ public class StringUtils {
     }
 
     public static String indent(String string) {
-        String pad = StringUtils.repeat(" ", 4);
+        return indent(string, 4);
+    }
+
+    public static String indent(String string, int padding) {
+        String pad = StringUtils.repeat(" ", padding);
         return pad+(string.trim().replaceAll("\n\\s*", "\n" + pad));
     }
 

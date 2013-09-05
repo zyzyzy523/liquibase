@@ -17,7 +17,7 @@ public class StandardTests {
 
 
     @Test
-    public void canInstantiate() {
+    public void allFoundClassesAreRegistered() {
         for (Class clazz : Context.getInstance().getChangeClasses()) {
             try {
                 clazz.newInstance();

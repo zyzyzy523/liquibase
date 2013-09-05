@@ -61,6 +61,7 @@ public class MainTest {
         assertTrue(main.getSeenExtensionClasses().size() > 0);
         for (final Class type : main.getSeenExtensionClasses().keySet()) {
             assertThat(main.getSeenExtensionClasses().get(type), everyItem(typeCompatibleWith(type)));
+            assertThat(main.getSeenExtensionClasses().get(type), everyItem(not(equalTo(type))));
         }
     }
 }
