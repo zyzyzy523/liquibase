@@ -94,11 +94,26 @@ public class StringUtils {
         return Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL).matcher(strippedSingleLines).replaceAll("").trim();
     }
 
+    public static String indent(String string) {
+        String pad = StringUtils.repeat(" ", 4);
+        return pad+(string.trim().replaceAll("\n\\s*", "\n" + pad));
+    }
+
     public static String join(String[] array, String delimiter) {
         return join(Arrays.asList(array), delimiter);
     }
 
     public static String join(Collection<String> collection, String delimiter) {
+        return join(collection, delimiter, new StringUtilsFormatter() {
+            @Override
+            public String toString(Object obj) {
+                return (String) obj;
+            }
+        });
+
+    }
+
+    public static String join(Collection collection, String delimiter, StringUtilsFormatter formatter) {
         if (collection == null) {
             return null;
         }
@@ -108,8 +123,8 @@ public class StringUtils {
         }
         
         StringBuffer buffer = new StringBuffer();
-        for (String val : collection) {
-            buffer.append(val).append(delimiter);
+        for (Object val : collection) {
+            buffer.append(formatter.toString(val)).append(delimiter);
         }
 
         String returnString = buffer.toString();
@@ -183,5 +198,9 @@ public class StringUtils {
             return null;
         }
         return string.replace("\r\n", "\n").replace("\r","\n");
+    }
+
+    public static interface StringUtilsFormatter {
+        public String toString(Object obj);
     }
 }

@@ -248,4 +248,16 @@ public class StringUtilsTest {
         assertEquals(1, strings.length);
         assertTrue(strings[0].startsWith("CREATE TABLE blog"));
     }
+
+    @Test
+    public void indent() {
+        assertEquals("    a line", StringUtils.indent("a line"));
+        assertEquals("    a line", StringUtils.indent("  a line"));
+        assertEquals("    line 1\n" +
+                "    line 2\n" +
+                "    line 3", StringUtils.indent("line 1\nline 2\nline 3"));
+        assertEquals("    line 1\n" +
+                "    line 2\n" +
+                "    line 3", StringUtils.indent("line 1\n line 2\n  line 3"));
+    }
 }
