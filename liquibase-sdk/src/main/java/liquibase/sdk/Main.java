@@ -1,9 +1,6 @@
 package liquibase.sdk;
 
-import liquibase.change.Change;
-import liquibase.sdk.exception.UnexpectedLiquibaseSdkException;
-import liquibase.sdk.test.StandardTests;
-import liquibase.sqlgenerator.SqlGenerator;
+import liquibase.sdk.change.StandardChangeTests;
 import liquibase.util.StringUtils;
 import org.apache.commons.cli.*;
 import org.junit.internal.TextListener;
@@ -11,11 +8,6 @@ import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.*;
 
 public class Main {
@@ -63,7 +55,7 @@ public class Main {
 
         JUnitCore junit = new JUnitCore();
         junit.addListener(new TextListener(System.out));
-        Result result = junit.run(new Computer(), StandardTests.class);
+        Result result = junit.run(new Computer(), StandardChangeTests.class);
 
     }
 
