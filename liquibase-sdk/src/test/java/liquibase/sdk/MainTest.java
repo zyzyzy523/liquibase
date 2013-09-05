@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import org.hamcrest.object.IsCompatibleType;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -37,9 +38,9 @@ public class MainTest {
                 "liquibase.change"
         });
 
-        assertThat(main.getPackages(), (Matcher) containsInAnyOrder("liquibase.change"));
-        assertTrue(main.getAllClasses().size() > 0);
-        assertThat(main.getAllClasses(),(Matcher) everyItem(hasProperty("name", startsWith("liquibase.change"))));
+        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change"));
+        assertTrue(Context.getInstance().getAllClasses().size() > 0);
+        assertThat(Context.getInstance().getAllClasses(),(Matcher) everyItem(hasProperty("name", startsWith("liquibase.change"))));
     }
 
     @Test
@@ -50,18 +51,12 @@ public class MainTest {
                 "liquibase.change, liquibase.changelog, liquibase.parser"
         });
 
-        assertThat(main.getPackages(), (Matcher) containsInAnyOrder("liquibase.change", "liquibase.changelog", "liquibase.parser"));
-        assertTrue(main.getAllClasses().size() > 0);
-        assertThat(main.getAllClasses(), (Matcher) everyItem(hasProperty("name", anyOf(
+        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change", "liquibase.changelog", "liquibase.parser"));
+        assertTrue(Context.getInstance().getAllClasses().size() > 0);
+        assertThat(Context.getInstance().getAllClasses(), (Matcher) everyItem(hasProperty("name", anyOf(
                 startsWith("liquibase.change"),
                 startsWith("liquibase.changelog"),
                 startsWith("liquibase.parser")
         ))));
-
-        assertTrue(main.getSeenExtensionClasses().size() > 0);
-        for (final Class type : main.getSeenExtensionClasses().keySet()) {
-            assertThat(main.getSeenExtensionClasses().get(type), everyItem(typeCompatibleWith(type)));
-            assertThat(main.getSeenExtensionClasses().get(type), everyItem(not(equalTo(type))));
-        }
     }
 }
