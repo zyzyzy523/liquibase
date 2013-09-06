@@ -1,13 +1,11 @@
 package liquibase.sdk;
 
 import liquibase.change.Change;
-import liquibase.change.ChangeFactory;
 import liquibase.sdk.exception.UnexpectedLiquibaseSdkException;
 import liquibase.sqlgenerator.SqlGenerator;
+import liquibase.util.StringUtils;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
@@ -34,8 +32,19 @@ public class Context {
     public static Context getInstance() {
         if (instance == null) {
             instance = new Context();
+            String propertiesFile = getPropertiesFileName();
+            try {
+                InputStream sdkProperties = Context.class.getClassLoader().getResourceAsStream(propertiesFile);
+                instance.init(sdkProperties);
+            } catch (IOException e) {
+                System.out.println("Error loading "+propertiesFile+": "+e.getMessage());
+            }
         }
         return instance;
+    }
+
+    public static String getPropertiesFileName() {
+        return System.getProperty("liquibase.sdk.properties.file", "liquibase.sdk.properties");
     }
 
     public boolean isInitialized() {
@@ -52,6 +61,21 @@ public class Context {
 
     public Map<Class, Set<Class>> getSeenExtensionClasses() {
         return seenExtensionClasses;
+    }
+
+    public void init(InputStream propertiesStream) throws IOException {
+        if (propertiesStream != null) {
+            Properties properties = new Properties();
+            properties.load(propertiesStream);
+
+            String packagesProperty = StringUtils.trimToNull(properties.getProperty("packages"));
+            if (packagesProperty == null) {
+                return;
+            }
+
+            this.init(new HashSet<String>(Arrays.asList(packagesProperty.split("\\s*,\\s*"))));
+        }
+
     }
 
     public void init(Set<String> packages) {

@@ -4,6 +4,7 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -40,5 +41,11 @@ public class ContextTest {
             assertThat(context.getSeenExtensionClasses().get(type), everyItem(typeCompatibleWith(type)));
             assertThat(context.getSeenExtensionClasses().get(type), everyItem(not(equalTo(type))));
         }
+    }
+
+    @Test
+    public void init_passingPropertiesStream() throws Exception {
+        context.init(new ByteArrayInputStream("packages: liquibase.a, liquibase.b".getBytes()));
+        assertThat(context.getPackages(), (Matcher) containsInAnyOrder("liquibase.a", "liquibase.b"));
     }
 }
