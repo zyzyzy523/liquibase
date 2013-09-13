@@ -141,12 +141,9 @@
                     <systemProperties>
                         <property>
                             <name>liquibase.defaultlogger.level</name>
-                            <value>debug</value>
+                            <value>severe</value>
                         </property>
                     </systemProperties>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
 

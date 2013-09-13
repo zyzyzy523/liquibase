@@ -100,7 +100,7 @@ public class StringUtils {
 
     public static String indent(String string, int padding) {
         String pad = StringUtils.repeat(" ", padding);
-        return pad+(string.trim().replaceAll("\n\\s*", "\n" + pad));
+        return pad+(string.trim().replaceAll("\n[ \t]*", "\n" + pad));
     }
 
     public static String join(String[] array, String delimiter) {
