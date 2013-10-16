@@ -68,6 +68,8 @@ public class Liquibase {
     private Logger log;
 
     private ChangeLogParameters changeLogParameters;
+    private ChangeExecListener changeExecListener;
+    private boolean ignoreClasspathPrefix = true;
 
     public Liquibase(String changeLogFile, ResourceAccessor resourceAccessor, DatabaseConnection conn) throws LiquibaseException {
         this(changeLogFile, resourceAccessor, DatabaseFactory.getInstance().findCorrectDatabaseImplementation(conn));
@@ -143,9 +145,15 @@ public class Liquibase {
         }
     }
 
-    private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog) throws DatabaseException {
+
+    protected UpdateVisitor createUpdateVisitor() {
+        return new UpdateVisitor(database, changeExecListener);
+    }
+
+
+    protected ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog) throws DatabaseException {
         return new ChangeLogIterator(changeLog,
-                new ShouldRunChangeSetFilter(database),
+                new ShouldRunChangeSetFilter(database, ignoreClasspathPrefix),
                 new ContextChangeSetFilter(contexts),
                 new DbmsChangeSetFilter(database));
     }
@@ -192,7 +200,7 @@ public class Liquibase {
             changeLog.validate(database, contexts);
 
             ChangeLogIterator logIterator = new ChangeLogIterator(changeLog,
-                    new ShouldRunChangeSetFilter(database),
+                    new ShouldRunChangeSetFilter(database, ignoreClasspathPrefix),
                     new ContextChangeSetFilter(contexts),
                     new DbmsChangeSetFilter(database),
                     new CountChangeSetFilter(changesToApply));
@@ -231,7 +239,10 @@ public class Liquibase {
         executor.comment("*********************************************************************");
         executor.comment("Change Log: " + changeLogFile);
         executor.comment("Ran at: " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date()));
-        executor.comment("Against: " + getDatabase().getConnection().getConnectionUserName() + "@" + getDatabase().getConnection().getURL());
+        DatabaseConnection connection = getDatabase().getConnection();
+        if (connection != null) {
+            executor.comment("Against: " + connection.getConnectionUserName() + "@" + connection.getURL());
+        }
         executor.comment("Liquibase version: " + LiquibaseUtil.getBuildVersion());
         executor.comment("*********************************************************************" + StreamUtil.getLineSeparator());
         
@@ -510,6 +521,7 @@ public class Liquibase {
                         new ContextChangeSetFilter(contexts),
                         new DbmsChangeSetFilter(database),
                         new ChangeSetFilter() {
+                            @Override
                             public boolean accepts(ChangeSet changeSet) {
                                 return listVisitor.getSeenChangeSets().contains(changeSet);
                             }
@@ -886,5 +898,16 @@ public class Liquibase {
 
     private LockService getLockService() {
         return LockServiceFactory.getInstance().getLockService(database);
+    }
+    public void setChangeExecListener(ChangeExecListener listener) {
+      this.changeExecListener = listener;
+    }
+
+    public void setIgnoreClasspathPrefix(boolean ignoreClasspathPrefix) {
+        this.ignoreClasspathPrefix = ignoreClasspathPrefix;
+    }
+
+    public boolean isIgnoreClasspathPrefix() {
+        return ignoreClasspathPrefix;
     }
 }
