@@ -226,7 +226,7 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
     protected CSVReader getCSVReader() throws IOException {
         ResourceAccessor opener = getResourceAccessor();
         if (opener == null) {
-            throw new UnexpectedLiquibaseException("No file opener specified for "+getFile());
+            throw new UnexpectedLiquibaseException("No resource accessor specified for "+getFile());
         }
         InputStream stream = opener.getResourceAsStream(getFile());
         if (stream == null) {
