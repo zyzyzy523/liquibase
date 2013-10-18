@@ -1,4 +1,4 @@
-package liquibase.sdk.verify;
+package liquibase.sdk.state;
 
 import liquibase.database.Database;
 import liquibase.util.StringUtils;

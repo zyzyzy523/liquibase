@@ -4,34 +4,48 @@ import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.ChangeParameterMetaData;
+import liquibase.change.core.AddDefaultValueChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.sdk.Context;
-import liquibase.sdk.verify.*;
+import liquibase.sdk.state.OutputFormat;
+import liquibase.sdk.state.Verification;
+import liquibase.sdk.state.VerifyTest;
+import liquibase.sdk.supplier.change.AllChanges;
+import liquibase.sdk.supplier.database.AllDatabases;
+import liquibase.sdk.supplier.resource.Resources;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.serializer.core.string.StringChangeLogSerializer;
+import liquibase.servicelocator.ServiceLocator;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.ParametersSuppliedBy;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 
 import java.util.*;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
+@RunWith(Theories.class)
 public class StandardChangeTests {
 
     private Set<Class> seenChangeClasses;
     private Context context;
 
+    @DataPoints public static Class[] changeClasses = ServiceLocator.getInstance().findClasses(Change.class);
+
     @Rule
-    public TestInformation testInformation = new TestInformation();
+    public VerifyTest testRun = new VerifyTest();
 
     @Before
     public void setup() {
@@ -42,105 +56,103 @@ public class StandardChangeTests {
         }
     }
 
-    @Test
-    public void allFoundClassesAreRegistered() {
-        for (Class clazz : seenChangeClasses) {
+
+    @Theory
+    public void allFoundClassesAreRegistered(Class changeClass) throws Exception {
             try {
-                clazz.newInstance();
+                changeClass.newInstance();
             } catch (Throwable e) {
-                fail("Error instantiating " + clazz.getName() + ", extension classes need a public no-arg constructor: " + e.getMessage());
+                fail("Error instantiating Change class " + changeClass.getName() + ", extension classes need a public no-arg constructor: " + e.getMessage());
             }
-        }
     }
 
-    @Test
-    public void atLeastOneSupportedDatabase() throws Exception {
+
+    @Theory
+    public void colorTest(@ParametersSuppliedBy(ColorSupplier.class) String color) {
+        assertNotNull(color);
+    }
+
+    @Theory
+    public void atLeastOneSupportedDatabase(@ParametersSuppliedBy(AllChanges.class) Change change) throws Exception {
         List<Database> databases = DatabaseFactory.getInstance().getImplementedDatabases();
 
-        for (Class clazz : seenChangeClasses) {
-            Change change = (Change) clazz.newInstance();
-            for (Database database : databases) {
-                if (change.supports(database)) {
-                    return;
-                }
+        for (Database database : databases) {
+            if (change.supports(database)) {
+                return;
             }
-            fail("No databases supported change " + change.getClass().getName() + ". Tried " + StringUtils.join(databases, ",", new StringUtils.StringUtilsFormatter() {
-                @Override
-                public String toString(Object obj) {
-                    return ((Database) obj).getShortName();
-                }
-            }));
         }
+        fail("No databases supported change " + change.getClass().getName() + ". Tried " + StringUtils.join(databases, ",", new StringUtils.StringUtilsFormatter() {
+            @Override
+            public String toString(Object obj) {
+                return ((Database) obj).getShortName();
+            }
+        }));
     }
 
-    @Test
-    public void minimumRequiredIsValidSql() throws Exception {
-        final TestState state = new TestState(testInformation, TestState.Type.SQL);
+    @Theory
+    public void minimumRequiredIsValidSql(@ParametersSuppliedBy(AllChanges.class) final Change change, @ParametersSuppliedBy(AllDatabases.class) final Database database) throws Exception {
+        assumeTrue(change.supports(database));
+        assumeTrue(!change.generateStatementsVolatile(database));
 
-        PermutationStack permutations = new PermutationStack();
-        permutations.push("Change Class", seenChangeClasses, Class.class);
-        permutations.push("Database", DatabaseFactory.getInstance().getImplementedDatabases(), Database.class);
+        testRun.addInfo("Database", database.getShortName());
+        testRun.addInfo("Change Class", change.getClass());
 
-        state.runPermutations(permutations, new PermutationTester() {
-            @Override
-            public PermutationOutput run(Permutation permutation) throws Exception {
-                Class changeClass = permutation.getCurrentValue("Change Class", Class.class);
-                Database database = permutation.getCurrentValue("Database", Database.class);
+        change.setResourceAccessor(Resources.RESOURCE_ACCESSOR);
 
-                Change change = (Change) changeClass.newInstance();
-                if (!change.supports(database)) {
-                    return null;
+        ChangeMetaData changeMetaData = ChangeFactory.getInstance().getChangeMetaData(change);
+        for (String paramName : new TreeSet<String>(changeMetaData.getRequiredParameters(database).keySet())) {
+            ChangeParameterMetaData param = changeMetaData.getParameters().get(paramName);
+            Object paramValue = param.getExampleValue();
+            String serializedValue = formatParameter(paramValue);
+
+            testRun.addInfo("Change Parameter " + param.getParameterName(), serializedValue);
+            param.setValue(change, paramValue);
+        }
+
+        if (change instanceof AddDefaultValueChange) {   //todo: Make more generic and interate over permutations
+            ((AddDefaultValueChange) change).setDefaultValue("test value");
+        }
+
+        ValidationErrors errors = change.validate(database);
+        assertFalse("Validation errors for " + changeMetaData.getName() + " on " + database.getShortName() + ": " + errors.toString(), errors.hasErrors());
+
+
+        List<Sql> finalSql = new ArrayList<Sql>();
+
+        SqlStatement[] sqlStatements = change.generateStatements(database);
+        for (SqlStatement statement : sqlStatements) {
+            Sql[] sql = SqlGeneratorFactory.getInstance().generateSql(statement, database);
+            if (sql != null) {
+                for (Sql line : sql) {
+                    String sqlLine = line.toSql();
+                    assertFalse("Change " + changeMetaData.getName() + " contains 'null' for " + database.getShortName() + ": " + sqlLine, sqlLine.contains(" null "));
+
+                    finalSql.add(line);
                 }
-                if (change.generateStatementsVolatile(database)) {
-                    return null;
-                }
-                ChangeMetaData changeMetaData = ChangeFactory.getInstance().getChangeMetaData(change);
-
-//                change.setResourceAccessor(new JUnitResourceAccessor());
-
-                PermutationOutput output = new PermutationOutput();
-
-                for (String paramName : new TreeSet<String>(changeMetaData.getRequiredParameters(database).keySet())) {
-                    ChangeParameterMetaData param = changeMetaData.getParameters().get(paramName);
-                    Object paramValue = param.getExampleValue();
-                    String serializedValue = formatParameter(paramValue);
-                    output.set("Change Parameter " + param.getParameterName(), serializedValue);
-                    param.setValue(change, paramValue);
-                }
-
-
-                ValidationErrors errors = change.validate(database);
-                assertFalse("Validation errors for " + changeMetaData.getName() + " on " + database.getShortName() + ": " + errors.toString(), errors.hasErrors());
-
-                List<Sql> finalSql = new ArrayList<Sql>();
-
-                SqlStatement[] sqlStatements = change.generateStatements(database);
-                for (SqlStatement statement : sqlStatements) {
-                    Sql[] sql = SqlGeneratorFactory.getInstance().generateSql(statement, database);
-                    if (sql == null) {
-                        System.out.println("Null sql for " + statement + " on " + database.getShortName());
-                    } else {
-                        for (Sql line : sql) {
-                            String sqlLine = line.toSql();
-                            assertFalse("Change " + changeMetaData.getName() + " contains 'null' for " + database.getShortName() + ": " + sqlLine, sqlLine.contains(" null "));
-
-                            finalSql.add(line);
-                        }
-                    }
-                }
-
-                output.set("sql", finalSql, new OutputFormat.CollectionFormat(new StringUtils.StringUtilsFormatter() {
-                    @Override
-                    public String toString(Object obj) {
-                        return ((Sql) obj).toSql();
-                    }
-                }));
-
-                return output;
             }
+        }
 
+        testRun.addData("sql", finalSql, new OutputFormat.CollectionFormat(new StringUtils.StringUtilsFormatter() {
+            @Override
+            public String toString(Object obj) {
+                return ((Sql) obj).toSql();
+            }
+        }));
+
+        testRun.verifyChanges(new Verification() {
+            @Override
+            public Result check() throws Exception {
+                if (database.getConnection() == null) {
+                    return Result.CANNOT_VALIDATE;
+                }
+                try {
+                    database.executeStatements(change, null, null);
+                } catch (LiquibaseException e) {
+                    fail("Error executing change: "+e.getMessage());
+                }
+                return Result.PASSED;
+            }
         });
-
     }
 
     private String formatParameter(Object paramValue) {
@@ -229,7 +241,7 @@ public class StandardChangeTests {
 //
 //                List<List<String>> paramLists = powerSet(optionalParameters);
 //                Collections.sort(paramLists, new Comparator<List<String>>() {
-//                    public int compare(List<String> o1, List<String> o2) {
+//                    public int test(List<String> o1, List<String> o2) {
 //                        int comp = Integer.valueOf(o1.size()).compareTo(o2.size());
 //                        if (comp == 0) {
 //                            comp =  StringUtils.join(o1, ",").compareTo(StringUtils.join(o2, ","));
