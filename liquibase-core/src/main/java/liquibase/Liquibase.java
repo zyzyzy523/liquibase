@@ -1,35 +1,13 @@
 package liquibase;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Writer;
-import java.text.DateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import liquibase.change.CheckSum;
-import liquibase.changelog.ChangeLogIterator;
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.changelog.RanChangeSet;
-import liquibase.changelog.filter.AfterTagChangeSetFilter;
-import liquibase.changelog.filter.AlreadyRanChangeSetFilter;
-import liquibase.changelog.filter.ChangeSetFilter;
-import liquibase.changelog.filter.ContextChangeSetFilter;
-import liquibase.changelog.filter.CountChangeSetFilter;
-import liquibase.changelog.filter.DbmsChangeSetFilter;
-import liquibase.changelog.filter.ExecutedAfterChangeSetFilter;
-import liquibase.changelog.filter.NotRanChangeSetFilter;
-import liquibase.changelog.filter.ShouldRunChangeSetFilter;
+import liquibase.changelog.*;
+import liquibase.changelog.filter.*;
 import liquibase.changelog.visitor.*;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.ObjectQuotingStrategy;
-import liquibase.database.core.OracleDatabase;
 import liquibase.diff.DiffGeneratorFactory;
 import liquibase.diff.DiffResult;
 import liquibase.diff.compare.CompareControl;
@@ -51,6 +29,15 @@ import liquibase.statement.core.UpdateStatement;
 import liquibase.util.LiquibaseUtil;
 import liquibase.util.StreamUtil;
 import liquibase.util.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Core Liquibase facade.
@@ -246,7 +233,7 @@ public class Liquibase {
         executor.comment("Liquibase version: " + LiquibaseUtil.getBuildVersion());
         executor.comment("*********************************************************************" + StreamUtil.getLineSeparator());
         
-        if (database instanceof OracleDatabase) {
+        if (database.getShortName().equals("oracle")) {
         	executor.execute(new RawSqlStatement("SET DEFINE OFF;"));
         }
     }

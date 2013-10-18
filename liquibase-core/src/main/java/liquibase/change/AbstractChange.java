@@ -1,21 +1,20 @@
 package liquibase.change;
 
-import java.lang.reflect.Type;
-import java.util.*;
-
 import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
-import liquibase.structure.DatabaseObject;
 import liquibase.exception.*;
 import liquibase.resource.ResourceAccessor;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
+import liquibase.serializer.ChangeLogSerializerFactory;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
+import liquibase.structure.DatabaseObject;
 import liquibase.util.StringUtils;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Standard superclass to simplify {@link Change } implementations. You can implement Change directly, this class is purely for convenience but recommended.
@@ -382,11 +381,11 @@ public abstract class AbstractChange implements Change {
     }
 
     /**
-     * Implementation generates checksum by serializing the change with {@link StringChangeLogSerializer}
+     * Implementation generates checksum by serializing the change with the "checksum" serializer
      */
     @Override
     public CheckSum generateCheckSum() {
-        return CheckSum.compute(new StringChangeLogSerializer().serialize(this, false));
+        return CheckSum.compute(ChangeLogSerializerFactory.getInstance().getSerializer("checksum").serialize(this, false));
     }
 
     /*

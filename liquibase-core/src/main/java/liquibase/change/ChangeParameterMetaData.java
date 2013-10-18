@@ -1,6 +1,5 @@
 package liquibase.change;
 
-import liquibase.change.core.LoadDataColumnConfig;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.exception.UnexpectedLiquibaseException;
@@ -129,6 +128,9 @@ public class ChangeParameterMetaData {
         if (requiredDatabases.length == 1 && StringUtils.join(requiredDatabases, ",").equals(ChangeParameterMetaData.COMPUTE)) {
             int validDatabases = 0;
             for (Database database : DatabaseFactory.getInstance().getImplementedDatabases()) {
+                if (database.getShortName() != null && database.getShortName().startsWith("liquibase-")) {
+                    continue;
+                }
                 try {
                     if (!change.generateStatementsVolatile(database)) {
                         Change testChange = change.getClass().newInstance();

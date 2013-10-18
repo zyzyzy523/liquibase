@@ -103,6 +103,14 @@ public class DatabaseFactory {
         implementedDatabases.clear();
     }
 
+    public Database findByName(String shortName) {
+        SortedSet<Database> databases = implementedDatabases.get(shortName);
+        if (databases == null) {
+            return null;
+        }
+        return databases.iterator().next();
+    }
+
     private static class DatabaseComparator implements Comparator<Database> {
         @Override
         public int compare(Database o1, Database o2) {

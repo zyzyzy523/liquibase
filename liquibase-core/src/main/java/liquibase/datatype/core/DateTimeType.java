@@ -1,40 +1,16 @@
 package liquibase.datatype.core;
 
-import liquibase.database.core.*;
+import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.statement.DatabaseFunction;
-import liquibase.database.Database;
 
 @DataTypeInfo(name = "datetime", aliases = {"java.sql.Types.DATETIME", "java.util.Date"}, minParameters = 0, maxParameters = 1, priority = LiquibaseDataType.PRIORITY_DEFAULT)
 public class DateTimeType extends LiquibaseDataType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof DB2Database
-                || database instanceof DerbyDatabase
-                || database instanceof FirebirdDatabase
-                || database instanceof H2Database
-                || database instanceof HsqlDatabase
-                || database instanceof MaxDBDatabase
-                || database instanceof OracleDatabase) {
-            return new DatabaseDataType("TIMESTAMP");
-        }
-        if (database instanceof InformixDatabase) {
-            return new DatabaseDataType("DATETIME YEAR TO FRACTION", 5);
-        }
-        if (database instanceof PostgresDatabase) {
-            return new DatabaseDataType("TIMESTAMP WITH TIME ZONE");
-        }
-        if (database instanceof SQLiteDatabase) {
-            return new DatabaseDataType("TEXT");
-        }
-
-        if (database instanceof OracleDatabase) {
-            return new DatabaseDataType("DATE");
-        }
-
         return new DatabaseDataType(getName());
     }
 
@@ -50,17 +26,6 @@ public class DateTimeType extends LiquibaseDataType {
             return "'" + ((String) value).replaceAll("'", "''") + "'";
         }
         return database.getDateTimeLiteral(((java.sql.Timestamp) value));
-    }
-
-    @Override
-    public Object sqlToObject(String value, Database database) {
-        if (database instanceof DB2Database) {
-            return value.replaceFirst("^\"SYSIBM\".\"TIMESTAMP\"\\('", "").replaceFirst("'\\)", "");
-        }
-        if (database instanceof DerbyDatabase) {
-            return value.replaceFirst("^TIMESTAMP\\('", "").replaceFirst("'\\)", "");
-        }
-        return super.sqlToObject(value, database);
     }
 
 

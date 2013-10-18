@@ -5,14 +5,12 @@ import liquibase.change.Change;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.RanChangeSet;
-import liquibase.snapshot.SnapshotControl;
-import liquibase.structure.DatabaseObject;
-import liquibase.structure.core.Schema;
 import liquibase.exception.*;
 import liquibase.servicelocator.PrioritizedService;
 import liquibase.sql.visitor.SqlVisitor;
-import liquibase.statement.SqlStatement;
 import liquibase.statement.DatabaseFunction;
+import liquibase.statement.SqlStatement;
+import liquibase.structure.DatabaseObject;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -339,5 +337,9 @@ public interface Database extends PrioritizedService {
     void setOutputDefaultCatalog(boolean outputDefaultCatalog);
 
     boolean supportsPrimaryKeyNames();
+
+    boolean expectsWindowsEOL();
+
+    String getStatementSeparator();
 }
 

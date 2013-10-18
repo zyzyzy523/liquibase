@@ -1,9 +1,8 @@
 package liquibase.sql.visitor;
 
 import liquibase.change.CheckSum;
-import liquibase.serializer.LiquibaseSerializable;
+import liquibase.serializer.ChangeLogSerializerFactory;
 import liquibase.serializer.ReflectionSerializer;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
 
 import java.util.Set;
 
@@ -44,7 +43,7 @@ public abstract class AbstractSqlVisitor implements SqlVisitor {
 
     @Override
     public CheckSum generateCheckSum() {
-        return CheckSum.compute(new StringChangeLogSerializer().serialize(this, false));
+        return CheckSum.compute(ChangeLogSerializerFactory.getInstance().getSerializer("checksum").serialize(this, false));
     }
 
     @Override

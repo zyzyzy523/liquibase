@@ -7,6 +7,7 @@ import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
+import liquibase.precondition.FailedPrecondition;
 import liquibase.precondition.Precondition;
 import liquibase.precondition.PreconditionLogic;
 

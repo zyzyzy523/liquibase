@@ -4,7 +4,7 @@ import liquibase.database.Database;
 import liquibase.diff.compare.CompareControl;
 import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.structure.DatabaseObject;
-import liquibase.structure.core.DataType;
+import liquibase.structure.DataType;
 
 import java.util.*;
 

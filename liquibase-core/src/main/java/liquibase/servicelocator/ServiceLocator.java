@@ -24,12 +24,12 @@ public class ServiceLocator {
     private static ServiceLocator instance;
 
     static {
-        try {
-            Class<?> scanner = Class.forName("Liquibase.ServiceLocator.ClrServiceLocator, Liquibase");
-            instance = (ServiceLocator) scanner.newInstance();
-        } catch (Exception e) {
+//        try {
+//            Class<?> scanner = Class.forName("Liquibase.ServiceLocator.ClrServiceLocator, Liquibase");
+//            instance = (ServiceLocator) scanner.newInstance();
+//        } catch (Exception e) {
             instance = new ServiceLocator();
-        }
+//        }
     }
 
     private ResourceAccessor resourceAccessor;

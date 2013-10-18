@@ -1,14 +1,10 @@
 package liquibase.datatype.core;
 
-import liquibase.database.core.DB2Database;
-import liquibase.database.core.DerbyDatabase;
-import liquibase.database.core.MSSQLDatabase;
-import liquibase.database.core.SybaseDatabase;
+import liquibase.database.Database;
 import liquibase.datatype.DataTypeInfo;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.datatype.LiquibaseDataType;
 import liquibase.statement.DatabaseFunction;
-import liquibase.database.Database;
 
 @DataTypeInfo(name="date", aliases = {"java.sql.Types.DATE", "java.sql.Date", "smalldatetime"}, minParameters = 0, maxParameters = 0, priority = LiquibaseDataType.PRIORITY_DEFAULT)
 public class DateType extends LiquibaseDataType {
@@ -36,18 +32,5 @@ public class DateType extends LiquibaseDataType {
         } else {
             return "'"+((String) value).replaceAll("'","''")+"'";
         }
-    }
-
-
-    @Override
-    public Object sqlToObject(String value, Database database) {
-        if (database instanceof DB2Database) {
-            return value.replaceFirst("^\"SYSIBM\".\"DATE\"\\('", "").replaceFirst("'\\)", "");
-        }
-        if (database instanceof DerbyDatabase) {
-            return value.replaceFirst("^DATE\\('", "").replaceFirst("'\\)", "");
-        }
-
-        return super.sqlToObject(value, database);
     }
 }

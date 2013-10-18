@@ -6,7 +6,7 @@ import liquibase.datatype.core.IntType;
 import liquibase.datatype.core.UnknownType;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.servicelocator.ServiceLocator;
-import liquibase.structure.core.DataType;
+import liquibase.structure.DataType;
 import liquibase.util.ObjectUtil;
 import liquibase.util.StringUtils;
 

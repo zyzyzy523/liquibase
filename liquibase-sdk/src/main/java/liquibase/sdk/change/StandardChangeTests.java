@@ -4,7 +4,6 @@ import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.ChangeParameterMetaData;
-import liquibase.change.core.AddDefaultValueChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.exception.LiquibaseException;
@@ -16,8 +15,9 @@ import liquibase.sdk.state.VerifyTest;
 import liquibase.sdk.supplier.change.AllChanges;
 import liquibase.sdk.supplier.database.AllDatabases;
 import liquibase.sdk.supplier.resource.Resources;
+import liquibase.serializer.ChangeLogSerializer;
+import liquibase.serializer.ChangeLogSerializerFactory;
 import liquibase.serializer.LiquibaseSerializable;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
 import liquibase.servicelocator.ServiceLocator;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
@@ -109,9 +109,9 @@ public class StandardChangeTests {
             param.setValue(change, paramValue);
         }
 
-        if (change instanceof AddDefaultValueChange) {   //todo: Make more generic and interate over permutations
-            ((AddDefaultValueChange) change).setDefaultValue("test value");
-        }
+//        if (change instanceof AddDefaultValueChange) {   //todo: Make more generic and interate over permutations
+//            ((AddDefaultValueChange) change).setDefaultValue("test value");
+//        }
 
         ValidationErrors errors = change.validate(database);
         assertFalse("Validation errors for " + changeMetaData.getName() + " on " + database.getShortName() + ": " + errors.toString(), errors.hasErrors());
@@ -164,7 +164,7 @@ public class StandardChangeTests {
             }
             serializedValue += "]";
         } else if (paramValue instanceof LiquibaseSerializable) {
-            serializedValue = new StringChangeLogSerializer().serialize(((LiquibaseSerializable) paramValue), true);
+            serializedValue = ChangeLogSerializerFactory.getInstance().getSerializer("txt").serialize(((LiquibaseSerializable) paramValue), true);
         } else {
             serializedValue = paramValue.toString();
         }

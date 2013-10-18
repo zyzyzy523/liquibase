@@ -1,16 +1,9 @@
 package liquibase.diff.output;
 
 import liquibase.database.Database;
-import liquibase.database.core.H2Database;
-import liquibase.diff.compare.DatabaseObjectComparatorFactory;
+import liquibase.database.DatabaseFactory;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.DatabaseObjectCollection;
-import liquibase.structure.core.Column;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class DiffOutputControl {
     private boolean includeSchema;
@@ -18,9 +11,9 @@ public class DiffOutputControl {
     private boolean includeTablespace;
 
     private String dataDir = null;
-    private DatabaseObjectCollection alreadyHandledMissing= new DatabaseObjectCollection(new DatabaseForHash());
-    private DatabaseObjectCollection alreadyHandledUnexpected = new DatabaseObjectCollection(new DatabaseForHash());
-    private DatabaseObjectCollection alreadyHandledChanged = new DatabaseObjectCollection(new DatabaseForHash());
+    private DatabaseObjectCollection alreadyHandledMissing= new DatabaseObjectCollection(DatabaseFactory.getInstance().findByName("liquibase-hash"));
+    private DatabaseObjectCollection alreadyHandledUnexpected = new DatabaseObjectCollection(DatabaseFactory.getInstance().findByName("liquibase-hash"));
+    private DatabaseObjectCollection alreadyHandledChanged = new DatabaseObjectCollection(DatabaseFactory.getInstance().findByName("liquibase-hash"));
 
     public DiffOutputControl() {
         includeSchema = true;
@@ -90,13 +83,7 @@ public class DiffOutputControl {
     }
 
     public boolean alreadyHandledChanged(DatabaseObject changedObject, Database accordingTo) {
-        return alreadyHandledChanged.contains(changedObject);    }
-
-    private static class DatabaseForHash extends H2Database {
-        @Override
-        public boolean isCaseSensitive() {
-            return true;
-        }
+        return alreadyHandledChanged.contains(changedObject);
     }
 
 }

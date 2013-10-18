@@ -12,15 +12,6 @@ public class TimeType  extends LiquibaseDataType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof InformixDatabase) {
-            return new DatabaseDataType("INTERVAL HOUR TO FRACTION", 5);
-        }
-        if (database instanceof MSSQLDatabase) {
-            return new DatabaseDataType("DATETIME");
-        }
-        if (database instanceof OracleDatabase) {
-            return new DatabaseDataType("DATE");
-        }
         return new DatabaseDataType(getName());
     }
 
@@ -35,18 +26,6 @@ public class TimeType  extends LiquibaseDataType {
         } else {
             return "'"+((String) value).replaceAll("'","''")+"'";
         }
-    }
-
-    @Override
-    public Object sqlToObject(String value, Database database) {
-        if (database instanceof DB2Database) {
-            return value.replaceFirst("^\"SYSIBM\".\"TIME\"\\('", "").replaceFirst("'\\)", "");
-        }
-        if (database instanceof DerbyDatabase) {
-            return value.replaceFirst("^TIME\\('", "").replaceFirst("'\\)", "");
-        }
-
-        return super.sqlToObject(value, database);
     }
 
 }

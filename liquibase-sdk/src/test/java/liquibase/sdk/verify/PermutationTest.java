@@ -1,7 +1,5 @@
 package liquibase.sdk.verify;
 
-import liquibase.change.core.CreateTableChange;
-import liquibase.database.core.OracleDatabase;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 

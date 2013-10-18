@@ -729,4 +729,14 @@ public class MockDatabase implements Database {
     public boolean supportsPrimaryKeyNames() {
         return true;
     }
+
+    @Override
+    public boolean expectsWindowsEOL() {
+        return false;
+    }
+
+    @Override
+    public String getStatementSeparator() {
+        return ";";
+    }
 }

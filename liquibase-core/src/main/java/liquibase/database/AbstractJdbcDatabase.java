@@ -950,12 +950,7 @@ public abstract class AbstractJdbcDatabase implements Database {
 
     @Override
     public boolean supportsDropTableCascadeConstraints() {
-        return (this instanceof SQLiteDatabase
-                || this instanceof SybaseDatabase
-                || this instanceof SybaseASADatabase
-                || this instanceof PostgresDatabase
-                || this instanceof OracleDatabase
-        );
+        return false;
     }
 
     @Override
@@ -1713,5 +1708,15 @@ public abstract class AbstractJdbcDatabase implements Database {
     @Override
     public boolean supportsPrimaryKeyNames() {
         return true;
+    }
+
+    @Override
+    public boolean expectsWindowsEOL() {
+        return false;
+    }
+
+    @Override
+    public String getStatementSeparator() {
+        return ";";
     }
 }

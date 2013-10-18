@@ -115,7 +115,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                     List<CachedRow> returnList = new ArrayList<CachedRow>();
 
                     CatalogAndSchema catalogAndSchema = database.correctSchema(new CatalogAndSchema(catalogName, schemaName));
-                    if (database instanceof OracleDatabase) {
+                    if (database.getShortName().equals("oracle")) {
                         //oracle getIndexInfo is buggy and slow.  See Issue 1824548 and http://forums.oracle.com/forums/thread.jspa?messageID=578383&#578383
                         String sql = "SELECT c.INDEX_NAME, 3 AS TYPE, c.TABLE_NAME, c.COLUMN_NAME, c.COLUMN_POSITION AS ORDINAL_POSITION, e.COLUMN_EXPRESSION AS FILTER_CONDITION, case I.UNIQUENESS when 'UNIQUE' then 0 else 1 end as NON_UNIQUE " +
                                 "FROM ALL_IND_COLUMNS c " +
@@ -159,7 +159,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
 
                 @Override
                 boolean shouldBulkSelect(ResultSetCache resultSetCache) {
-                    if (database instanceof OracleDatabase) {
+                    if (database.getShortName().equals("oracle")) {
                         return super.shouldBulkSelect(resultSetCache);
                     }
                     return false;
@@ -197,7 +197,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
 
                 @Override
                 public ResultSet fastFetchQuery() throws SQLException, DatabaseException {
-                    if (database instanceof OracleDatabase) {
+                    if (database.getShortName().equals("oracle")) {
                         return oracleQuery(false);
                     }
                     CatalogAndSchema catalogAndSchema = database.correctSchema(new CatalogAndSchema(catalogName, schemaName));
@@ -207,7 +207,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
 
                 @Override
                 public ResultSet bulkFetchQuery() throws SQLException, DatabaseException {
-                    if (database instanceof OracleDatabase) {
+                    if (database.getShortName().equals("oracle")) {
                         return oracleQuery(true);
                     }
 
@@ -329,7 +329,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                 private String createSql(String catalogName, String schemaName, String tableName) throws SQLException {
                     Database database = JdbcDatabaseSnapshot.this.getDatabase();
                     String sql;
-                    if (database instanceof MySQLDatabase || database instanceof HsqlDatabase) {
+                    if (database.getShortName().equals("mysql") || database.getShortName().equals("hsqldb")) {
                         sql = "select CONSTRAINT_NAME, TABLE_NAME " +
                                 "from information_schema.table_constraints " +
                                 "where constraint_schema='" + database.correctObjectName(catalogName, Catalog.class) + "' " +
@@ -337,7 +337,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                             sql += " and table_name='" + database.correctObjectName(tableName, Table.class) + "'";
                         }
-                    } else if (database instanceof PostgresDatabase) {
+                    } else if (database.getShortName().equals("postgresql")) {
                         sql = "select CONSTRAINT_NAME, TABLE_NAME " +
                                 "from information_schema.table_constraints " +
                                 "where constraint_catalog='" + database.correctObjectName(catalogName, Catalog.class) + "' " +
@@ -346,14 +346,14 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                                 sql += " and table_name='" + database.correctObjectName(tableName, Table.class) + "'";
                         }
-                    } else if (database instanceof MSSQLDatabase) {
+                    } else if (database.getShortName().equals("mssql")) {
                         sql = "select CONSTRAINT_NAME, TABLE_NAME from INFORMATION_SCHEMA.TABLE_CONSTRAINTS " +
                                 "where CONSTRAINT_TYPE = 'Unique' " +
                                 "and CONSTRAINT_SCHEMA='"+database.correctObjectName(schemaName, Schema.class)+"'";
                         if (tableName != null) {
                                 sql += " and TABLE_NAME='"+database.correctObjectName(tableName, Table.class)+"'";
                         }
-                    } else if (database instanceof OracleDatabase) {
+                    } else if (database.getShortName().equals("oracle")) {
                         sql = "select uc.constraint_name, uc.table_name,uc.status,uc.deferrable,uc.deferred,ui.tablespace_name from all_constraints uc, all_cons_columns ucc, all_indexes ui " +
                                 "where uc.constraint_type='U' and uc.index_name = ui.index_name and uc.constraint_name = ucc.constraint_name " +
                                 "and uc.owner = '" + database.correctObjectName(catalogName, Catalog.class) + "' " +
@@ -362,7 +362,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                             sql += " and uc.table_name = '" + database.correctObjectName(tableName, Table.class) + "'";
                         }
-                    } else if (database instanceof DB2Database) {
+                    } else if (database.getShortName().equals("db2")) {
                         sql = "select distinct k.constname as constraint_name, t.tabname as TABLE_NAME from syscat.keycoluse k, syscat.tabconst t " +
                                 "where k.constname = t.constname " +
                                 "and t.tabschema = '" + database.correctObjectName(catalogName, Catalog.class) + "' " +
@@ -370,7 +370,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                             sql += " and t.tabname = '" + database.correctObjectName(tableName, Table.class) + "'";
                         }
-                    } else if (database instanceof FirebirdDatabase) {
+                    } else if (database.getShortName().equals("firebird")) {
                         sql = "SELECT RDB$INDICES.RDB$INDEX_NAME AS CONSTRAINT_NAME, RDB$INDICES.RDB$RELATION_NAME AS TABLE_NAME FROM RDB$INDICES " +
                                 "LEFT JOIN RDB$RELATION_CONSTRAINTS ON RDB$RELATION_CONSTRAINTS.RDB$INDEX_NAME = RDB$INDICES.RDB$INDEX_NAME " +
                                 "WHERE RDB$INDICES.RDB$UNIQUE_FLAG IS NOT NULL " +
@@ -379,7 +379,7 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                             sql += " AND RDB$INDICES.RDB$RELATION_NAME='"+database.correctObjectName(tableName, Table.class)+"'";
                         }
-                    } else if (database instanceof DerbyDatabase) {
+                    } else if (database.getShortName().equals("derby")) {
                         sql = "select c.constraintname as CONSTRAINT_NAME, tablename AS TABLE_NAME " +
                                 "from sys.systables t, sys.sysconstraints c, sys.sysschemas s " +
                                 "where s.schemaname='"+database.correctObjectName(catalogName, Catalog.class)+"' "+

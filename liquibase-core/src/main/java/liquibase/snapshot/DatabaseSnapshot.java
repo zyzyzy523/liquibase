@@ -2,15 +2,13 @@ package liquibase.snapshot;
 
 import liquibase.CatalogAndSchema;
 import liquibase.database.Database;
+import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.servicelocator.ServiceLocator;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.DatabaseObjectCollection;
-import liquibase.structure.core.*;
-import liquibase.diff.compare.DatabaseObjectComparatorFactory;
+import liquibase.structure.core.Schema;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class DatabaseSnapshot {

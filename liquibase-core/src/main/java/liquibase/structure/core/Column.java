@@ -1,15 +1,88 @@
 package liquibase.structure.core;
 
+import liquibase.change.ColumnConfig;
+import liquibase.change.ConstraintsConfig;
 import liquibase.structure.AbstractDatabaseObject;
+import liquibase.structure.DataType;
 import liquibase.structure.DatabaseObject;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class Column extends AbstractDatabaseObject {
 
     private String name;
 
     public Column() {
+    }
+
+
+    /**
+     * Create a ColumnConfig object based on this object.
+     * It will attempt to set as much as possible based on the information in the snapshot.
+     */
+    public ColumnConfig toColumnConfig() {
+        ColumnConfig config = new ColumnConfig();
+        config.setName(this.getName());
+        config.setType(this.getType().toString());
+
+        if (this.getRelation() != null && this.getRelation() instanceof Table) {
+            if (this.getDefaultValue() != null) {
+                config.setDefaultValue(this.getDefaultValue().toString());
+            }
+            ConstraintsConfig constraints = new ConstraintsConfig();
+
+            constraints.setNullable(this.isNullable());
+
+            if (this.isAutoIncrement()) {
+                config.setAutoIncrement(true);
+                config.setStartWith(this.getAutoIncrementInformation().getStartWith());
+                config.setIncrementBy(this.getAutoIncrementInformation().getIncrementBy());
+            } else {
+                config.setAutoIncrement(false);
+            }
+
+
+            Table table = (Table) this.getRelation();
+            PrimaryKey primaryKey = table.getPrimaryKey();
+            if (primaryKey != null && primaryKey.getColumnNamesAsList().contains(this.getName())) {
+                constraints.setPrimaryKey(true);
+                constraints.setPrimaryKeyName(primaryKey.getName());
+                constraints.setPrimaryKeyTablespace(primaryKey.getTablespace());
+            }
+
+            List<UniqueConstraint> uniqueConstraints = table.getUniqueConstraints();
+            if (uniqueConstraints != null) {
+                for (UniqueConstraint constraint : uniqueConstraints) {
+                    if (constraint.getColumnNames().contains(getName())) {
+                        constraints.setUnique(true);
+                        constraints.setUniqueConstraintName(constraint.getName());
+                    }
+                }
+            }
+
+            List<ForeignKey> fks = table.getOutgoingForeignKeys();
+            if (fks != null) {
+                for (ForeignKey fk : fks) {
+                    if (fk.getForeignKeyColumns().equals(getName())) {
+                        constraints.setForeignKeyName(fk.getName());
+                        constraints.setReferences(fk.getPrimaryKeyTable().getName() + "(" + fk.getPrimaryKeyColumns() + ")");
+                    }
+                }
+            }
+
+            if (constraints.isPrimaryKey() == null) {
+                constraints.setPrimaryKey(false);
+            }
+            if (constraints.isUnique() == null) {
+                constraints.setUnique(false);
+            }
+            config.setConstraints(constraints);
+        }
+
+        config.setRemarks(this.getRemarks());
+
+        return config;
     }
 
     public Relation getRelation() {

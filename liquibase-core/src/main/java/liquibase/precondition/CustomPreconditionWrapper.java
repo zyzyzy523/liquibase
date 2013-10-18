@@ -1,11 +1,9 @@
 package liquibase.precondition;
 
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.*;
-import liquibase.precondition.core.ErrorPrecondition;
-import liquibase.precondition.core.FailedPrecondition;
 import liquibase.util.ObjectUtil;
 
 import java.util.HashMap;

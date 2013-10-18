@@ -1,26 +1,19 @@
 package liquibase.change;
 
+import liquibase.serializer.LiquibaseSerializable;
+import liquibase.serializer.ReflectionSerializer;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.SequenceCurrentValueFunction;
 import liquibase.statement.SequenceNextValueFunction;
-import liquibase.structure.core.Column;
-import liquibase.structure.core.Table;
 import liquibase.util.ISODateFormat;
+import liquibase.util.StringUtils;
 
 import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import liquibase.serializer.LiquibaseSerializable;
-import liquibase.serializer.ReflectionSerializer;
-import liquibase.structure.core.*;
-import liquibase.statement.DatabaseFunction;
-import liquibase.util.ISODateFormat;
-import liquibase.util.StringUtils;
 
 /**
  * The standard configuration used by Change classes to represent a column.
@@ -53,71 +46,6 @@ public class ColumnConfig implements LiquibaseSerializable {
     private BigInteger incrementBy;
     private String remarks;
 
-
-    /**
-     * Create a ColumnConfig object based on a {@link Column} snapshot.
-     * It will attempt to set as much as possible based on the information in the snapshot.
-     */
-    public ColumnConfig(Column columnSnapshot) {
-        setName(columnSnapshot.getName());
-        setType(columnSnapshot.getType().toString());
-
-        if (columnSnapshot.getRelation() != null && columnSnapshot.getRelation() instanceof Table) {
-            if (columnSnapshot.getDefaultValue() != null) {
-                setDefaultValue(columnSnapshot.getDefaultValue().toString());
-            }
-            ConstraintsConfig constraints = new ConstraintsConfig();
-
-            constraints.setNullable(columnSnapshot.isNullable());
-
-            if (columnSnapshot.isAutoIncrement()) {
-                setAutoIncrement(true);
-                setStartWith(columnSnapshot.getAutoIncrementInformation().getStartWith());
-                setIncrementBy(columnSnapshot.getAutoIncrementInformation().getIncrementBy());
-            } else {
-                setAutoIncrement(false);
-            }
-
-
-            Table table = (Table) columnSnapshot.getRelation();
-            PrimaryKey primaryKey = table.getPrimaryKey();
-            if (primaryKey != null && primaryKey.getColumnNamesAsList().contains(columnSnapshot.getName())) {
-                constraints.setPrimaryKey(true);
-                constraints.setPrimaryKeyName(primaryKey.getName());
-                constraints.setPrimaryKeyTablespace(primaryKey.getTablespace());
-            }
-
-            List<UniqueConstraint> uniqueConstraints = table.getUniqueConstraints();
-            if (uniqueConstraints != null) {
-                for (UniqueConstraint constraint : uniqueConstraints) {
-                    if (constraint.getColumnNames().contains(getName())) {
-                        constraints.setUnique(true);
-                        constraints.setUniqueConstraintName(constraint.getName());
-                    }
-                }
-            }
-
-            List<ForeignKey> fks = table.getOutgoingForeignKeys();
-            if (fks != null) {
-                for (ForeignKey fk : fks) {
-                    if (fk.getForeignKeyColumns().equals(getName())) {
-                        constraints.setForeignKeyName(fk.getName());
-                        constraints.setReferences(fk.getPrimaryKeyTable().getName() + "(" + fk.getPrimaryKeyColumns() + ")");
-                    }
-                }
-            }
-
-            if (constraints.isPrimaryKey() == null) {
-                constraints.setPrimaryKey(false);
-            }
-            if (constraints.isUnique() == null) {
-                constraints.setUnique(false);
-            }
-            setConstraints(constraints);
-        }
-
-        setRemarks(columnSnapshot.getRemarks());
-    }
 
     /**
      * Create am empty ColumnConfig object. Boolean and other object values will default to null.

@@ -1,13 +1,13 @@
 package liquibase.change;
 
 import liquibase.database.Database;
-import liquibase.database.core.MSSQLDatabase;
 import liquibase.exception.DatabaseException;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A common parent for all raw SQL related changes regardless of where the sql was sourced from.
@@ -164,7 +164,7 @@ public abstract class AbstractSQLChange extends AbstractChange implements DbmsTa
 
         String processedSQL = normalizeLineEndings(sql);
         for (String statement : StringUtils.processMutliLineSQL(processedSQL, isStripComments(), isSplitStatements(), getEndDelimiter())) {
-            if (database instanceof MSSQLDatabase) {
+            if (database.expectsWindowsEOL()) {
                  statement = statement.replaceAll("\n", "\r\n");
              }
 
