@@ -5,7 +5,7 @@ import liquibase.database.core.*;
 import liquibase.datatype.DatabaseDataType;
 import liquibase.exception.DatabaseException;
 
-public class UUIDTypeCor extends UUIDType {
+public class UUIDTypeCore extends UUIDType {
     @Override
     public boolean supports(Database database) {
         return true;
