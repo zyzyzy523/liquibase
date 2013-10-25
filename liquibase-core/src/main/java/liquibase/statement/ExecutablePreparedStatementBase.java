@@ -1,28 +1,20 @@
 package liquibase.statement;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import liquibase.change.ColumnConfig;
+import liquibase.changelog.ChangeSet;
+import liquibase.database.Database;
+import liquibase.database.PreparedStatementFactory;
+import liquibase.exception.DatabaseException;
+import liquibase.util.StreamUtil;
+import liquibase.util.file.FilenameUtils;
+
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import liquibase.change.ColumnConfig;
-import liquibase.changelog.ChangeSet;
-import liquibase.database.Database;
-import liquibase.database.PreparedStatementFactory;
-import liquibase.database.core.PostgresDatabase;
-import liquibase.exception.DatabaseException;
-import liquibase.util.file.FilenameUtils;
-import liquibase.util.StreamUtil;
 
 public abstract class ExecutablePreparedStatementBase implements ExecutablePreparedStatement {
 
@@ -108,7 +100,7 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 		        Reader bufReader = new BufferedReader(new FileReader(file));
 		        // PostgreSql does not support PreparedStatement.setCharacterStream() nor
 		        // PreparedStatement.setClob().
-		        if (database instanceof PostgresDatabase) {
+		        if (database.getShortName().equals("postgresql")) {
 		            String text = StreamUtil.getReaderContents(bufReader);
 		            stmt.setString(i, text);
 		        } else {

@@ -34,6 +34,9 @@ public class IntTypeCore extends IntType {
         if (database instanceof MSSQLDatabase || database instanceof HsqlDatabase || database instanceof FirebirdDatabase) {
             return new DatabaseDataType("INT");
         }
+        if (database instanceof SQLiteDatabase ) {
+            return new DatabaseDataType("INTEGER");
+        }
         return super.toDatabaseDataType(database);
 
         //sqllite

@@ -29,7 +29,7 @@ public class UnknownType extends LiquibaseDataType {
             dataTypeMaxParameters = database.getDataTypeMaxParameters(getName());
         }
         Object[] parameters = getParameters();
-        if (database instanceof MySQLDatabase && (
+        if (database.getShortName().equals("mysql") && (
                 getName().equalsIgnoreCase("TINYBLOB")
                         || getName().equalsIgnoreCase("MEDIUMBLOB")
                         || getName().equalsIgnoreCase("TINYTEXT")
@@ -39,7 +39,7 @@ public class UnknownType extends LiquibaseDataType {
             parameters = new Object[0];
         }
 
-        if (database instanceof MSSQLDatabase && (
+        if (database.getShortName().equals("mssql") && (
                 getName().equalsIgnoreCase("REAL")
                 || getName().equalsIgnoreCase("XML")
                 || getName().equalsIgnoreCase("HIERARCHYID")

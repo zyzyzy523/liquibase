@@ -3,6 +3,7 @@ package liquibase.datatype.core;
 import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.datatype.DatabaseDataType;
+import liquibase.exception.DatabaseException;
 
 public class TimeTypeCore extends TimeType {
 
@@ -22,7 +23,13 @@ public class TimeTypeCore extends TimeType {
             return new DatabaseDataType("INTERVAL HOUR TO FRACTION", 5);
         }
         if (database instanceof MSSQLDatabase) {
-            return new DatabaseDataType("DATETIME");
+            try {
+                if (database.getDatabaseMajorVersion() <= 9) {
+                    return new DatabaseDataType("DATETIME");
+                }
+            } catch (DatabaseException e) {
+                //assume greater than sql 2008 and TIME will work
+            }
         }
         if (database instanceof OracleDatabase) {
             return new DatabaseDataType("DATE");

@@ -135,11 +135,11 @@ public class SQLiteDatabase extends AbstractJdbcDatabase {
             List<ColumnConfig> copyColumns = new ArrayList<ColumnConfig>();
             if (table != null) {
                 for (Column column : table.getColumns()) {
-                    ColumnConfig new_column = new ColumnConfig(column);
+                    ColumnConfig new_column = column.toColumnConfig();
                     if (alterTableVisitor.createThisColumn(new_column)) {
                         createColumns.add(new_column);
                     }
-                    ColumnConfig copy_column = new ColumnConfig(column);
+                    ColumnConfig copy_column = column.toColumnConfig();
                     if (alterTableVisitor.copyThisColumn(copy_column)) {
                         copyColumns.add(copy_column);
                     }

@@ -6,7 +6,7 @@ import liquibase.datatype.DatabaseDataType;
 
 import java.util.Arrays;
 
-public class UnknownTypeMySQL extends UnknownType {
+public class UnknownTypeMy extends UnknownType {
 
     @Override
     public int getPriority() {

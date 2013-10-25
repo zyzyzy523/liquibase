@@ -11,33 +11,6 @@ public class DateTimeType extends LiquibaseDataType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof DB2Database
-                || database instanceof DerbyDatabase
-                || database instanceof FirebirdDatabase
-                || database instanceof H2Database
-                || database instanceof HsqlDatabase
-                || database instanceof MaxDBDatabase
-                || database instanceof OracleDatabase) {
-            return new DatabaseDataType("TIMESTAMP");
-        }
-
-        if (database instanceof MSSQLDatabase && getParameters().length > 0 && "16".equals(getParameters()[0])) {
-            return new DatabaseDataType("SMALLDATETIME");
-        }
-        if (database instanceof InformixDatabase) {
-            return new DatabaseDataType("DATETIME YEAR TO FRACTION", 5);
-        }
-        if (database instanceof PostgresDatabase) {
-            return new DatabaseDataType("TIMESTAMP WITH TIME ZONE");
-        }
-        if (database instanceof SQLiteDatabase) {
-            return new DatabaseDataType("TEXT");
-        }
-
-        if (database instanceof OracleDatabase) {
-            return new DatabaseDataType("DATE");
-        }
-
         return new DatabaseDataType(getName());
     }
 
