@@ -68,11 +68,6 @@ public class StandardChangeTests {
 
 
     @Theory
-    public void colorTest(@ParametersSuppliedBy(ColorSupplier.class) String color) {
-        assertNotNull(color);
-    }
-
-    @Theory
     public void atLeastOneSupportedDatabase(@ParametersSuppliedBy(AllChanges.class) Change change) throws Exception {
         List<Database> databases = DatabaseFactory.getInstance().getImplementedDatabases();
 
