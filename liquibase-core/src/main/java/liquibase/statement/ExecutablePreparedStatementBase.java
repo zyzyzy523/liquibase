@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
@@ -14,9 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import liquibase.change.ColumnConfig;
+import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
 import liquibase.database.PreparedStatementFactory;
+import liquibase.database.core.PostgresDatabase;
 import liquibase.exception.DatabaseException;
+import liquibase.util.file.FilenameUtils;
+import liquibase.util.StreamUtil;
 
 public abstract class ExecutablePreparedStatementBase implements ExecutablePreparedStatement {
 
@@ -25,13 +31,15 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 	private String schemaName;
 	private String tableName;
 	private List<ColumnConfig> columns;
+	private ChangeSet changeSet;
 
-	protected ExecutablePreparedStatementBase(Database database, String catalogName, String schemaName, String tableName, List<ColumnConfig> columns) {
+	protected ExecutablePreparedStatementBase(Database database, String catalogName, String schemaName, String tableName, List<ColumnConfig> columns, ChangeSet changeSet) {
 		this.database = database;
 		this.catalogName = catalogName;
 		this.schemaName = schemaName;
 		this.tableName = tableName;
 		this.columns = columns;
+		this.changeSet = changeSet;
 	}
 
 	@Override
@@ -85,16 +93,30 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 		    stmt.setDate(i, new java.sql.Date(col.getValueDate().getTime()));
 		} else if(col.getValueBlobFile() != null) {
 		    try {
-		        File file = new File(col.getValueBlobFile());
+                // Add change log base path if file path is relative.
+		    	String filePath = getAbsolutePath(col.getValueBlobFile());
+		        File file = new File(filePath);
 		        stmt.setBinaryStream(i, new BufferedInputStream(new FileInputStream(file)), (int) file.length());
 		    } catch (FileNotFoundException e) {
 		        throw new DatabaseException(e.getMessage(), e); // wrap
 		    }
 		} else if(col.getValueClobFile() != null) {
 		    try {
-		        File file = new File(col.getValueClobFile());
-		        stmt.setCharacterStream(i, new BufferedReader(new FileReader(file)), (int) file.length());
+                // Add change log base path if file path is relative.
+		    	String filePath = getAbsolutePath(col.getValueClobFile());
+		        File file = new File(filePath);
+		        Reader bufReader = new BufferedReader(new FileReader(file));
+		        // PostgreSql does not support PreparedStatement.setCharacterStream() nor
+		        // PreparedStatement.setClob().
+		        if (database instanceof PostgresDatabase) {
+		            String text = StreamUtil.getReaderContents(bufReader);
+		            stmt.setString(i, text);
+		        } else {
+		            stmt.setCharacterStream(i, bufReader);
+		        }
 		    } catch(FileNotFoundException e) {
+		        throw new DatabaseException(e.getMessage(), e); // wrap
+		    } catch(IOException e) {
 		        throw new DatabaseException(e.getMessage(), e); // wrap
 		    }
 		} else {
@@ -102,6 +124,24 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 			stmt.setNull(i, java.sql.Types.NULL);
 		}
 	}
+
+    /**
+     * Gets absolute and normalized path for path.
+     * If path is relative, absolute path is calculated relative to change log file.
+     *
+     * @param path Absolute or relative path.
+     * @return Absolute and normalized path.
+     */
+    public String getAbsolutePath(String path) {
+    	String p = path;
+        File f = new File(p);
+        if (!f.isAbsolute()) {
+            String basePath = FilenameUtils.getFullPath(changeSet.getChangeLog().getPhysicalFilePath());
+            p = FilenameUtils.normalize(basePath + p);
+        }
+        return p;
+    }
+
 
 	@Override
     public boolean skipOnUnsupported() {
