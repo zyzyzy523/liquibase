@@ -30,33 +30,33 @@ public class MainTest {
         }
     }
 
-    @Test
-    public void init() throws Exception {
-        Main main = new Main();
-        main.init(new String[] {
-                "-packages",
-                "liquibase.change"
-        });
+//    @Test
+//    public void init() throws Exception {
+//        Main main = new Main();
+//        main.init(new String[] {
+//                "-packages",
+//                "liquibase.change"
+//        });
+//
+//        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change"));
+//        assertTrue(Context.getInstance().getAllClasses().size() > 0);
+//        assertThat(Context.getInstance().getAllClasses(),(Matcher) everyItem(hasProperty("name", startsWith("liquibase.change"))));
+//    }
 
-        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change"));
-        assertTrue(Context.getInstance().getAllClasses().size() > 0);
-        assertThat(Context.getInstance().getAllClasses(),(Matcher) everyItem(hasProperty("name", startsWith("liquibase.change"))));
-    }
-
-    @Test
-    public void init_multiplePackages() throws Exception {
-        Main main = new Main();
-        main.init(new String[] {
-                "-packages",
-                "liquibase.change, liquibase.changelog, liquibase.parser"
-        });
-
-        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change", "liquibase.changelog", "liquibase.parser"));
-        assertTrue(Context.getInstance().getAllClasses().size() > 0);
-        assertThat(Context.getInstance().getAllClasses(), (Matcher) everyItem(hasProperty("name", anyOf(
-                startsWith("liquibase.change"),
-                startsWith("liquibase.changelog"),
-                startsWith("liquibase.parser")
-        ))));
-    }
+//    @Test
+//    public void init_multiplePackages() throws Exception {
+//        Main main = new Main();
+//        main.init(new String[] {
+//                "-packages",
+//                "liquibase.change, liquibase.changelog, liquibase.parser"
+//        });
+//
+//        assertThat(Context.getInstance().getPackages(), (Matcher) containsInAnyOrder("liquibase.change", "liquibase.changelog", "liquibase.parser"));
+//        assertTrue(Context.getInstance().getAllClasses().size() > 0);
+//        assertThat(Context.getInstance().getAllClasses(), (Matcher) everyItem(hasProperty("name", anyOf(
+//                startsWith("liquibase.change"),
+//                startsWith("liquibase.changelog"),
+//                startsWith("liquibase.parser")
+//        ))));
+//    }
 }

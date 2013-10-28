@@ -23,7 +23,7 @@ public class LiquibaseSdkTests {
 
         @Before
         public void before () {
-            this.context = Context.getInstance();
+            this.context = Context.getInstance(this);
         }
 
         @Test
@@ -41,7 +41,7 @@ public class LiquibaseSdkTests {
         @Test
         public void classesFound() {
             if (context.isInitialized()) {
-                assertTrue("No extension classes were found in "+ StringUtils.join(Context.getInstance().getPackages(), ","), Context.getInstance().getSeenExtensionClasses().size() > 0);
+                assertTrue("No extension classes were found in "+ StringUtils.join(context.getPackages(), ","), context.getSeenExtensionClasses().size() > 0);
             }
         }
     }

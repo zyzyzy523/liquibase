@@ -12,7 +12,6 @@ import java.util.*;
 
 public class Main {
 
-    private static final String ARG_PACKAGES = "packages";
     private CommandLine arguments;
     private Options commandLineOptions;
 
@@ -34,23 +33,23 @@ public class Main {
             return;
         }
 
-        Context context = Context.getInstance();
-        if (context.getSeenExtensionClasses().size() == 0) {
-            System.out.println("No extension classes found in "+StringUtils.join(context.getPackages(), ","));
-            return;
-        }
-
-        System.out.println("Extension classes found:");
-        for (Map.Entry<Class, Set<Class>> entry : context.getSeenExtensionClasses().entrySet()) {
-            System.out.println(StringUtils.indent(entry.getKey().getName()+" extensions:", 4));
-
-            System.out.println(StringUtils.indent(StringUtils.join(entry.getValue(), "\n", new StringUtils.StringUtilsFormatter() {
-                @Override
-                public String toString(Object obj) {
-                    return ((Class) obj).getName();
-                }
-            }), 8));
-        }
+//        Context context = Context.getInstance();
+//        if (context.getSeenExtensionClasses().size() == 0) {
+//            System.out.println("No extension classes found in "+StringUtils.join(context.getPackages(), ","));
+//            return;
+//        }
+//
+//        System.out.println("Extension classes found:");
+//        for (Map.Entry<Class, Set<Class>> entry : context.getSeenExtensionClasses().entrySet()) {
+//            System.out.println(StringUtils.indent(entry.getKey().getName()+" extensions:", 4));
+//
+//            System.out.println(StringUtils.indent(StringUtils.join(entry.getValue(), "\n", new StringUtils.StringUtilsFormatter() {
+//                @Override
+//                public String toString(Object obj) {
+//                    return ((Class) obj).getName();
+//                }
+//            }), 8));
+//        }
 
         printHeader("Running Tests");
 
@@ -68,7 +67,7 @@ public class Main {
 
     public Main() {
         commandLineOptions = new Options();
-        commandLineOptions.addOption(OptionBuilder.withArgName(ARG_PACKAGES).hasArg().withDescription("Comma separated list of packages containing extensions").isRequired(true).create("packages"));
+//        commandLineOptions.addOption(OptionBuilder.withArgName(ARG_PACKAGES).hasArg().withDescription("Comma separated list of packages containing extensions").isRequired(true).create("packages"));
     }
 
     public void init(String[] args) throws UserError {
@@ -81,9 +80,9 @@ public class Main {
         }
 
 
-        Set<String> packages = new HashSet<String>(Arrays.asList(arguments.getOptionValue(ARG_PACKAGES).split("\\s*,\\s*")));
-
-        Context.getInstance().init(packages);
+//        Set<String> packages = new HashSet<String>(Arrays.asList(arguments.getOptionValue(ARG_PACKAGES).split("\\s*,\\s*")));
+//
+//        Context.getInstance().init(packages);
     }
 
 

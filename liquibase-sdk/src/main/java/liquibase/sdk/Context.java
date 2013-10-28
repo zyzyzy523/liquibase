@@ -21,6 +21,7 @@ public class Context {
     private Set<String> packages = new HashSet<String>();
     private Set<Class> allClasses = new HashSet<Class>();
     private Map<Class, Set<Class>> seenExtensionClasses = new HashMap<Class, Set<Class>>();
+    private static ClassLoader classLoader;
 
     private Context() {
     }
@@ -29,12 +30,13 @@ public class Context {
         instance = null;
     }
 
-    public static Context getInstance() {
+    public static Context getInstance(Object test) {
         if (instance == null) {
             instance = new Context();
             String propertiesFile = getPropertiesFileName();
             try {
-                InputStream sdkProperties = Context.class.getClassLoader().getResourceAsStream(propertiesFile);
+                classLoader = test.getClass().getClassLoader();
+                InputStream sdkProperties = classLoader.getResourceAsStream(propertiesFile);
                 instance.init(sdkProperties);
             } catch (IOException e) {
                 System.out.println("Error loading "+propertiesFile+": "+e.getMessage());
@@ -63,26 +65,23 @@ public class Context {
         return seenExtensionClasses;
     }
 
-    public void init(InputStream propertiesStream) throws IOException {
+    protected void init(InputStream propertiesStream) throws IOException {
         if (propertiesStream != null) {
             Properties properties = new Properties();
             properties.load(propertiesStream);
 
-            String packagesProperty = StringUtils.trimToNull(properties.getProperty("packages"));
-            if (packagesProperty == null) {
-                return;
-            }
+            String packagesProperty = StringUtils.trimToEmpty(StringUtils.trimToNull(properties.getProperty("packages")));
 
             this.init(new HashSet<String>(Arrays.asList(packagesProperty.split("\\s*,\\s*"))));
         }
 
     }
 
-    public void init(Set<String> packages) {
+    protected void init(Set<String> packages) {
         this.packages = packages;
         try {
             for (String packageName : packages) {
-                Enumeration<URL> dirs = this.getClass().getClassLoader().getResources(packageName.replace('.', '/'));
+                Enumeration<URL> dirs = classLoader.getResources(packageName.replace('.', '/'));
                 while (dirs.hasMoreElements()) {
                     File dir = new File(dirs.nextElement().toURI());
                     findClasses(packageName, dir);
@@ -122,6 +121,7 @@ public class Context {
     }
 
     private void findClasses(String packageName, File dir) throws ClassNotFoundException {
+        packageName = packageName.replaceFirst("^\\.","");
         String[] classFiles = dir.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -129,8 +129,14 @@ public class Context {
             }
         });
         for (String classFile : classFiles) {
-            Class<?> foundClass = Class.forName(packageName + "." + classFile.replaceFirst("\\.class$", ""));
-            allClasses.add(foundClass);
+            Class<?> foundClass = null;
+            String className = packageName + "." + classFile.replaceFirst("\\.class$", "");
+            try {
+                foundClass = Class.forName(className, false, classLoader);
+                allClasses.add(foundClass);
+            } catch (Throwable e) {
+                System.out.println("Error loading class "+className+": "+e.getCause().getClass().getName()+": "+e.getCause().getMessage());
+            }
         }
 
         File[] subDirs = dir.listFiles(new FileFilter() {

@@ -49,7 +49,7 @@ public class StandardChangeTests {
 
     @Before
     public void setup() {
-        context = Context.getInstance();
+        context = Context.getInstance(this);
         seenChangeClasses = context.getSeenExtensionClasses().get(Change.class);
         if (seenChangeClasses == null) {
             seenChangeClasses = new HashSet<Class>();

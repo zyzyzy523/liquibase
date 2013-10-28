@@ -21,7 +21,7 @@ public class ContextTest {
     @Before
     public void setup() {
         Context.reset();
-        this.context = Context.getInstance();
+        this.context = Context.getInstance(this);
     }
 
     @Test
