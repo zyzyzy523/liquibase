@@ -1,14 +1,11 @@
 package liquibase.sdk;
 
-import liquibase.sdk.change.StandardChangeTests;
-import liquibase.util.StringUtils;
+import liquibase.sdk.standardtests.change.StandardChangeTests;
 import org.apache.commons.cli.*;
 import org.junit.internal.TextListener;
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
-
-import java.util.*;
 
 public class Main {
 

@@ -12,6 +12,7 @@ public class VerifyTest extends TestWatcher {
     private String testName;
     private String displayName;
     private List<Verification> checks;
+    private SortedMap<String, Value> permutationDefinition;
     private SortedMap<String, Value> info;
     private SortedMap<String, Value> data;
 
@@ -22,15 +23,16 @@ public class VerifyTest extends TestWatcher {
         this.displayName = description.getDisplayName();
 
         this.info = new TreeMap<String, Value>();
+        this.permutationDefinition = new TreeMap<String, Value>();
         this.data = new TreeMap<String, Value>();
         this.checks = new ArrayList<Verification>();
     }
 
     @Override
     protected void succeeded(Description description) {
-        if (info.size() > 0 || data.size() > 0) {
-            if (info.size() == 0) {
-                fail("Did not define any test state info to identify this permutation");
+        if (permutationDefinition.size() > 0 || data.size() > 0) {
+            if (permutationDefinition.size() == 0) {
+                fail("Did not define any test permutation definitions to identify this permutation");
             }
 
             PersistedTestResults persistedTestResults = PersistedTestResults.getInstance(testClass, testName);
@@ -54,6 +56,18 @@ public class VerifyTest extends TestWatcher {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public SortedMap<String, Value> getPermutationDefinition() {
+        return Collections.unmodifiableSortedMap(permutationDefinition);
+    }
+
+    public void addPermutationDefinition(String message, Object value) {
+        this.addPermutationDefinition(message, value, OutputFormat.DefaultFormat);
+    }
+
+    public void addPermutationDefinition(String message, Object value, OutputFormat format) {
+        this.permutationDefinition.put(message, new Value(value, format));
     }
 
     public SortedMap<String, Value> getInfo() {

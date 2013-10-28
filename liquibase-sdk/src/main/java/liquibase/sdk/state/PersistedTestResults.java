@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static org.junit.Assert.fail;
 
@@ -19,7 +21,7 @@ public class PersistedTestResults {
     private boolean testsFailed = false;
 
     private Map<String, TestPermutation> acceptedRuns = new HashMap<String, TestPermutation>();
-    private Map<String, TestPermutation> newRuns = new HashMap<String, TestPermutation>();
+    private SortedMap<String, TestPermutation> newRuns = new TreeMap<String, TestPermutation>();
 
     private PersistedTestResults(Class testClass, String testName) {
         this.testClass = testClass;
@@ -41,14 +43,28 @@ public class PersistedTestResults {
         try {
             if (foundDifferences()) {
                 BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
+                out.append("# Test Output: ").append(testClass.getName()).append(".").append(testName).append(" #\n\n");
+                out.append("This output is generated when the test is ran.\n\n");
+
                 for (Map.Entry<String, TestPermutation> iteration : newRuns.entrySet()) {
+                    out.append("## Permutation Output ##\n\n");
+                    out.append("- _VALIDATED_ ").append(String.valueOf(iteration.getValue().isValidated())).append("\n");
+
+                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getPermutationDefinition().entrySet()) {
+                        out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
+                    }
+
+                    out.append("\n");
+
                     for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getInfo().entrySet()) {
                         out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
                     }
                     out.append("\n");
-                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getInfo().entrySet()) {
+                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
                         out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
                     }
+
+                    out.append("\n\n");
                 }
 
                 out.close();
@@ -100,7 +116,7 @@ public class PersistedTestResults {
 
         String returnDir = sdkPropertiesFile.getAbsolutePath().replace("\\", "/") //normalize separators
                 .replaceFirst("/liquibase.sdk.properties$", "") //strip off file name
-                .replace("target/test-classes", "src/test/resources"); //switch to src dir
+                .replace("target/test-classes", "src/test/java"); //switch to src dir
         File file = new File(returnDir + "/" + testPackageDir);
         file.mkdirs();
         if (!file.exists()) {
@@ -149,9 +165,7 @@ public class PersistedTestResults {
                 }
             }
 
-            if (finalResult == Verification.Result.CANNOT_VALIDATE) {
-                thisRun.setValidated(finalResult == Verification.Result.PASSED);
-            }
+            thisRun.setValidated(finalResult == Verification.Result.PASSED);
 
             newRuns.put(thisRunKey, thisRun);
         } else {

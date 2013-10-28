@@ -1,6 +1,6 @@
 package liquibase.sdk;
 
-import liquibase.sdk.change.StandardChangeTests;
+import liquibase.sdk.standardtests.change.StandardChangeTests;
 import liquibase.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
