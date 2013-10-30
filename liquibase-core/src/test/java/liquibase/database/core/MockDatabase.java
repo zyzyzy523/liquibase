@@ -150,7 +150,7 @@ public class MockDatabase implements Database {
 
     @Override
     public String getShortName() {
-        return null;
+        return "mock";
     }
 
     public String getDriverName() throws DatabaseException {

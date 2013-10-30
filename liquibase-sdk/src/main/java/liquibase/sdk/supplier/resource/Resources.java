@@ -12,9 +12,9 @@ public class Resources {
 
     public static final liquibase.resource.ResourceAccessor RESOURCE_ACCESSOR = new ResourceAccessor();
 
-    private static final String usersCsv = "username, fullname\n" +
-            "nvoxland, Nathan Voxland\n" +
-            "bob, Bob Bobson";
+    private static final String usersCsv = "username, fullname, pk_id\n" +
+            "nvoxland, Nathan Voxland, 1\n" +
+            "bob, Bob Bobson, 2";
 
     private static class ResourceAccessor implements liquibase.resource.ResourceAccessor {
 

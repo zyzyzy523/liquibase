@@ -122,9 +122,9 @@ public class SybaseDatabase extends AbstractJdbcDatabase {
 
     @Override
     public String getDefaultDriver(String url) {
-        if (url.startsWith("jdbc:sybase")) {
+        if (url != null && url.startsWith("jdbc:sybase")) {
             return "com.sybase.jdbc3.jdbc.SybDriver";
-        } else if (url.startsWith("jdbc:jtds:sybase")) {
+        } else if (url != null && url.startsWith("jdbc:jtds:sybase")) {
             return "net.sourceforge.jtds.jdbc.Driver";
         }
         return null;

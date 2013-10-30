@@ -23,25 +23,25 @@ public class LiquibaseSdkTests {
 
         @Before
         public void before () {
-            this.context = Context.getInstance(this);
+            this.context = Context.getInstance();
         }
 
         @Test
         public void liquibaseSdkPropertiesFound() throws Exception {
-            assertEquals("There should be exactly one "+Context.getPropertiesFileName()+" file in the root of your classpath", 1, Collections.list(this.getClass().getClassLoader().getResources(Context.getPropertiesFileName())).size());
+            assertEquals("There should be exactly one "+Context.LIQUIBASE_SDK_PROPERTIES_FILENAME+" file in the root of your classpath", 1, Collections.list(this.getClass().getClassLoader().getResources(Context.LIQUIBASE_SDK_PROPERTIES_FILENAME)).size());
         }
 
         @Test
         public void contextInitialized() {
             if (!context.isInitialized()) {
-                fail("Testing Context is not initialized. Create a "+Context.getPropertiesFileName()+" file in the root of your classpath.");
+                fail("Testing Context is not initialized. Create a "+Context.LIQUIBASE_SDK_PROPERTIES_FILENAME+" file in the root of your classpath.");
             }
         }
 
         @Test
         public void classesFound() {
             if (context.isInitialized()) {
-                assertTrue("No extension classes were found in "+ StringUtils.join(context.getPackages(), ","), context.getSeenExtensionClasses().size() > 0);
+                assertTrue("No extension classes were found", context.getSeenExtensionClasses().size() > 0);
             }
         }
     }

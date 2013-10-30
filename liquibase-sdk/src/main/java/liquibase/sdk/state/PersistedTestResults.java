@@ -1,5 +1,7 @@
 package liquibase.sdk.state;
 
+import liquibase.exception.DatabaseException;
+
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class PersistedTestResults {
@@ -147,6 +151,18 @@ public class PersistedTestResults {
         Object acceptedRun = this.acceptedRuns.get(thisRunKey);
 
         if (acceptedRun == null) {
+            for (Setup setup : run.getSetupCommands()) {
+                String result = null;
+                try {
+                    result = setup.setup();
+                } catch (Exception e) {
+                    fail("Setup threw exception: "+e.getMessage());
+                }
+                if (result != null) {
+                    fail("Setup failed: " + result);
+                }
+            }
+
             Verification.Result finalResult = Verification.Result.PASSED;
             if (run.getChecks().size() == 0) {
                 finalResult = Verification.Result.CANNOT_VALIDATE;

@@ -52,7 +52,7 @@ public class RenameTableChange extends AbstractChange {
         this.oldTableName = oldTableName;
     }
 
-    @DatabaseChangeProperty(description = "New name for the table")
+    @DatabaseChangeProperty(description = "New name for the table", exampleValue = "employee")
     public String getNewTableName() {
         return newTableName;
     }

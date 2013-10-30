@@ -129,6 +129,10 @@ public class ServiceLocator {
         }
     }
 
+    public List<String> getPackages() {
+        return packagesToScan;
+    }
+
     public void addPackageToScan(String packageName) {
         packagesToScan.add(packageName);
     }

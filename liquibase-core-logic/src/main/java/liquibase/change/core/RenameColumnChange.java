@@ -60,7 +60,7 @@ public class RenameColumnChange extends AbstractChange {
         this.oldColumnName = oldColumnName;
     }
 
-    @DatabaseChangeProperty(description = "Name to rename the column to")
+    @DatabaseChangeProperty(description = "Name to rename the column to", exampleValue = "full_name")
     public String getNewColumnName() {
         return newColumnName;
     }

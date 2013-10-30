@@ -133,6 +133,10 @@ public abstract class AbstractJdbcDatabase implements Database {
 
     @Override
     public void setConnection(DatabaseConnection conn) {
+        if (conn == null) {
+            this.connection = null;
+            return;
+        }
         LogFactory.getLogger().debug("Connected to " + conn.getConnectionUserName() + "@" + conn.getURL());
         this.connection = conn;
         try {

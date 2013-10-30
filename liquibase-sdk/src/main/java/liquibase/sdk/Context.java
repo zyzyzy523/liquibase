@@ -2,8 +2,8 @@ package liquibase.sdk;
 
 import liquibase.change.Change;
 import liquibase.sdk.exception.UnexpectedLiquibaseSdkException;
+import liquibase.servicelocator.ServiceLocator;
 import liquibase.sqlgenerator.SqlGenerator;
-import liquibase.util.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Modifier;
@@ -12,16 +12,16 @@ import java.util.*;
 
 public class Context {
 
+    public static final String LIQUIBASE_SDK_PROPERTIES_FILENAME = "liquibase.sdk.properties";
     private static Context instance;
     private static final List<Class<?>> extensionInterfaces = Arrays.asList(Change.class, SqlGenerator.class);
 
-
-
     private boolean initialized = false;
-    private Set<String> packages = new HashSet<String>();
+
     private Set<Class> allClasses = new HashSet<Class>();
     private Map<Class, Set<Class>> seenExtensionClasses = new HashMap<Class, Set<Class>>();
-    private static ClassLoader classLoader;
+
+    private Set<File> propertyFiles;
 
     private Context() {
     }
@@ -30,31 +30,22 @@ public class Context {
         instance = null;
     }
 
-    public static Context getInstance(Object test) {
+    public static Context getInstance() {
         if (instance == null) {
             instance = new Context();
-            String propertiesFile = getPropertiesFileName();
             try {
-                classLoader = test.getClass().getClassLoader();
-                InputStream sdkProperties = classLoader.getResourceAsStream(propertiesFile);
-                instance.init(sdkProperties);
-            } catch (IOException e) {
-                System.out.println("Error loading "+propertiesFile+": "+e.getMessage());
+                instance.init();
+            } catch (Exception e) {
+                System.out.println("Error initializing context: "+e.getMessage());
+                e.printStackTrace();
             }
+
         }
         return instance;
     }
 
-    public static String getPropertiesFileName() {
-        return System.getProperty("liquibase.sdk.properties.file", "liquibase.sdk.properties");
-    }
-
-    public boolean isInitialized() {
+   public boolean isInitialized() {
         return initialized;
-    }
-
-    public Set<String> getPackages() {
-        return packages;
     }
 
     public Set<Class> getAllClasses() {
@@ -65,23 +56,20 @@ public class Context {
         return seenExtensionClasses;
     }
 
-    protected void init(InputStream propertiesStream) throws IOException {
-        if (propertiesStream != null) {
-            Properties properties = new Properties();
-            properties.load(propertiesStream);
 
-            String packagesProperty = StringUtils.trimToEmpty(StringUtils.trimToNull(properties.getProperty("packages")));
+    protected void init() throws Exception {
+        propertyFiles = new HashSet<File>();
 
-            this.init(new HashSet<String>(Arrays.asList(packagesProperty.split("\\s*,\\s*"))));
+
+        Enumeration<URL> resourceUrls = Context.class.getClassLoader().getResources(LIQUIBASE_SDK_PROPERTIES_FILENAME);
+        while(resourceUrls.hasMoreElements()) {
+            File propertiesFile = new File(resourceUrls.nextElement().toURI());
+            propertyFiles.add(propertiesFile);
         }
 
-    }
-
-    protected void init(Set<String> packages) {
-        this.packages = packages;
         try {
-            for (String packageName : packages) {
-                Enumeration<URL> dirs = classLoader.getResources(packageName.replace('.', '/'));
+            for (String packageName : ServiceLocator.getInstance().getPackages()) {
+                Enumeration<URL> dirs = this.getClass().getClassLoader().getResources(packageName.replace('.', '/'));
                 while (dirs.hasMoreElements()) {
                     File dir = new File(dirs.nextElement().toURI());
                     findClasses(packageName, dir);
@@ -132,7 +120,7 @@ public class Context {
             Class<?> foundClass = null;
             String className = packageName + "." + classFile.replaceFirst("\\.class$", "");
             try {
-                foundClass = Class.forName(className, false, classLoader);
+                foundClass = Class.forName(className);
                 allClasses.add(foundClass);
             } catch (Throwable e) {
                 System.out.println("Error loading class "+className+": "+e.getCause().getClass().getName()+": "+e.getCause().getMessage());

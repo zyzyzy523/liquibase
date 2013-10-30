@@ -10,6 +10,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.sdk.Context;
 import liquibase.sdk.state.OutputFormat;
+import liquibase.sdk.state.Setup;
 import liquibase.sdk.state.Verification;
 import liquibase.sdk.state.VerifyTest;
 import liquibase.sdk.supplier.change.AllChanges;
@@ -50,7 +51,7 @@ public class StandardChangeTests {
 
     @Before
     public void setup() {
-        context = Context.getInstance(this);
+        context = Context.getInstance();
         seenChangeClasses = context.getSeenExtensionClasses().get(Change.class);
         if (seenChangeClasses == null) {
             seenChangeClasses = new HashSet<Class>();
@@ -136,6 +137,24 @@ public class StandardChangeTests {
             }
         }));
 
+        String setupClassName = change.getClass().getName()+"SdkTestSetup";
+        StandardChangeSdkTestSetup setup = null;
+        try {
+            Class<? extends StandardChangeSdkTestSetup> setupClass = (Class<? extends StandardChangeSdkTestSetup>) Class.forName(setupClassName);
+            setup = setupClass.newInstance();
+            setup.setChange(change);
+            setup.setDatabase(database);
+
+        } catch (ClassNotFoundException e) {
+            // ok
+        } catch (InstantiationException e) {
+            fail("Could not instantiate setup class "+setupClassName+": "+e.getMessage());
+        } catch (IllegalAccessException e) {
+            fail("Illegal access exception instantiating setup class " + setupClassName + ": " + e.getMessage());
+        }
+        testRun.setup(setup, setupClassName, StandardChangeSdkTestSetup.class);
+
+
         testRun.verifyChanges(new Verification() {
             @Override
             public Result check() throws Exception {
@@ -144,8 +163,13 @@ public class StandardChangeTests {
                 }
                 try {
                     database.executeStatements(change, null, null);
-                } catch (LiquibaseException e) {
-                    fail("Error executing change: "+e.getMessage());
+                } catch (Throwable e) {
+                    String message = "Error executing change: " + e.getMessage();
+                    if (testRun.getNullSetupCommands().size() > 0) {
+                        message += "\n"+"Did not run potential setup commands: "+StringUtils.join(testRun.getNullSetupCommands(), ", ");
+                    }
+                    message+="\n"+ChangeLogSerializerFactory.getInstance().getSerializer("xml").serialize(change, true);
+                    fail(message);
                 }
                 return Result.PASSED;
             }

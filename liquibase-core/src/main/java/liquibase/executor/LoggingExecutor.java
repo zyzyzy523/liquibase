@@ -1,5 +1,6 @@
 package liquibase.executor;
 
+import liquibase.change.Change;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.servicelocator.LiquibaseService;
@@ -25,6 +26,22 @@ public class LoggingExecutor extends AbstractExecutor implements Executor {
         this.output = output;
         this.delegatedReadExecutor = delegatedExecutor;
         setDatabase(database);
+    }
+
+    @Override
+    public void execute(Change change) throws DatabaseException {
+        execute(change, new ArrayList<SqlVisitor>());
+    }
+
+    @Override
+    public void execute(Change change, List<SqlVisitor> sqlVisitors) throws DatabaseException {
+        SqlStatement[] sqlStatements = change.generateStatements(database);
+        if (sqlStatements != null) {
+            for (SqlStatement statement : sqlStatements) {
+                execute(statement, sqlVisitors);
+            }
+        }
+
     }
 
     @Override

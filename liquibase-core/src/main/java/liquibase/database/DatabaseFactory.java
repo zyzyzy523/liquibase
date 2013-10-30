@@ -86,6 +86,9 @@ public class DatabaseFactory {
     }
 
     public String findDefaultDriver(String url) {
+        if (url == null) {
+            return null;
+        }
         for (Database database : this.getImplementedDatabases()) {
             String defaultDriver = database.getDefaultDriver(url);
             if (defaultDriver != null) {

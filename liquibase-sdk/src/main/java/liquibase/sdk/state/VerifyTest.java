@@ -12,6 +12,8 @@ public class VerifyTest extends TestWatcher {
     private String testName;
     private String displayName;
     private List<Verification> checks;
+    private List<Setup> setupCommands;
+    private List<String> nullSetupCommands;
     private SortedMap<String, Value> permutationDefinition;
     private SortedMap<String, Value> info;
     private SortedMap<String, Value> data;
@@ -26,6 +28,8 @@ public class VerifyTest extends TestWatcher {
         this.permutationDefinition = new TreeMap<String, Value>();
         this.data = new TreeMap<String, Value>();
         this.checks = new ArrayList<Verification>();
+        this.setupCommands = new ArrayList<Setup>();
+        this.nullSetupCommands = new ArrayList<String>();
     }
 
     @Override
@@ -94,12 +98,28 @@ public class VerifyTest extends TestWatcher {
         return Collections.unmodifiableSortedMap(data);
     }
 
+    public void setup(Setup setup, String expectedClassName, Class expectedType) {
+        if (setup == null) {
+            this.nullSetupCommands.add(expectedClassName + " extends " + expectedType.getName());
+        } else {
+            this.setupCommands.add(setup);
+        }
+    }
+
     public void verifyChanges(Verification check) {
         this.checks.add(check);
     }
 
     public List<Verification> getChecks() {
         return checks;
+    }
+
+    public List<Setup> getSetupCommands() {
+        return setupCommands;
+    }
+
+    public List<String> getNullSetupCommands() {
+        return nullSetupCommands;
     }
 
     public static class Value {
