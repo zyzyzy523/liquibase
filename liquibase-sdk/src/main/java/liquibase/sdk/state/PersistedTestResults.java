@@ -156,6 +156,7 @@ public class PersistedTestResults {
                 try {
                     result = setup.setup();
                 } catch (Exception e) {
+                    e.printStackTrace();
                     fail("Setup threw exception: "+e.getMessage());
                 }
                 if (result != null) {

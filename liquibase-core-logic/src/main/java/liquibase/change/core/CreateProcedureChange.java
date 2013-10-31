@@ -5,6 +5,7 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
+import liquibase.database.core.H2Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.database.core.DB2Database;
 import liquibase.statement.SqlStatement;
@@ -16,6 +17,11 @@ import liquibase.statement.core.RawSqlStatement;
 public class CreateProcedureChange extends AbstractChange {
     private String comments;
     private String procedureBody;
+
+    @Override
+    public boolean supports(Database database) {
+        return (!(database instanceof H2Database));
+    }
 
     @DatabaseChangeProperty(serializationType = SerializationType.DIRECT_VALUE,
     exampleValue = "CREATE OR REPLACE PROCEDURE testHello\n" +
