@@ -6,17 +6,14 @@ import liquibase.change.ChangeMetaData;
 import liquibase.change.ChangeParameterMetaData;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
-import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.sdk.Context;
 import liquibase.sdk.state.OutputFormat;
-import liquibase.sdk.state.Setup;
 import liquibase.sdk.state.Verification;
 import liquibase.sdk.state.VerifyTest;
 import liquibase.sdk.supplier.change.AllChanges;
 import liquibase.sdk.supplier.database.AllDatabases;
 import liquibase.sdk.supplier.resource.Resources;
-import liquibase.serializer.ChangeLogSerializer;
 import liquibase.serializer.ChangeLogSerializerFactory;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.servicelocator.ServiceLocator;
@@ -26,10 +23,7 @@ import liquibase.statement.SqlStatement;
 import liquibase.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.ParametersSuppliedBy;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
+import org.junit.experimental.theories.*;
 import org.junit.runner.RunWith;
 
 import java.util.*;
@@ -47,7 +41,7 @@ public class StandardChangeTests {
     @DataPoints public static Class[] changeClasses = ServiceLocator.getInstance().findClasses(Change.class);
 
     @Rule
-    public VerifyTest testRun = new VerifyTest();
+    public VerifyTest verifyTest = new VerifyTest();
 
     @Before
     public void setup() {
@@ -91,8 +85,8 @@ public class StandardChangeTests {
         assumeTrue(change.supports(database));
         assumeTrue(!change.generateStatementsVolatile(database));
 
-        testRun.addPermutationDefinition("Database", database.getShortName());
-        testRun.addPermutationDefinition("Change Class", change.getClass());
+        verifyTest.addPermutationDefinition("Database", database.getShortName());
+        verifyTest.addPermutationDefinition("Change Class", change.getClass());
 
         change.setResourceAccessor(Resources.RESOURCE_ACCESSOR);
 
@@ -102,7 +96,7 @@ public class StandardChangeTests {
             Object paramValue = param.getExampleValue();
             String serializedValue = formatParameter(paramValue);
 
-            testRun.addInfo("Change Parameter " + param.getParameterName(), serializedValue);
+            verifyTest.addInfo("Change Parameter " + param.getParameterName(), serializedValue);
             param.setValue(change, paramValue);
         }
 
@@ -130,7 +124,7 @@ public class StandardChangeTests {
             }
         }
 
-        testRun.addData("sql", finalSql, new OutputFormat.CollectionFormat(new StringUtils.StringUtilsFormatter() {
+        verifyTest.addData("sql", finalSql, new OutputFormat.CollectionFormat(new StringUtils.StringUtilsFormatter() {
             @Override
             public String toString(Object obj) {
                 return ((Sql) obj).toSql();
@@ -152,10 +146,10 @@ public class StandardChangeTests {
         } catch (IllegalAccessException e) {
             fail("Illegal access exception instantiating setup class " + setupClassName + ": " + e.getMessage());
         }
-        testRun.setup(setup, setupClassName, StandardChangeSdkTestSetup.class);
+        verifyTest.setup(setup, setupClassName, StandardChangeSdkTestSetup.class);
 
 
-        testRun.verifyChanges(new Verification() {
+        verifyTest.verifyChanges(new Verification() {
             @Override
             public Result check() throws Exception {
                 if (database.getConnection() == null) {
@@ -165,15 +159,17 @@ public class StandardChangeTests {
                     database.executeStatements(change, null, null);
                 } catch (Throwable e) {
                     String message = "Error executing change: " + e.getMessage();
-                    if (testRun.getNullSetupCommands().size() > 0) {
-                        message += "\n"+"Did not run potential setup commands: "+StringUtils.join(testRun.getNullSetupCommands(), ", ");
+                    if (verifyTest.getNullSetupCommands().size() > 0) {
+                        message += "\n" + "Did not run potential setup commands: " + StringUtils.join(verifyTest.getNullSetupCommands(), ", ");
                     }
-                    message+="\n"+ChangeLogSerializerFactory.getInstance().getSerializer("xml").serialize(change, true);
+                    message += "\n" + ChangeLogSerializerFactory.getInstance().getSerializer("xml").serialize(change, true);
                     fail(message);
                 }
                 return Result.PASSED;
             }
         });
+
+        verifyTest.verifyChanges(setup, setupClassName, StandardChangeSdkTestSetup.class);
     }
 
     private String formatParameter(Object paramValue) {

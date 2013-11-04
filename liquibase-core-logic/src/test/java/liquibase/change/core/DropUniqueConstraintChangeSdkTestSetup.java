@@ -1,12 +1,17 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.UniqueConstraint;
+
+import static junit.framework.Assert.assertNotNull;
 
 public class DropUniqueConstraintChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         DropUniqueConstraintChange change = (DropUniqueConstraintChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -31,9 +36,18 @@ public class DropUniqueConstraintChangeSdkTestSetup extends StandardChangeSdkTes
         addUniqueConstraintChange.setColumnNames(uniqueColumns);
         addUniqueConstraintChange.setConstraintName(change.getConstraintName());
 
-        execute(createTableChange, addUniqueConstraintChange);
+        return new Change[] {createTableChange, addUniqueConstraintChange };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        DropUniqueConstraintChange change = (DropUniqueConstraintChange) getChange();
 
+        String[] columns = null;
+        if (change.getUniqueColumns() != null) {
+            columns = change.getUniqueColumns().split(",");
+        }
+
+        assertNotNull(diffResult.getMissingObject(new UniqueConstraint(change.getConstraintName(), change.getCatalogName(), change.getSchemaName(), change.getTableName(), columns), getDatabase()));
     }
 }

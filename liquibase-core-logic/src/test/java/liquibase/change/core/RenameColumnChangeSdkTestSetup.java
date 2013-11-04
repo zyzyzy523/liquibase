@@ -1,12 +1,19 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
+import liquibase.diff.DiffResult;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.Column;
+import liquibase.structure.core.Table;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 public class RenameColumnChangeSdkTestSetup extends StandardChangeSdkTestSetup {
 
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         RenameColumnChange change = (RenameColumnChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -20,8 +27,18 @@ public class RenameColumnChangeSdkTestSetup extends StandardChangeSdkTestSetup {
         }
         createTableChange.addColumn(new ColumnConfig().setName(change.getOldColumnName()).setType(dataType));
 
-        execute(createTableChange);
+        return new Change[] {createTableChange };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        RenameColumnChange change = (RenameColumnChange) getChange();
+
+        Column oldColumn = diffResult.getMissingObject(new Column(Table.class, change.getCatalogName(), change.getSchemaName(), change.getTableName(), change.getOldColumnName()), getDatabase());
+        Column newColumn = diffResult.getUnexpectedObject(new Column(Table.class, change.getCatalogName(), change.getSchemaName(), change.getTableName(), change.getNewColumnName()), getDatabase());
+
+        assertNotNull(oldColumn);
+        assertNotNull(newColumn);
+        assertEquals(oldColumn.getType().toString(), newColumn.getType().toString());
     }
 }

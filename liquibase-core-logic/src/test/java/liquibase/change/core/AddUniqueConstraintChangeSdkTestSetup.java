@@ -1,12 +1,15 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.UniqueConstraint;
 
 public class AddUniqueConstraintChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         AddUniqueConstraintChange change = (AddUniqueConstraintChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -19,9 +22,14 @@ public class AddUniqueConstraintChangeSdkTestSetup extends StandardChangeSdkTest
         }
         createTableChange.addColumn(new ColumnConfig().setName("other_column").setType("int"));
 
-        execute(createTableChange);
+        return new Change[] {createTableChange };
 
-        return null;
+    }
 
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        AddUniqueConstraintChange change = (AddUniqueConstraintChange) getChange();
+
+        diffResult.getUnexpectedObject(new UniqueConstraint(change.getConstraintName(), change.getCatalogName(), change.getSchemaName(), change.getTableName()), getDatabase());
     }
 }

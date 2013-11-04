@@ -1,13 +1,19 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
 import liquibase.exception.DatabaseException;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.statement.ForeignKeyConstraint;
+import liquibase.structure.core.ForeignKey;
+
+import static junit.framework.TestCase.assertNotNull;
 
 public class DropForeignKeyConstraintChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws DatabaseException {
+    protected Change[]  prepareDatabase() throws DatabaseException {
         DropForeignKeyConstraintChange change = (DropForeignKeyConstraintChange) getChange();
 
         CreateTableChange createBaseTable = new CreateTableChange();
@@ -29,9 +35,14 @@ public class DropForeignKeyConstraintChangeSdkTestSetup extends StandardChangeSd
         createFKChange.setReferencedColumnNames("id");
         createFKChange.setConstraintName(change.getConstraintName());
 
-        execute(createBaseTable, createFKChange);
+        return new Change[] {createBaseTable, createFKChange };
 
-        return null;
+    }
 
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        DropForeignKeyConstraintChange change = (DropForeignKeyConstraintChange) getChange();
+
+        assertNotNull(diffResult.getMissingObject(new ForeignKey(change.getConstraintName(), change.getBaseTableCatalogName(), change.getBaseTableSchemaName(), change.getBaseTableName()), getDatabase()));
     }
 }

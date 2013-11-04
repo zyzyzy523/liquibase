@@ -1,12 +1,13 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
-import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
 
 public class LoadUpdateDataChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         LoadUpdateDataChange change = (LoadUpdateDataChange) getChange();
 
         InsertDataChange insertDataChange1 = new InsertDataChange();
@@ -31,8 +32,12 @@ public class LoadUpdateDataChangeSdkTestSetup extends StandardChangeSdkTestSetup
             createTableChange.addColumn(new ColumnConfig().setName(columnName).setType("varchar(20)"));
         }
 
-        execute(createTableChange);
-
-        return null;
+        return new Change[] {createTableChange };
     }
+
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) throws Exception {
+        //todo
+    }
+
 }

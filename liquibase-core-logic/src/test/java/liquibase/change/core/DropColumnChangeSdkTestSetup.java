@@ -1,11 +1,17 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
+import liquibase.diff.DiffResult;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.Column;
+import liquibase.structure.core.Table;
+
+import static junit.framework.Assert.assertNotNull;
 
 public class DropColumnChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         DropColumnChange change = (DropColumnChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -15,8 +21,13 @@ public class DropColumnChangeSdkTestSetup extends StandardChangeSdkTestSetup {
         createTableChange.addColumn(new ColumnConfig().setName(change.getColumnName()).setType("int"));
         createTableChange.addColumn(new ColumnConfig().setName("other_col").setType("int"));
 
-        execute(createTableChange);
+        return new Change[] {createTableChange };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        DropColumnChange change = (DropColumnChange) getChange();
+
+        assertNotNull(diffResult.getMissingObject(new Column(Table.class, change.getCatalogName(), change.getSchemaName(), change.getTableName(), change.getColumnName()), getDatabase()));
     }
 }

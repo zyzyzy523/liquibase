@@ -2,12 +2,17 @@ package liquibase.change.core;
 
 import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
+import liquibase.diff.DiffResult;
 import liquibase.exception.DatabaseException;
+import liquibase.executor.ExecutorService;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.statement.core.RawSqlStatement;
+
+import static org.junit.Assert.assertTrue;
 
 public class DeleteDataChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws DatabaseException {
+    protected Change[]  prepareDatabase() throws DatabaseException {
         DeleteDataChange change = (DeleteDataChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -31,8 +36,15 @@ public class DeleteDataChangeSdkTestSetup extends StandardChangeSdkTestSetup {
         insertDataChange2.addColumn(new ColumnConfig().setName("id").setType("int").setValueNumeric(1));
         insertDataChange2.addColumn(new ColumnConfig().setName("name").setType("varchar(255)").setValue("Row A"));
 
-        execute(createTableChange, insertDataChange1, insertDataChange2);
+        return new Change[] {createTableChange, insertDataChange1, insertDataChange2 };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) throws Exception {
+        //todo: implement a generic check
+
+//        int rows = ExecutorService.getInstance().getExecutor(getDatabase()).queryForInt(new RawSqlStatement("select count(*) from " + getDatabase().escapeTableName(change.getCatalogName(), change.getSchemaName(), change.getTableName())));
+//        assertTrue(rows > 0);
+
     }
 }

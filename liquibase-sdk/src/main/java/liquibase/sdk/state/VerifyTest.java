@@ -14,6 +14,7 @@ public class VerifyTest extends TestWatcher {
     private List<Verification> checks;
     private List<Setup> setupCommands;
     private List<String> nullSetupCommands;
+    private List<String> nullCheckCommands;
     private SortedMap<String, Value> permutationDefinition;
     private SortedMap<String, Value> info;
     private SortedMap<String, Value> data;
@@ -30,6 +31,7 @@ public class VerifyTest extends TestWatcher {
         this.checks = new ArrayList<Verification>();
         this.setupCommands = new ArrayList<Setup>();
         this.nullSetupCommands = new ArrayList<String>();
+        this.nullCheckCommands = new ArrayList<String>();
     }
 
     @Override
@@ -108,6 +110,14 @@ public class VerifyTest extends TestWatcher {
 
     public void verifyChanges(Verification check) {
         this.checks.add(check);
+    }
+
+    public void verifyChanges(Verification check, String expectedClassName, Class expectedType) {
+        if (check == null) {
+            this.nullCheckCommands.add(expectedClassName + " extends " + expectedType.getName());
+        } else {
+            verifyChanges(check);
+        }
     }
 
     public List<Verification> getChecks() {

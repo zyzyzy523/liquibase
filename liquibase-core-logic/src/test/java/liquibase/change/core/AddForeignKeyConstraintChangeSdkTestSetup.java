@@ -1,14 +1,21 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
 import liquibase.exception.DatabaseException;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.ForeignKey;
+import liquibase.structure.core.Schema;
+import liquibase.structure.core.Table;
+
+import static junit.framework.Assert.assertNotNull;
 
 public class AddForeignKeyConstraintChangeSdkTestSetup extends StandardChangeSdkTestSetup {
 
     @Override
-    public String setup() throws DatabaseException {
+    protected Change[]  prepareDatabase() throws DatabaseException {
         AddForeignKeyConstraintChange change = (AddForeignKeyConstraintChange) getChange();
 
         CreateTableChange createBaseTable = new CreateTableChange();
@@ -27,8 +34,16 @@ public class AddForeignKeyConstraintChangeSdkTestSetup extends StandardChangeSdk
             createReferencedTable.addColumn(new ColumnConfig().setName(columnName).setType("int").setConstraints(new ConstraintsConfig().setPrimaryKey(true)));
         }
 
-        execute(createBaseTable, createReferencedTable);
+        return new Change[] {createBaseTable, createReferencedTable };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        AddForeignKeyConstraintChange change = (AddForeignKeyConstraintChange) getChange();
+
+        Table baseTable = new Table(change.getBaseTableCatalogName(), change.getBaseTableSchemaName(), change.getBaseTableName());
+        Table referencedTable = new Table(change.getReferencedTableCatalogName(), change.getReferencedTableSchemaName(), change.getReferencedTableName());
+
+        assertNotNull(diffResult.getUnexpectedObject(new ForeignKey().setName(change.getConstraintName()).setForeignKeyTable(baseTable).setPrimaryKeyTable(referencedTable).setForeignKeyColumns(change.getBaseColumnNames()).setPrimaryKeyColumns(change.getReferencedColumnNames()), getDatabase()));
     }
 }

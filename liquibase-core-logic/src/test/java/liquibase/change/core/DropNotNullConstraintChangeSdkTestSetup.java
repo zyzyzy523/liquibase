@@ -1,12 +1,20 @@
 package liquibase.change.core;
 
+import liquibase.change.Change;
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
+import liquibase.diff.DiffResult;
+import liquibase.diff.ObjectDifferences;
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.structure.core.Column;
+import liquibase.structure.core.Table;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DropNotNullConstraintChangeSdkTestSetup extends StandardChangeSdkTestSetup {
     @Override
-    public String setup() throws Exception {
+    protected Change[]  prepareDatabase() throws Exception {
         DropNotNullConstraintChange change = (DropNotNullConstraintChange) getChange();
 
         CreateTableChange createTableChange = new CreateTableChange();
@@ -21,9 +29,15 @@ public class DropNotNullConstraintChangeSdkTestSetup extends StandardChangeSdkTe
         createTableChange.addColumn(new ColumnConfig().setName(change.getColumnName()).setType(columnType).setConstraints(new ConstraintsConfig().setNullable(false)));
         createTableChange.addColumn(new ColumnConfig().setName("other_column").setType("int"));
 
-        execute(createTableChange);
+        return new Change[] {createTableChange };
+    }
 
-        return null;
+    @Override
+    protected void checkDiffResult(DiffResult diffResult) {
+        DropNotNullConstraintChange change = (DropNotNullConstraintChange) getChange();
 
+        ObjectDifferences diff = diffResult.getChangedObject(new Column(Table.class, change.getCatalogName(), change.getSchemaName(), change.getTableName(), change.getColumnName()), getDatabase());
+        assertFalse((Boolean) diff.getDifference("nullable").getReferenceValue());
+        assertTrue((Boolean) diff.getDifference("nullable").getComparedValue());
     }
 }
