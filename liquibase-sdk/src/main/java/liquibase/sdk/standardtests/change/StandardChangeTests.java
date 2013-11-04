@@ -140,13 +140,13 @@ public class StandardChangeTests {
             setup.setDatabase(database);
 
         } catch (ClassNotFoundException e) {
-            // ok
+            fail("Missing setup class "+setupClassName+" extends "+StandardChangeSdkTestSetup.class.getName());
         } catch (InstantiationException e) {
             fail("Could not instantiate setup class "+setupClassName+": "+e.getMessage());
         } catch (IllegalAccessException e) {
             fail("Illegal access exception instantiating setup class " + setupClassName + ": " + e.getMessage());
         }
-        verifyTest.setup(setup, setupClassName, StandardChangeSdkTestSetup.class);
+        verifyTest.setup(setup);
 
 
         verifyTest.verifyChanges(new Verification() {
@@ -159,9 +159,7 @@ public class StandardChangeTests {
                     database.executeStatements(change, null, null);
                 } catch (Throwable e) {
                     String message = "Error executing change: " + e.getMessage();
-                    if (verifyTest.getNullSetupCommands().size() > 0) {
-                        message += "\n" + "Did not run potential setup commands: " + StringUtils.join(verifyTest.getNullSetupCommands(), ", ");
-                    }
+
                     message += "\n" + ChangeLogSerializerFactory.getInstance().getSerializer("xml").serialize(change, true);
                     fail(message);
                 }
@@ -169,7 +167,7 @@ public class StandardChangeTests {
             }
         });
 
-        verifyTest.verifyChanges(setup, setupClassName, StandardChangeSdkTestSetup.class);
+        verifyTest.verifyChanges(setup);
     }
 
     private String formatParameter(Object paramValue) {
