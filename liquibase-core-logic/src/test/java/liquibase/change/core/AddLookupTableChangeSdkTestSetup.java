@@ -23,7 +23,7 @@ public class AddLookupTableChangeSdkTestSetup extends StandardChangeSdkTestSetup
         createTableChange.setTableName(change.getExistingTableName());
 
         createTableChange.addColumn(new ColumnConfig().setName("other_column").setType("int"));
-        createTableChange.addColumn(new ColumnConfig().setName(change.getExistingColumnName()).setType("int"));
+        createTableChange.addColumn(new ColumnConfig().setName(change.getExistingColumnName()).setType(change.getNewColumnDataType()));
 
         return new Change[] {createTableChange };
     }

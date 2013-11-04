@@ -36,6 +36,12 @@ public class DerbyDatabase extends AbstractJdbcDatabase {
         determineDriverVersion();
     }
 
+
+    @Override
+    public String escapeTableName(String catalogName, String schemaName, String tableName) {
+        return super.escapeTableName(catalogName, schemaName, tableName);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
     @Override
     public boolean isCorrectDatabaseImplementation(DatabaseConnection conn) throws DatabaseException {
         return "Apache Derby".equalsIgnoreCase(conn.getDatabaseProductName());

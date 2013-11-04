@@ -1,5 +1,6 @@
 package liquibase.sdk.state;
 
+import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -13,11 +14,13 @@ public class VerifyTest extends TestWatcher {
     private String displayName;
     private List<Verification> checks;
     private List<Setup> setupCommands;
+    private List<Cleanup> cleanupCommands;
     private SortedMap<String, Value> permutationDefinition;
     private SortedMap<String, Value> info;
     private SortedMap<String, Value> data;
+    private FailureHandler failureHandler;
 
-//    @Override
+    //    @Override
     protected void starting(Description description) {
         this.testClass = description.getTestClass();
         this.testName = description.getMethodName();
@@ -28,6 +31,7 @@ public class VerifyTest extends TestWatcher {
         this.data = new TreeMap<String, Value>();
         this.checks = new ArrayList<Verification>();
         this.setupCommands = new ArrayList<Setup>();
+        this.cleanupCommands = new ArrayList<Cleanup>();
     }
 
     @Override
@@ -104,12 +108,28 @@ public class VerifyTest extends TestWatcher {
         this.checks.add(check);
     }
 
+    public void cleanup(Cleanup cleanup) {
+        this.cleanupCommands.add(cleanup);
+    }
+
+    public FailureHandler getFailureHandler() {
+        return failureHandler;
+    }
+
+    public void setFailureHandler(FailureHandler handler) {
+        this.failureHandler = handler;
+    }
+
     public List<Verification> getChecks() {
         return checks;
     }
 
     public List<Setup> getSetupCommands() {
         return setupCommands;
+    }
+
+    public List<Cleanup> getCleanupCommands() {
+        return cleanupCommands;
     }
 
     public static class Value {

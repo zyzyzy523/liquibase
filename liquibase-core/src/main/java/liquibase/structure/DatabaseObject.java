@@ -1,11 +1,12 @@
 package liquibase.structure;
 
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.core.Schema;
 
 import java.util.Set;
 import java.util.UUID;
 
-public interface DatabaseObject extends Comparable{
+public interface DatabaseObject extends Comparable, LiquibaseSerializable{
 
     public UUID getSnapshotId();
 

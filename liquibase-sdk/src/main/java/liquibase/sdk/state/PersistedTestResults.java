@@ -151,40 +151,51 @@ public class PersistedTestResults {
         Object acceptedRun = this.acceptedRuns.get(thisRunKey);
 
         if (acceptedRun == null) {
-            for (Setup setup : run.getSetupCommands()) {
-                String result = null;
-                try {
-                    result = setup.setup();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    fail("Setup threw exception: "+e.getMessage());
-                }
-                if (result != null) {
-                    fail("Setup failed: " + result);
-                }
-            }
-
-            Verification.Result finalResult = Verification.Result.PASSED;
-            if (run.getChecks().size() == 0) {
-                finalResult = Verification.Result.CANNOT_VALIDATE;
-            } else {
-                for (Verification check : run.getChecks()) {
+            try {
+                for (Setup setup : run.getSetupCommands()) {
+                    String result = null;
                     try {
-                        Verification.Result result = check.check();
-                        if (result == Verification.Result.CANNOT_VALIDATE) {
-                            finalResult = Verification.Result.CANNOT_VALIDATE;
-                        }
+                        result = setup.setup();
                     } catch (Exception e) {
-                        StringWriter stringWriter = new StringWriter();
-                        e.printStackTrace(new PrintWriter(stringWriter));
-                        throw new AssertionError("Error executing verification: "+stringWriter.toString());
+                        e.printStackTrace();
+                        fail("Setup threw exception: "+e.getMessage());
+                    }
+                    if (result != null) {
+                        fail("Setup failed: " + result);
+                    }
+                }
+
+                Verification.Result finalResult = Verification.Result.PASSED;
+                if (run.getChecks().size() == 0) {
+                    finalResult = Verification.Result.CANNOT_VALIDATE;
+                } else {
+                    for (Verification check : run.getChecks()) {
+                        try {
+                            Verification.Result result = check.check();
+                            if (result == Verification.Result.CANNOT_VALIDATE) {
+                                finalResult = Verification.Result.CANNOT_VALIDATE;
+                            }
+                        } catch (AssertionError e) {
+                            throw run.getFailureHandler().toAssertionError(e);
+                        } catch (Exception e) {
+                            throw run.getFailureHandler().toAssertionError(e);
+                        }
+                    }
+                }
+
+                thisRun.setValidated(finalResult == Verification.Result.PASSED);
+
+                newRuns.put(thisRunKey, thisRun);
+            } finally {
+                for (Cleanup cleanup : run.getCleanupCommands()) {
+                    try {
+                        cleanup.cleanup();
+                    } catch (Exception e) {
+                        System.out.println("Error in cleanup: "+e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
-
-            thisRun.setValidated(finalResult == Verification.Result.PASSED);
-
-            newRuns.put(thisRunKey, thisRun);
         } else {
             throw new RuntimeException("todo");
         }

@@ -8,14 +8,17 @@ import liquibase.diff.DiffResult;
 import liquibase.diff.compare.CompareControl;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.ExecutorService;
+import liquibase.sdk.state.Cleanup;
+import liquibase.sdk.state.FailureHandler;
 import liquibase.sdk.state.Setup;
 import liquibase.sdk.state.Verification;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.SnapshotControl;
 import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.statement.SqlStatement;
+import liquibase.util.StringUtils;
 
-public abstract class StandardChangeSdkTestSetup implements Setup, Verification {
+public abstract class StandardChangeSdkTestSetup implements Setup, Verification, Cleanup {
 
     private Change change;
     private Database database;
@@ -98,4 +101,11 @@ public abstract class StandardChangeSdkTestSetup implements Setup, Verification 
         return new SnapshotControl(getDatabase());
     }
 
+    @Override
+    public void cleanup() throws Exception {
+        if (getDatabase().getConnection() == null) {
+            return;
+        }
+        getDatabase().dropDatabaseObjects(CatalogAndSchema.DEFAULT);
+    }
 }

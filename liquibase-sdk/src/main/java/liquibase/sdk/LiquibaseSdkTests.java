@@ -1,6 +1,7 @@
 package liquibase.sdk;
 
 import liquibase.sdk.standardtests.change.StandardChangeTests;
+import liquibase.sdk.standardtests.database.StandardDatabaseTests;
 import liquibase.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({StandardChangeTests.class, LiquibaseSdkTests.EnvironmentTest.class})
+@Suite.SuiteClasses({StandardDatabaseTests.class, StandardChangeTests.class, LiquibaseSdkTests.EnvironmentTest.class})
 public class LiquibaseSdkTests {
 
     public static class EnvironmentTest {

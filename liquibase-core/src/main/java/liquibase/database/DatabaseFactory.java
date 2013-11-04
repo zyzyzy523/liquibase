@@ -12,6 +12,7 @@ import java.util.*;
 public class DatabaseFactory {
     private static DatabaseFactory instance;
     private Map<String, SortedSet<Database>> implementedDatabases = new HashMap<String, SortedSet<Database>>();
+    private Map<String, SortedSet<Database>> internalDatabases = new HashMap<String, SortedSet<Database>>();
 
     protected DatabaseFactory() {
         try {
@@ -51,10 +52,18 @@ public class DatabaseFactory {
     }
 
     public void register(Database database) {
-        if (!implementedDatabases.containsKey(database.getShortName())) {
-            implementedDatabases.put(database.getShortName(), new TreeSet<Database>(new TreeSet<Database>(new DatabaseComparator())));
+        Map<String, SortedSet<Database>> map = null;
+        if (database instanceof InternalDatabase) {
+            map = internalDatabases;
+        } else {
+            map = implementedDatabases;
+
         }
-        implementedDatabases.get(database.getShortName()).add(database);
+
+        if (!map.containsKey(database.getShortName())) {
+            map.put(database.getShortName(), new TreeSet<Database>(new TreeSet<Database>(new DatabaseComparator())));
+        }
+        map.get(database.getShortName()).add(database);
     }
 
     public Database findCorrectDatabaseImplementation(DatabaseConnection connection) throws DatabaseException {
@@ -109,7 +118,10 @@ public class DatabaseFactory {
     public Database findByName(String shortName) {
         SortedSet<Database> databases = implementedDatabases.get(shortName);
         if (databases == null) {
-            return null;
+            databases = internalDatabases.get(shortName);
+            if (databases == null) {
+                return null;
+            }
         }
         return databases.iterator().next();
     }

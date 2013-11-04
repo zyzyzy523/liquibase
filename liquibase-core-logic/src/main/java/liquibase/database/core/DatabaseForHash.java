@@ -1,6 +1,8 @@
 package liquibase.database.core;
 
-public class DatabaseForHash extends H2Database {
+import liquibase.database.InternalDatabase;
+
+public class DatabaseForHash extends H2Database implements InternalDatabase {
     @Override
     public boolean isCaseSensitive() {
         return true;

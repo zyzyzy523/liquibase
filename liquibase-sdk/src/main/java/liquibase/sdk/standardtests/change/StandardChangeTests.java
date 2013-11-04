@@ -1,13 +1,16 @@
 package liquibase.sdk.standardtests.change;
 
+import liquibase.CatalogAndSchema;
 import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.ChangeParameterMetaData;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.exception.DatabaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.sdk.Context;
+import liquibase.sdk.state.FailureHandler;
 import liquibase.sdk.state.OutputFormat;
 import liquibase.sdk.state.Verification;
 import liquibase.sdk.state.VerifyTest;
@@ -16,7 +19,12 @@ import liquibase.sdk.supplier.database.AllDatabases;
 import liquibase.sdk.supplier.resource.Resources;
 import liquibase.serializer.ChangeLogSerializerFactory;
 import liquibase.serializer.LiquibaseSerializable;
+import liquibase.serializer.SnapshotSerializerFactory;
 import liquibase.servicelocator.ServiceLocator;
+import liquibase.snapshot.DatabaseSnapshot;
+import liquibase.snapshot.InvalidExampleException;
+import liquibase.snapshot.SnapshotControl;
+import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
@@ -85,6 +93,9 @@ public class StandardChangeTests {
         assumeTrue(change.supports(database));
         assumeTrue(!change.generateStatementsVolatile(database));
 
+        database.setOutputDefaultCatalog(false);
+        database.setOutputDefaultSchema(false);
+
         verifyTest.addPermutationDefinition("Database", database.getShortName());
         verifyTest.addPermutationDefinition("Change Class", change.getClass());
 
@@ -146,6 +157,21 @@ public class StandardChangeTests {
         } catch (IllegalAccessException e) {
             fail("Illegal access exception instantiating setup class " + setupClassName + ": " + e.getMessage());
         }
+
+        verifyTest.setFailureHandler(new FailureHandler() {
+            @Override
+            public String getStateMessage() {
+                String state = null;
+                try {
+                    DatabaseSnapshot snapshot = SnapshotGeneratorFactory.getInstance().createSnapshot(CatalogAndSchema.DEFAULT, database, new SnapshotControl(database));
+                    System.out.println(SnapshotSerializerFactory.getInstance().getSerializer("xml").serialize(snapshot, true));
+                } catch (Exception e) {
+                    state = "ERROR FETCHING: "+e.getMessage();
+                }
+
+                return state;
+            }
+        });
         verifyTest.setup(setup);
 
 
@@ -168,6 +194,8 @@ public class StandardChangeTests {
         });
 
         verifyTest.verifyChanges(setup);
+
+        verifyTest.cleanup(setup);
     }
 
     private String formatParameter(Object paramValue) {

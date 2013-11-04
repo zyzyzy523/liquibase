@@ -6,6 +6,7 @@ import liquibase.database.Database;
 import liquibase.database.core.*;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.*;
 import liquibase.util.StringUtils;

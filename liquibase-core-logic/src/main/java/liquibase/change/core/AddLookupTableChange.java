@@ -2,11 +2,7 @@ package liquibase.change.core;
 
 import liquibase.change.*;
 import liquibase.database.Database;
-import liquibase.database.core.DB2Database;
-import liquibase.database.core.InformixDatabase;
-import liquibase.database.core.MSSQLDatabase;
-import liquibase.database.core.OracleDatabase;
-import liquibase.database.core.SybaseASADatabase;
+import liquibase.database.core.*;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.statement.core.ReorganizeTableStatement;
@@ -162,16 +158,14 @@ public class AddLookupTableChange extends AbstractChange {
         String existingTableSchemaName = getExistingTableSchemaName();
 
         SqlStatement[] createTablesSQL = {new RawSqlStatement("CREATE TABLE " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " AS SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " AS " + database.escapeObjectName(getNewColumnName(), Column.class) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL")};
-        if (database instanceof MSSQLDatabase) {
-            createTablesSQL = new SqlStatement[]{new RawSqlStatement("SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " AS " + database.escapeObjectName(getNewColumnName(), Column.class) + " INTO " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL"),};
-        } else if (database instanceof SybaseASADatabase) {
+        if (database instanceof MSSQLDatabase || database instanceof SybaseASADatabase) {
             createTablesSQL = new SqlStatement[]{new RawSqlStatement("SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " AS " + database.escapeObjectName(getNewColumnName(), Column.class) + " INTO " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL"),};
         } else if (database instanceof DB2Database) {
             createTablesSQL = new SqlStatement[]{
                     new RawSqlStatement("CREATE TABLE " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " AS (SELECT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " AS " + database.escapeObjectName(getNewColumnName(), Column.class) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + ") WITH NO DATA"),
                     new RawSqlStatement("INSERT INTO " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " SELECT DISTINCT " + database.escapeObjectName(getExistingColumnName(), Column.class) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL"),
             };
-        } else if (database instanceof InformixDatabase) {
+        } else if (database instanceof InformixDatabase || database instanceof HsqlDatabase || database instanceof DerbyDatabase) {
             createTablesSQL = new SqlStatement[] {
                     new RawSqlStatement("CREATE TABLE " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " ( "  + database.escapeObjectName(getNewColumnName(), Column.class) + " " + getNewColumnDataType() + " )"),
                     new RawSqlStatement("INSERT INTO " + database.escapeTableName(newTableCatalogName, newTableSchemaName, getNewTableName()) + " ( "  + database.escapeObjectName(getNewColumnName(), Column.class) + " ) SELECT DISTINCT "  + database.escapeObjectName(getExistingColumnName(), Column.class) + " FROM " + database.escapeTableName(existingTableCatalogName, existingTableSchemaName, getExistingTableName()) + " WHERE " + database.escapeObjectName(getExistingColumnName(), Column.class) + " IS NOT NULL"),

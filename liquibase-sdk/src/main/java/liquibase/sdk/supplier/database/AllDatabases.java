@@ -5,7 +5,6 @@ import liquibase.database.DatabaseConnection;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
-import liquibase.sdk.Context;
 import org.junit.experimental.theories.ParameterSignature;
 import org.junit.experimental.theories.ParameterSupplier;
 import org.junit.experimental.theories.PotentialAssignment;
@@ -14,6 +13,8 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.*;
+
+import static junit.framework.Assert.assertNotNull;
 
 public class AllDatabases extends ParameterSupplier {
 
@@ -24,29 +25,31 @@ public class AllDatabases extends ParameterSupplier {
     public List<PotentialAssignment> getValueSources(ParameterSignature sig) {
         List<PotentialAssignment> returnList = new ArrayList<PotentialAssignment>();
         for (Database database :  DatabaseFactory.getInstance().getImplementedDatabases()) {
-            database.setConnection(openConnection(database));
-            returnList.add(PotentialAssignment.forValue(database.getShortName(), database));
+            for (ConnectionConfiguration config : ConnectionConfigurationFactory.getInstance().getConfigurations(database)) {
+                database.setConnection(openConnection(config));
+                returnList.add(PotentialAssignment.forValue(database.getShortName()+" - "+config.getConfigurationName(), database));
+            }
         }
 
         return returnList;
     }
 
-    protected DatabaseConnection openConnection(Database database) {
+    protected DatabaseConnection openConnection(ConnectionConfiguration connectionConfig) {
         try {
-            final String url = getConnectionUrl(database);
+            final String url = connectionConfig.getUrl();
             if (connectionsAttempted.containsKey(url)) {
                 JdbcConnection connection = (JdbcConnection) connectionsByUrl.get(url);
                 if (connection == null) {
                     return null;
                 } else if (connection.getUnderlyingConnection().isClosed()){
-                    connectionsByUrl.put(url, openDatabaseConnection(url));
+                    connectionsByUrl.put(url, openDatabaseConnection(connectionConfig));
                 }
                 return connectionsByUrl.get(url);
             }
             connectionsAttempted.put(url, Boolean.TRUE);
 
 
-            final DatabaseConnection connection = openDatabaseConnection(url);
+            final DatabaseConnection connection = openDatabaseConnection(connectionConfig);
             if (connection == null) {
                 return null;
             }
@@ -110,30 +113,12 @@ public class AllDatabases extends ParameterSupplier {
 
     }
 
-    protected String getConnectionUrl(Database database) {
-        if (database.getShortName().equals("h2")) {
-            return "jdbc:h2:mem:liquibase";
-        }
-        return null;  //To change body of created methods use File | Settings | File Templates.
-    }
+    public DatabaseConnection openDatabaseConnection(ConnectionConfiguration connectionConfiguration) throws Exception {
+        String url = connectionConfiguration.getUrl();
+        assertNotNull("Null jdbc url", url);
 
-    protected String getUsername(String url) {
-        return "liquibase";
-    }
-
-    protected String getPassword(String url) {
-        return "liquibase";
-    }
-
-
-    public DatabaseConnection openDatabaseConnection(String url) throws Exception {
-        if (url == null) {
-            System.out.println("Cannot open connection for null url");
-            return null;
-        }
-
-        String username = getUsername(url);
-        String password = getPassword(url);
+        String username = connectionConfiguration.getUsername();
+        String password = connectionConfiguration.getPassword();
 
 
         JDBCDriverClassLoader jdbcDriverLoader = new JDBCDriverClassLoader();

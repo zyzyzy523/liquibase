@@ -5,14 +5,16 @@ import liquibase.database.Database;
 import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.DatabaseObjectCollection;
 import liquibase.structure.core.Schema;
 
 import java.util.*;
 
-public abstract class DatabaseSnapshot {
+public abstract class DatabaseSnapshot implements LiquibaseSerializable {
 
+    private HashSet<String> serializableFields;
     private SnapshotControl snapshotControl;
     private Database database;
     private DatabaseObjectCollection allFound;
@@ -32,6 +34,10 @@ public abstract class DatabaseSnapshot {
                 include(obj);
             }
         }
+
+        this.serializableFields =  new HashSet<String>();
+        this.serializableFields.add("snapshotControl");
+        this.serializableFields.add("objects");
     }
 
     public DatabaseSnapshot(DatabaseObject[] examples, Database database) throws DatabaseException, InvalidExampleException {
@@ -40,6 +46,42 @@ public abstract class DatabaseSnapshot {
 
     public SnapshotControl getSnapshotControl() {
         return snapshotControl;
+    }
+
+    @Override
+    public String getSerializedObjectName() {
+        return "snapshot";
+    }
+
+    @Override
+    public Set<String> getSerializableFields() {
+        return serializableFields;
+    }
+
+    @Override
+    public Object getSerializableFieldValue(String field) {
+        if (field.equals("snapshotControl")) {
+            SortedSet<String> types = new TreeSet<String>();
+            for (Class type : snapshotControl.getTypesToInclude()) {
+                types.add(type.getName());
+            }
+            return types;
+        } else if (field.equals("objects")) {
+            return allFound;
+        } else {
+            throw new UnexpectedLiquibaseException("Unknown field: "+field);
+        }
+    }
+
+    @Override
+    public SerializationType getSerializableFieldType(String field) {
+        if (field.equals("snapshotControl")) {
+            return SerializationType.NESTED_OBJECT;
+        } else if (field.equals("objects")) {
+            return SerializationType.NESTED_OBJECT;
+        } else {
+            throw new UnexpectedLiquibaseException("Unknown field: "+field);
+        }
     }
 
     public Database getDatabase() {
