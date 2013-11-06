@@ -1,16 +1,24 @@
 package liquibase.sdk;
 
 import liquibase.sdk.standardtests.change.StandardChangeTests;
+import liquibase.sdk.vagrant.VagrantControl;
+import liquibase.util.StreamUtil;
+import liquibase.util.StringUtils;
 import org.apache.commons.cli.*;
 import org.junit.internal.TextListener;
 import org.junit.runner.Computer;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 public class Main {
 
     private CommandLine arguments;
     private Options commandLineOptions;
+    private List commands;
 
     public static void main(String[] args) {
         printHeader("Liquibase Extension SDK");
@@ -48,11 +56,11 @@ public class Main {
 //            }), 8));
 //        }
 
-        printHeader("Running Tests");
-
-        JUnitCore junit = new JUnitCore();
-        junit.addListener(new TextListener(System.out));
-        Result result = junit.run(new Computer(), StandardChangeTests.class);
+//        printHeader("Running Tests");
+//
+//        JUnitCore junit = new JUnitCore();
+//        junit.addListener(new TextListener(System.out));
+//        Result result = junit.run(new Computer(), StandardChangeTests.class);
 
     }
 
@@ -69,11 +77,21 @@ public class Main {
 
     public void init(String[] args) throws UserError {
         Context.reset();
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new GnuParser();
         try {
             arguments = parser.parse(commandLineOptions, args);
         } catch (ParseException e) {
             throw new UserError("Error parsing command line: " + e.getMessage());
+        }
+
+        commands = arguments.getArgList();
+        if (commands.size() == 0) {
+            throw new UserError("No command passed");
+        }
+        if (commands.get(0).toString().equalsIgnoreCase("vagrant")) {
+            runVagrant(commands.subList(1, commands.size()));
+        } else {
+            throw new UserError("Unknown command: "+commands.get(0));
         }
 
 
@@ -82,11 +100,42 @@ public class Main {
 //        Context.getInstance().init(packages);
     }
 
+    private void runVagrant(List commands) throws UserError {
+        if (commands.size() < 1) {
+            throw new UserError("No vagrant command passed");
+        }
+       String vagrantCommand = commands.get(0).toString();
+        List<String> remainingCommands = (List<String>) commands.subList(1, commands.size());
+
+        VagrantControl vagrantControl = new VagrantControl(remainingCommands, arguments);
+
+        if (vagrantCommand.equalsIgnoreCase("init")) {
+            vagrantControl.init();
+        } else if (vagrantCommand.equalsIgnoreCase("up")) {
+            vagrantControl.up();
+        } else if (vagrantCommand.equalsIgnoreCase("provision")) {
+            vagrantControl.provision();
+        } else if (vagrantCommand.equalsIgnoreCase("destroy")) {
+            vagrantControl.destroy();
+        } else if (vagrantCommand.equalsIgnoreCase("halt")) {
+            vagrantControl.halt();
+        } else if (vagrantCommand.equalsIgnoreCase("reload")) {
+            vagrantControl.reload();
+        } else if (vagrantCommand.equalsIgnoreCase("resume")) {
+            vagrantControl.resume();
+        } else if (vagrantCommand.equalsIgnoreCase("status")) {
+            vagrantControl.status();
+        } else if (vagrantCommand.equalsIgnoreCase("suspend")) {
+            vagrantControl.suspend();
+        } else {
+            throw new UserError("Unknown vagrant command: "+vagrantCommand);
+        }
+    }
 
 
     public void printHelp() {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("liquibase-sdk", commandLineOptions);
+        formatter.printHelp("liquibase-sdk [options] [vagrant|test] [command options]", commandLineOptions);
     }
 
     public static class UserError extends Exception {

@@ -53,4 +53,19 @@ public class ConnectionConfigurationFactory {
         configsByDatabase.get(databaseShortName).add(config);
     }
 
+    public Collection<ConnectionConfiguration> findByDescription(String configs) {
+        List<ConnectionConfiguration> returnList = new ArrayList<ConnectionConfiguration>();
+        for (String config : configs.split(",")) {
+            String name = "standard";
+            Set<ConnectionConfiguration> potentialConfigurations = configsByDatabase.get(config);
+            for (ConnectionConfiguration potential : potentialConfigurations) {
+                if (potential.getConfigurationName().equals(name)) {
+                    returnList.add(potential);
+                    break;
+                }
+            }
+        }
+
+        return returnList;
+    }
 }
