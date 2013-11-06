@@ -15,6 +15,6 @@ public class SybaseConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:sybase:Tds:"+ getHostName()+":5000/liquibase";
+        return "jdbc:sybase:Tds:"+ getHostname()+":5000/liquibase";
     }
 }

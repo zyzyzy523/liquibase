@@ -1,6 +1,7 @@
 package liquibase.sdk.supplier.database;
 
 import liquibase.database.Database;
+import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.servicelocator.ServiceLocator;
 
 import java.util.*;
@@ -53,19 +54,61 @@ public class ConnectionConfigurationFactory {
         configsByDatabase.get(databaseShortName).add(config);
     }
 
-    public Collection<ConnectionConfiguration> findByDescription(String configs) {
+    public Collection<ConnectionConfiguration> findConfigurations(List<String> descriptions) {
         List<ConnectionConfiguration> returnList = new ArrayList<ConnectionConfiguration>();
-        for (String config : configs.split(",")) {
-            String name = "standard";
-            Set<ConnectionConfiguration> potentialConfigurations = configsByDatabase.get(config);
+        for (String config : descriptions) {
+            Map<String, String> params = parseConfig(config);
+            if (!params.containsKey("config")) {
+                params.put("config", "standard");
+            }
+
+            String databaseName = params.get("databaseName");
+            String configName = params.get("config");
+
+            Set<ConnectionConfiguration> potentialConfigurations = configsByDatabase.get(databaseName);
+            if (potentialConfigurations == null) {
+                throw new UnexpectedLiquibaseException("No database configurations for "+databaseName);
+            }
+
+            boolean foundConfig = false;
             for (ConnectionConfiguration potential : potentialConfigurations) {
-                if (potential.getConfigurationName().equals(name)) {
+                if (potential.getConfigurationName().equals(configName)) {
+                    if (params.containsKey("version")) {
+                        potential.setVersion(params.get("version"));
+                    }
+                    if (params.containsKey("hostname")) {
+                        potential.setHostname(params.get("hostname"));
+                    }
                     returnList.add(potential);
+                    foundConfig = true;
                     break;
                 }
+            }
+            if (!foundConfig) {
+                throw new UnexpectedLiquibaseException("No database configuration of '"+config+"'");
             }
         }
 
         return returnList;
+    }
+
+    private Map<String, String> parseConfig(String config) {
+        Map<String, String> params = new HashMap<String, String>();
+
+        String databaseName;
+        if (config.contains("[")) {
+            databaseName = config.replaceFirst("\\[.*", "").trim();
+            String paramString = config.replaceFirst(".*\\[", "").replaceFirst("]$", "");
+            for (String keyValue : paramString.split(",")) {
+                String[] split = keyValue.split(":");
+                params.put(split[0].trim(), split[1].trim());
+            }
+        } else {
+            databaseName = config;
+        }
+        params.put("databaseName", databaseName.trim());
+
+
+        return params;
     }
 }

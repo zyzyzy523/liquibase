@@ -17,7 +17,7 @@ public class MySQLConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:mysql://"+ getHostName() +"/liquibase";
+        return "jdbc:mysql://"+ getHostname() +"/liquibase";
     }
 
     @Override
@@ -35,7 +35,8 @@ public class MySQLConfigStandard extends ConnectionConfiguration {
     @Override
     public String getPuppetInit() {
         return "class { '::mysql::server':\n" +
-                "    root_password => 'root',\n" +
+                "    root_password => 'root',\n"+
+                (getVersion() == null ? "" : "    package_ensure => '"+getVersion()+"',\n")+
                 "    override_options => { 'mysqld' => { 'bind_address'  => '0.0.0.0' } }, \n" +
                 "}\n" +
                 "\n" +

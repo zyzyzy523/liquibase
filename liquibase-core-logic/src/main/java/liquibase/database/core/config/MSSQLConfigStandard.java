@@ -15,6 +15,6 @@ public class MSSQLConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:sqlserver://"+ getHostName() +":1433;databaseName=liquibase";
+        return "jdbc:sqlserver://"+ getHostname() +":1433;databaseName=liquibase";
     }
 }

@@ -1,12 +1,14 @@
 package liquibase.sdk.supplier.database;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class ConnectionConfiguration {
+public abstract class ConnectionConfiguration implements Cloneable {
 
     public static final String NAME_STANDARD = "standard";
+
+    public String version;
+    private String hostname = "10.10.100.100";
 
     public abstract String getDatabaseShortName();
     public abstract String getConfigurationName();
@@ -21,8 +23,12 @@ public abstract class ConnectionConfiguration {
         return "liquibase";
     }
 
-    public String getHostName() {
-        return "10.10.100.100";
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public Set<String> getPuppetModules() {
@@ -46,5 +52,13 @@ public abstract class ConnectionConfiguration {
 
     public String getPuppetInit() {
         return null;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

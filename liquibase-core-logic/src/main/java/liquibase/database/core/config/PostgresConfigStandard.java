@@ -17,7 +17,7 @@ public class PostgresConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:postgresql://"+ getHostName() +"/liquibase";
+        return "jdbc:postgresql://"+ getHostname() +"/liquibase";
     }
 
     @Override

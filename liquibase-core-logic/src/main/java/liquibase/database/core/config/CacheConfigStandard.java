@@ -15,6 +15,6 @@ public class CacheConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:Cache://"+ getHostName() +":1972/liquibase";
+        return "jdbc:Cache://"+ getHostname() +":1972/liquibase";
     }
 }

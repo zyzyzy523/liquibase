@@ -15,6 +15,6 @@ public class MaxDBConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:sapdb://"+ getHostName() +"/liquibas";
+        return "jdbc:sapdb://"+ getHostname() +"/liquibas";
     }
 }

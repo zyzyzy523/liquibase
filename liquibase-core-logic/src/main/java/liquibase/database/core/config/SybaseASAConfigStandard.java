@@ -15,6 +15,6 @@ public class SybaseASAConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:sybase:Tds:"+ getHostName() +":9810/servicename=prior";
+        return "jdbc:sybase:Tds:"+ getHostname() +":9810/servicename=prior";
     }
 }

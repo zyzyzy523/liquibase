@@ -18,7 +18,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:oracle:thin:@" + getHostName() + ":1521:XE";
+        return "jdbc:oracle:thin:@" + getHostname() + ":1521:XE";
     }
 
     @Override

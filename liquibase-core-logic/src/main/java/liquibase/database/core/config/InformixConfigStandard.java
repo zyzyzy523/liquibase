@@ -15,6 +15,6 @@ public class InformixConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:informix-sqli://" + getHostName() + ":9088/liquibase:informixserver=ol_ids_1150_1";
+        return "jdbc:informix-sqli://" + getHostname() + ":9088/liquibase:informixserver=ol_ids_1150_1";
     }
 }

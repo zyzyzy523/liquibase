@@ -39,21 +39,19 @@ public class VagrantControl {
 
     public void init() {
         try {
-            String config = StringUtils.trimToNull(StringUtils.join(commandArgs, ",").replaceAll("[,]+", ",").replaceAll("\\s*,\\s*", ","));
-
-            if (config == null) {
+            if (commandArgs.size() == 0) {
                 throw new Main.UserError("Missing database configuration after vagrant box name");
             }
 
             System.out.println("Initializing vagrant in " + vagrantBoxDir.getAbsolutePath());
 
             System.out.println("Vagrant box name: " + boxName);
-            System.out.println("Vagrant config: " + config);
+            System.out.println("Vagrant config: " + StringUtils.join(commandArgs, ", "));
 
-            Collection<ConnectionConfiguration> databases = ConnectionConfigurationFactory.getInstance().findByDescription(config);
+            Collection<ConnectionConfiguration> databases = ConnectionConfigurationFactory.getInstance().findConfigurations(commandArgs);
 
-            writeVagrantFile(boxName, config, databases);
-            writePuppetFiles(boxName, config, databases);
+            writeVagrantFile(databases);
+            writePuppetFiles(databases);
         } catch (Exception e) {
             throw new UnexpectedLiquibaseException(e);
         }
@@ -127,7 +125,7 @@ public class VagrantControl {
         System.out.println("Out code: " + out);
     }
 
-    private void writePuppetFiles(String boxName, String config, Collection<ConnectionConfiguration> databases) throws Exception {
+    private void writePuppetFiles(Collection<ConnectionConfiguration> databases) throws Exception {
         copyFile("liquibase/sdk/vagrant/puppet-bootstrap.sh", vagrantBoxDir);
 
         writePuppetFile(databases);
@@ -198,9 +196,10 @@ public class VagrantControl {
         output.close();
     }
 
-    private void writeVagrantFile(String boxName, String config, Collection<ConnectionConfiguration> databases) throws Exception {
+    private void writeVagrantFile(Collection<ConnectionConfiguration> databases) throws Exception {
 
         String[] boxInfo = null;
+        String hostName = null;
 
         for (ConnectionConfiguration connectionConfig : databases) {
             String[] absoluteBox = getAbsoluteBox(connectionConfig.getVagrantBoxName());
@@ -210,6 +209,14 @@ public class VagrantControl {
             } else {
                 if (!boxInfo[0].equals(absoluteBox[0])) {
                     throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" needs vagrant box "+absoluteBox[0]+", not "+boxInfo[0]+" like other configurations");
+                }
+            }
+
+            if (hostName == null) {
+                hostName = connectionConfig.getHostname();
+            } else {
+                if (!hostName.equals(connectionConfig.getHostname())) {
+                    throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" does not match previously defined hostname "+hostName);
                 }
             }
         }
@@ -223,7 +230,7 @@ public class VagrantControl {
         Map<String, Object> context = new HashMap<String, Object>();
         context.put("configVmBox", boxInfo[0]);
         context.put("configVmBoxUrl", boxInfo[1]);
-        context.put("configVmNetworkIp", "10.10.100.100");
+        context.put("configVmNetworkIp", hostName);
         context.put("vmCustomizeMemory", "8192");
 
         writeVelocityFile("liquibase/sdk/vagrant/Vagrantfile.vm", vagrantBoxDir, context);

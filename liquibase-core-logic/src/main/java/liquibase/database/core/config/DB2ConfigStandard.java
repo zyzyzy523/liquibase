@@ -15,6 +15,6 @@ public class DB2ConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:db2://"+ getHostName() +":50000/lqbase";
+        return "jdbc:db2://"+ getHostname() +":50000/lqbase";
     }
 }
