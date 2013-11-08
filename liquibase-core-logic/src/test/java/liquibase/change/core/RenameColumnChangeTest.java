@@ -3,15 +3,15 @@ package liquibase.change.core;
 import liquibase.change.ChangeFactory;
 import liquibase.change.StandardChangeTest;
 import liquibase.database.Database;
-import liquibase.database.core.CacheDatabase;
-import liquibase.database.core.DB2Database;
 import liquibase.database.core.MockDatabase;
 import liquibase.database.core.SQLiteDatabase;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RenameColumnStatement;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link RenameColumnChange}
@@ -56,7 +56,6 @@ public class RenameColumnChangeTest extends StandardChangeTest {
 
     @Override
     protected boolean changeIsUnsupported(Database database) {
-        return database instanceof CacheDatabase
-                || database instanceof SQLiteDatabase;
+        return database instanceof SQLiteDatabase;
     }
 }

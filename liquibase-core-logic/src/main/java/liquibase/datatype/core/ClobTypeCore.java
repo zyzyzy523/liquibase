@@ -18,9 +18,7 @@ public class ClobTypeCore extends ClobType  {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof CacheDatabase) {
-            return new DatabaseDataType("LONGVARCHAR");
-        }   else if (database instanceof FirebirdDatabase) {
+        if (database instanceof FirebirdDatabase) {
             return new DatabaseDataType("BLOB SUB_TYPE TEXT");
         } else if (database instanceof MaxDBDatabase || database instanceof SybaseASADatabase) {
             return new DatabaseDataType("LONG VARCHAR");

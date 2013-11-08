@@ -17,7 +17,7 @@ public class BlobTypeCore extends BlobType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof CacheDatabase || database instanceof H2Database || database instanceof HsqlDatabase) {
+        if (database instanceof H2Database || database instanceof HsqlDatabase) {
             return new DatabaseDataType("LONGVARBINARY");
         }
         if (database instanceof MaxDBDatabase) {

@@ -86,7 +86,7 @@ public class ModifyDataTypeGenerator extends AbstractSqlGenerator<ModifyDataType
      * @return the string that comes before the column type
      *         definition (like 'set data type' for derby or an open parentheses for Oracle)
      */
-    private String getPreDataTypeString(Database database) {
+    protected String getPreDataTypeString(Database database) {
         if (database instanceof DerbyDatabase
                 || database instanceof DB2Database) {
             return " SET DATA TYPE ";
@@ -96,7 +96,6 @@ public class ModifyDataTypeGenerator extends AbstractSqlGenerator<ModifyDataType
                 || database instanceof MySQLDatabase
                 || database instanceof HsqlDatabase
                 || database instanceof H2Database
-                || database instanceof CacheDatabase
                 || database instanceof OracleDatabase
                 || database instanceof MaxDBDatabase
                 || database instanceof InformixDatabase) {

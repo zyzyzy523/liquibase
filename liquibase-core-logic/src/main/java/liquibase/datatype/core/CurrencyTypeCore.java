@@ -18,7 +18,7 @@ public class CurrencyTypeCore extends CurrencyType {
 
     @Override
     public DatabaseDataType toDatabaseDataType(Database database) {
-        if (database instanceof CacheDatabase || database instanceof InformixDatabase || database instanceof MSSQLDatabase || database instanceof SybaseASADatabase || database instanceof SybaseDatabase) {
+        if (database instanceof InformixDatabase || database instanceof MSSQLDatabase || database instanceof SybaseASADatabase || database instanceof SybaseDatabase) {
             return new DatabaseDataType("MONEY");
         }
         if (database instanceof MaxDBDatabase) {
