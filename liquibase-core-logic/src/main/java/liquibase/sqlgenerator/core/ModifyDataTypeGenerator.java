@@ -68,12 +68,11 @@ public class ModifyDataTypeGenerator extends AbstractSqlGenerator<ModifyDataType
     /**
      * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
      */
-    private String getModifyString(Database database) {
+    protected String getModifyString(Database database) {
         if (database instanceof SybaseASADatabase
                 || database instanceof SybaseDatabase
                 || database instanceof MySQLDatabase
                 || database instanceof OracleDatabase
-                || database instanceof MaxDBDatabase
                 || database instanceof InformixDatabase
                 ) {
             return "MODIFY";
@@ -97,7 +96,6 @@ public class ModifyDataTypeGenerator extends AbstractSqlGenerator<ModifyDataType
                 || database instanceof HsqlDatabase
                 || database instanceof H2Database
                 || database instanceof OracleDatabase
-                || database instanceof MaxDBDatabase
                 || database instanceof InformixDatabase) {
             return " ";
         } else {

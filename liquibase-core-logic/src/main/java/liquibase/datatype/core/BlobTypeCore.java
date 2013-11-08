@@ -20,9 +20,6 @@ public class BlobTypeCore extends BlobType {
         if (database instanceof H2Database || database instanceof HsqlDatabase) {
             return new DatabaseDataType("LONGVARBINARY");
         }
-        if (database instanceof MaxDBDatabase) {
-            return new DatabaseDataType("LONG BYTE");
-        }
         if (database instanceof MSSQLDatabase) {
             String param = "MAX";
             if (this.getParameters().length > 0) {

@@ -20,7 +20,7 @@ public class ClobTypeCore extends ClobType  {
     public DatabaseDataType toDatabaseDataType(Database database) {
         if (database instanceof FirebirdDatabase) {
             return new DatabaseDataType("BLOB SUB_TYPE TEXT");
-        } else if (database instanceof MaxDBDatabase || database instanceof SybaseASADatabase) {
+        } else if (database instanceof SybaseASADatabase) {
             return new DatabaseDataType("LONG VARCHAR");
         } else if (database instanceof MSSQLDatabase) {
             return new DatabaseDataType("NVARCHAR", "MAX");
