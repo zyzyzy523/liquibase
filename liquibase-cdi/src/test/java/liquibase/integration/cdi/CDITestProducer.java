@@ -3,7 +3,6 @@ package liquibase.integration.cdi;
 import liquibase.integration.cdi.annotations.LiquibaseType;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
-import org.hsqldb.jdbc.JDBCDataSource;
 import org.jboss.weld.resources.ClassLoaderResourceLoader;
 
 import javax.enterprise.inject.Produces;
@@ -30,11 +29,12 @@ public class CDITestProducer {
 
     @Produces @LiquibaseType
     public DataSource createDataSource() throws SQLException {
-        JDBCDataSource ds = new JDBCDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:test");
-        ds.setUser("sa");
-        ds.setPassword("");
-        return ds;
+//        JDBCDataSource ds = new JDBCDataSource();
+//        ds.setDatabase("jdbc:hsqldb:mem:test");
+//        ds.setUser("sa");
+//        ds.setPassword("");
+//        return ds;
+        return null;
     }
 
     @Produces @LiquibaseType
