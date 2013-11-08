@@ -2,7 +2,6 @@ package liquibase.sqlgenerator.core;
 
 import liquibase.database.Database;
 import liquibase.database.core.DB2Database;
-import liquibase.database.core.DB2iDatabase;
 import liquibase.database.core.MySQLDatabase;
 import liquibase.database.core.OracleDatabase;
 import liquibase.database.core.PostgresDatabase;
@@ -38,13 +37,7 @@ public class SetTableRemarksGenerator extends AbstractSqlGenerator<SetTableRemar
 			sql = "ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " COMMENT = '" + remarks
 					+ "'";
 		} else {
-			String command = "COMMENT";
-
-			if (database instanceof DB2iDatabase) {
-				command = "LABEL";
-			}
-
-			sql = command + " ON TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " IS '"
+			sql = "COMMENT ON TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " IS '"
 					+ database.escapeStringForDatabase(remarks) + "'";
 		}
 
