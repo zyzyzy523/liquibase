@@ -60,6 +60,7 @@
             <outputDirectory>lib</outputDirectory>
             <excludes>
                 <exclude>org.liquibase:liquibase-core</exclude>
+                <exclude>org.liquibase:liquibase-framework</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
