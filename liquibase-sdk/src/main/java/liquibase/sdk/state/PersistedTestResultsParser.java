@@ -73,10 +73,10 @@ class PersistedTestResultsParser {
                 continue;
             }
 
-            if (line.equals("#### Background: ####")) {
+            if (line.equals("#### Background ####")) {
                 section = Section.INFORMATION;
                 continue;
-            } else if (line.equals("#### Data: ####")) {
+            } else if (line.equals("#### Data ####")) {
                 section = Section.DATA;
                 continue;
             }

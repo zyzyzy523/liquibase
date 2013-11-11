@@ -74,7 +74,7 @@ public class PersistedTestResults {
 
             if (iteration.getValue().getBackground().size() > 0) {
                 out.append("\n");
-                out.append("#### Background: ####\n");
+                out.append("#### Background ####\n");
                 out.append("\n");
 
                 for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getBackground().entrySet()) {
@@ -84,7 +84,7 @@ public class PersistedTestResults {
 
             if (iteration.getValue().getData().entrySet().size() > 0) {
                 out.append("\n");
-                out.append("#### Data: ####\n");
+                out.append("#### Data ####\n");
                 out.append("\n");
 
                 for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
