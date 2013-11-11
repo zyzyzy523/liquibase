@@ -25,6 +25,9 @@ public class StreamUtil {
      * @throws IOException If there is an error reading the stream.
      */
     public static String getStreamContents(InputStream ins) throws IOException {
+        if (ins == null) {
+            throw new IOException("Null stream passed to StreamUtil.getStreamContents()");
+        }
         return getReaderContents(new UtfBomAwareReader(ins));
     }
 

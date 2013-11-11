@@ -9,6 +9,7 @@ public abstract class OutputFormat {
 
 
     public static final OutputFormat DefaultFormat = new OutputFormat.DefaultFormat();
+    public static final OutputFormat FromFile = new OutputFormat.FromFileFormat();
 
     public abstract String format(Object value);
 
@@ -28,6 +29,17 @@ public abstract class OutputFormat {
             }
 
             return value.toString();
+        }
+    }
+
+    private static class FromFileFormat extends OutputFormat {
+        @Override
+        public String format(Object value) {
+            if (value == null) {
+                return null;
+            }
+
+            return (String) value;
         }
     }
 

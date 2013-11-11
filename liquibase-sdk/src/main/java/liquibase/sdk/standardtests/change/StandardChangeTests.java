@@ -96,6 +96,8 @@ public class StandardChangeTests {
         database.setOutputDefaultCatalog(false);
         database.setOutputDefaultSchema(false);
 
+        verifyTest.setPermutationName(change.getClass().getName()+" on "+database.getShortName());
+
         verifyTest.addPermutationDefinition("Database", database.getShortName());
         verifyTest.addPermutationDefinition("Change Class", change.getClass());
 

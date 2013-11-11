@@ -1,6 +1,7 @@
 package liquibase.sdk.state;
 
 import liquibase.sdk.standardtests.change.StandardChangeSdkTestSetup;
+import liquibase.util.StringUtils;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -12,6 +13,7 @@ public class VerifyTest extends TestWatcher {
     private Class<?> testClass;
     private String testName;
     private String displayName;
+    private String permutationName;
     private List<Verification> checks;
     private List<Setup> setupCommands;
     private List<Cleanup> cleanupCommands;
@@ -36,6 +38,9 @@ public class VerifyTest extends TestWatcher {
 
     @Override
     protected void succeeded(Description description) {
+        if (StringUtils.trimToNull(permutationName) == null) {
+            fail("No permutation name set");
+        }
         if (permutationDefinition.size() > 0 || data.size() > 0) {
             if (permutationDefinition.size() == 0) {
                 fail("Did not define any test permutation definitions to identify this permutation");
@@ -130,6 +135,14 @@ public class VerifyTest extends TestWatcher {
 
     public List<Cleanup> getCleanupCommands() {
         return cleanupCommands;
+    }
+
+    public String getPermutationName() {
+        return permutationName;
+    }
+
+    public void setPermutationName(String permutationName) {
+        this.permutationName = permutationName;
     }
 
     public static class Value {

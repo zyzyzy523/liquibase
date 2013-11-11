@@ -1,6 +1,6 @@
 package liquibase.sdk.state;
 
-import liquibase.exception.DatabaseException;
+import liquibase.util.StringUtils;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class PersistedTestResults {
@@ -19,7 +17,7 @@ public class PersistedTestResults {
     private static final Map<String, PersistedTestResults> instances = new HashMap<String, PersistedTestResults>();
 
     private File acceptedOutputFile;
-    private Class testClass;
+    private String testClass;
     private String testName;
 
     private boolean testsFailed = false;
@@ -27,18 +25,24 @@ public class PersistedTestResults {
     private Map<String, TestPermutation> acceptedRuns = new HashMap<String, TestPermutation>();
     private SortedMap<String, TestPermutation> newRuns = new TreeMap<String, TestPermutation>();
 
-    private PersistedTestResults(Class testClass, String testName) {
+    private PersistedTestResults(String testClass, String testName) {
+        this(testClass, testName, true);
+    }
+
+    protected PersistedTestResults(String testClass, String testName, boolean writeOnShutdown) {
         this.testClass = testClass;
         this.testName = testName;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!testsFailed && (newRuns.size() > 0 || acceptedRuns.size() > 0)) {
-                    writeAcceptedFile();
+        if (writeOnShutdown) {
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!testsFailed && (newRuns.size() > 0 || acceptedRuns.size() > 0)) {
+                        writeAcceptedFile();
+                    }
                 }
-            }
-        }));
+            }));
+        }
 
     }
 
@@ -47,35 +51,69 @@ public class PersistedTestResults {
         try {
             if (foundDifferences()) {
                 BufferedWriter out = new BufferedWriter(new FileWriter(outputFile));
-                out.append("# Test Output: ").append(testClass.getName()).append(".").append(testName).append(" #\n\n");
-                out.append("This output is generated when the test is ran.\n\n");
-
-                for (Map.Entry<String, TestPermutation> iteration : newRuns.entrySet()) {
-                    out.append("## Permutation Output ##\n\n");
-                    out.append("- _VALIDATED_ ").append(String.valueOf(iteration.getValue().isValidated())).append("\n");
-
-                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getPermutationDefinition().entrySet()) {
-                        out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
-                    }
-
-                    out.append("\n");
-
-                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getInfo().entrySet()) {
-                        out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
-                    }
-                    out.append("\n");
-                    for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
-                        out.append("- **").append(entry.getKey()).append("** ").append(entry.getValue().serialize()).append("\n");
-                    }
-
-                    out.append("\n\n");
-                }
+                serialize(out);
 
                 out.close();
             }
         } catch (IOException e) {
             System.out.println("Error writing output file "+outputFile);
         }
+    }
+
+    protected void serialize(BufferedWriter out) throws IOException {
+        out.append("# Test Output: ").append(testClass).append(".").append(testName).append(" #\n\n");
+        out.append("This output is generated when the test is ran.\n\n");
+
+        for (Map.Entry<String, TestPermutation> iteration : newRuns.entrySet()) {
+            out.append("## Permutation: "+iteration.getValue().getPermutationName()+" ##\n\n");
+            out.append("- _VALIDATED:_ ").append(String.valueOf(iteration.getValue().isValidated())).append("\n");
+
+            for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getPermutationDefinition().entrySet()) {
+                appendMapEntry(entry, out);
+            }
+
+            out.append("\n");
+            out.append("#### Permutation Information: ####\n");
+            out.append("\n");
+
+            for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getInfo().entrySet()) {
+                appendMapEntry(entry, out);
+            }
+
+            out.append("\n");
+            out.append("#### Permutation Data: ####\n");
+            out.append("\n");
+
+            for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
+                appendMapEntry(entry, out);
+            }
+
+            out.append("\n\n");
+        }
+
+        out.flush();
+    }
+
+    private void appendMapEntry(Map.Entry<String, VerifyTest.Value> entry, BufferedWriter out) throws IOException {
+        String value = entry.getValue().serialize();
+        value  = value.replace("\r\n", "\n");
+
+        boolean multiLine = value.contains("\n");
+
+        out.append("- **").append(entry.getKey());
+
+        if (multiLine) {
+            out.append("~**\n");
+        } else {
+            out.append(":** ");
+        }
+        if (multiLine) {
+            out.append(StringUtils.indent(value, 4));
+        } else {
+            out.append(value);
+        }
+
+        out.append("\n");
     }
 
     private boolean foundDifferences() {
@@ -89,14 +127,14 @@ public class PersistedTestResults {
     public static PersistedTestResults getInstance(Class testClass, String testName) {
         String key = testClass.getName()+"#"+testName;
         if (!instances.containsKey(key)) {
-            instances.put(key, new PersistedTestResults(testClass, testName));
+            instances.put(key, new PersistedTestResults(testClass.getName(), testName));
         }
         return instances.get(key);
     }
 
     public File getAcceptedOutputFile() {
         if (acceptedOutputFile == null) {
-            acceptedOutputFile = new File(getSavedStateDir(), testClass.getSimpleName()+"."+testName+".accepted.md");
+            acceptedOutputFile = new File(getSavedStateDir(), testClass.replaceFirst(".*\\.","")+"."+testName+".accepted.md");
         }
         return acceptedOutputFile;
     }
@@ -105,7 +143,7 @@ public class PersistedTestResults {
      * Return the directory approved_output directory to use for this TestState. Creates approved_output dir if it does not exist
      */
     public File getSavedStateDir() {
-        String testPackageDir = testClass.getPackage().getName().replace(".", "/");
+        String testPackageDir = testClass.replaceFirst("\\..*?$", "").replace(".", "/");
 
         File sdkPropertiesFile = null;
         try {
@@ -199,5 +237,17 @@ public class PersistedTestResults {
         } else {
             throw new RuntimeException("todo");
         }
+    }
+
+    protected void copyAcceptedRunsToNewRuns() {
+        this.newRuns.putAll(this.acceptedRuns);
+    }
+
+    public static PersistedTestResults parse(BufferedReader fileContents) throws IOException {
+        return new PersistedTestResultsParser().parse(fileContents);
+    }
+
+    protected void addAcceptedRun(TestPermutation currentPermutation) {
+        acceptedRuns.put(currentPermutation.getKey(), currentPermutation);
     }
 }
