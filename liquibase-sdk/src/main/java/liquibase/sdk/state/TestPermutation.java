@@ -9,13 +9,13 @@ public class TestPermutation {
     private String key;
     private SortedMap<String, VerifyTest.Value> data;
     private SortedMap<String,VerifyTest.Value> permutationDefinition;
-    private SortedMap<String,VerifyTest.Value> info;
+    private SortedMap<String,VerifyTest.Value> background;
     private Boolean validated;
 
     public TestPermutation(VerifyTest run) {
         this(run.getPermutationName());
         this.permutationDefinition = run.getPermutationDefinition();
-        this.info = run.getInfo();
+        this.background = run.getInfo();
         this.data = run.getData();
     }
 
@@ -24,7 +24,7 @@ public class TestPermutation {
         this.key = permutationName;
 
         this.permutationDefinition = new TreeMap<String, VerifyTest.Value>();
-        this.info= new TreeMap<String, VerifyTest.Value>();
+        this.background = new TreeMap<String, VerifyTest.Value>();
         this.data = new TreeMap<String, VerifyTest.Value>();
     }
 
@@ -52,12 +52,12 @@ public class TestPermutation {
         this.permutationDefinition.put(key, new VerifyTest.Value(value, outputFormat));
     }
 
-    public SortedMap<String, VerifyTest.Value> getInfo() {
-        return info;
+    public SortedMap<String, VerifyTest.Value> getBackground() {
+        return background;
     }
 
-    public void addInfo(String key, Object value, OutputFormat outputFormat) {
-        this.info.put(key, new VerifyTest.Value(value, outputFormat));
+    public void addBackground(String key, Object value, OutputFormat outputFormat) {
+        this.background.put(key, new VerifyTest.Value(value, outputFormat));
     }
 
     public void setValidated(boolean validated) {

@@ -58,7 +58,7 @@ class PersistedTestResultsParser {
                     if (section.equals(Section.DEFINITION)) {
                         currentPermutation.addDefinition(multiLineKey, multiLineValue, OutputFormat.FromFile);
                     } else if (section.equals(Section.INFORMATION)) {
-                        currentPermutation.addInfo(multiLineKey, multiLineValue, OutputFormat.FromFile);
+                        currentPermutation.addBackground(multiLineKey, multiLineValue, OutputFormat.FromFile);
                     } else if (section.equals(Section.DATA)) {
                         currentPermutation.addData(multiLineKey, multiLineValue, OutputFormat.FromFile);
                     } else {
@@ -73,10 +73,10 @@ class PersistedTestResultsParser {
                 continue;
             }
 
-            if (line.equals("#### Permutation Information: ####")) {
+            if (line.equals("#### Background: ####")) {
                 section = Section.INFORMATION;
                 continue;
-            } else if (line.equals("#### Permutation Data: ####")) {
+            } else if (line.equals("#### Data: ####")) {
                 section = Section.DATA;
                 continue;
             }
@@ -113,7 +113,7 @@ class PersistedTestResultsParser {
                 if (section.equals(Section.DEFINITION)) {
                     currentPermutation.addDefinition(key, value, OutputFormat.FromFile);
                 } else if (section.equals(Section.INFORMATION)) {
-                    currentPermutation.addInfo(key, value, OutputFormat.FromFile);
+                    currentPermutation.addBackground(key, value, OutputFormat.FromFile);
                 } else if (section.equals(Section.DATA)) {
                     currentPermutation.addData(key, value, OutputFormat.FromFile);
                 } else {

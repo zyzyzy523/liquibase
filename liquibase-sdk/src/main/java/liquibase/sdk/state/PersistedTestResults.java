@@ -72,20 +72,24 @@ public class PersistedTestResults {
                 appendMapEntry(entry, out);
             }
 
-            out.append("\n");
-            out.append("#### Permutation Information: ####\n");
-            out.append("\n");
+            if (iteration.getValue().getBackground().size() > 0) {
+                out.append("\n");
+                out.append("#### Background: ####\n");
+                out.append("\n");
 
-            for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getInfo().entrySet()) {
-                appendMapEntry(entry, out);
+                for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getBackground().entrySet()) {
+                    appendMapEntry(entry, out);
+                }
             }
 
-            out.append("\n");
-            out.append("#### Permutation Data: ####\n");
-            out.append("\n");
+            if (iteration.getValue().getData().entrySet().size() > 0) {
+                out.append("\n");
+                out.append("#### Data: ####\n");
+                out.append("\n");
 
-            for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
-                appendMapEntry(entry, out);
+                for (Map.Entry<String, VerifyTest.Value> entry : iteration.getValue().getData().entrySet()) {
+                    appendMapEntry(entry, out);
+                }
             }
 
             out.append("\n\n");
