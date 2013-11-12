@@ -6,7 +6,7 @@ exec { "apt-update":
 }
 
 user { 'liquibase':
-    password: 'liquibase'
+    password => 'liquibase'
 }
 
 Firewall <| |> -> Package <| |>
