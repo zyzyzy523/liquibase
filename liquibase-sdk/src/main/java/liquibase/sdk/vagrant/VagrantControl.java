@@ -26,7 +26,14 @@ public class VagrantControl {
     private String hostName;
 
     public VagrantControl(List<String> commands, CommandLine arguments) {
-        vagrantPath = "C:\\HashiCorp\\Vagrant\\bin\\vagrant.bat";
+//        vagrantPath = "C:\\HashiCorp\\Vagrant\\bin\\vagrant.bat";
+        String path = new ProcessBuilder().environment().get("Path");
+        vagrantPath = findVagrant(path);
+
+        if (vagrantPath == null) {
+            throw new RuntimeException("Cannot find vagrant in "+path);
+        }
+        System.out.println("Vagrant path: "+vagrantPath);
 
         this.boxName = commands.get(0);
 
@@ -38,6 +45,24 @@ public class VagrantControl {
         } catch (IOException e) {
             throw new UnexpectedLiquibaseException(e);
         }
+    }
+
+    private String findVagrant(String path) {
+        for (String dir : path.split("[:;]")) {
+            File batch = new File(dir, "vagrant.bat");
+            File shell = new File(dir, "vagrant.sh");
+            File empty = new File(dir, "vagrant");
+            if (batch.exists()) {
+                return batch.getAbsolutePath();
+            }
+            if (empty.exists()) {
+                return batch.getAbsolutePath();
+            }
+            if (shell.exists()) {
+                return batch.getAbsolutePath();
+            }
+        }
+        return null;
     }
 
     public void init() {
