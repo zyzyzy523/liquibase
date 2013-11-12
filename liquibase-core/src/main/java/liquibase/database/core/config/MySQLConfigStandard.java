@@ -28,12 +28,12 @@ public class MySQLConfigStandard extends ConnectionConfiguration {
     }
 
     @Override
-    public Set<String> getRequiredPackages() {
-        return super.getRequiredPackages();
+    public Set<String> getRequiredPackages(String vagrantBoxName) {
+        return super.getRequiredPackages(vagrantBoxName);
     }
 
     @Override
-    public String getPuppetInit() {
+    public String getPuppetInit(String box) {
         return "class { '::mysql::server':\n" +
                 "    root_password => 'root',\n"+
                 (getVersion() == null ? "" : "    package_ensure => '"+getVersion()+"',\n")+

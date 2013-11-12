@@ -28,7 +28,7 @@ public class PostgresConfigStandard extends ConnectionConfiguration {
     }
 
     @Override
-    public String getPuppetInit() {
+    public String getPuppetInit(String box) {
         return "class { '::postgresql::server':\n" +
                 "    ip_mask_deny_postgres_user => '0.0.0.0/32',\n" +
                 "    ip_mask_allow_all_users    => '0.0.0.0/0',\n" +

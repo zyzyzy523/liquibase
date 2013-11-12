@@ -21,6 +21,9 @@ public class VagrantControl {
     private final File vagrantDir;
     private final File vagrantBoxDir;
     private String vagrantPath;
+    private String vagrantBoxName;
+    private String vagrantBoxUrl;
+    private String hostName;
 
     public VagrantControl(List<String> commands, CommandLine arguments) {
         vagrantPath = "C:\\HashiCorp\\Vagrant\\bin\\vagrant.bat";
@@ -49,6 +52,41 @@ public class VagrantControl {
             System.out.println("Vagrant config: " + StringUtils.join(commandArgs, ", "));
 
             Collection<ConnectionConfiguration> databases = ConnectionConfigurationFactory.getInstance().findConfigurations(commandArgs);
+
+            String[] boxInfo = null;
+            String hostName = null;
+            for (ConnectionConfiguration connectionConfig : databases) {
+                String[] absoluteBox = getAbsoluteBox(connectionConfig.getVagrantBoxName());
+
+                if (boxInfo == null) {
+                    boxInfo = absoluteBox;
+                } else {
+                    if (!boxInfo[0].equals(absoluteBox[0])) {
+                        throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" needs vagrant box "+absoluteBox[0]+", not "+boxInfo[0]+" like other configurations");
+                    }
+                }
+
+                if (hostName == null) {
+                    hostName = connectionConfig.getHostname();
+                } else {
+                    if (!hostName.equals(connectionConfig.getHostname())) {
+                        throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" does not match previously defined hostname "+hostName);
+                    }
+                }
+            }
+
+            if (boxInfo == null) {
+                throw new UnexpectedLiquibaseException("Null boxInfo");
+            }
+
+            this.vagrantBoxName = boxInfo[0];
+            this.vagrantBoxUrl = boxInfo[1];
+            this.hostName = hostName;
+
+            System.out.println("Vagrant vm url: "+vagrantBoxUrl);
+            System.out.println("Hostname: "+hostName);
+
+
 
             writeVagrantFile(databases);
             writePuppetFiles(databases);
@@ -143,7 +181,7 @@ public class VagrantControl {
         Set<String> modules = new HashSet<String>();
 
         for (ConnectionConfiguration config : databases) {
-            forges.addAll(config.getPuppetForges());
+            forges.addAll(config.getPuppetForges(vagrantBoxName));
             modules.addAll(config.getPuppetModules());
         }
 
@@ -164,8 +202,8 @@ public class VagrantControl {
         Set<String> puppetBlocks = new HashSet<String>();
 
         for (ConnectionConfiguration config : databases) {
-            requiredPackages.addAll(config.getRequiredPackages());
-            String thisInit = config.getPuppetInit();
+            requiredPackages.addAll(config.getRequiredPackages(vagrantBoxName));
+            String thisInit = config.getPuppetInit(vagrantBoxName);
             if (thisInit != null) {
                 puppetBlocks.add(thisInit);
             }
@@ -198,38 +236,9 @@ public class VagrantControl {
 
     private void writeVagrantFile(Collection<ConnectionConfiguration> databases) throws Exception {
 
-        String[] boxInfo = null;
-        String hostName = null;
-
-        for (ConnectionConfiguration connectionConfig : databases) {
-            String[] absoluteBox = getAbsoluteBox(connectionConfig.getVagrantBoxName());
-
-            if (boxInfo == null) {
-                boxInfo = absoluteBox;
-            } else {
-                if (!boxInfo[0].equals(absoluteBox[0])) {
-                    throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" needs vagrant box "+absoluteBox[0]+", not "+boxInfo[0]+" like other configurations");
-                }
-            }
-
-            if (hostName == null) {
-                hostName = connectionConfig.getHostname();
-            } else {
-                if (!hostName.equals(connectionConfig.getHostname())) {
-                    throw new UnexpectedLiquibaseException("Configuration "+connectionConfig+" does not match previously defined hostname "+hostName);
-                }
-            }
-        }
-
-        if (boxInfo == null) {
-            throw new UnexpectedLiquibaseException("Null boxInfo");
-        }
-
-        System.out.println("Vagrant vm url: "+boxInfo[1]);
-
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put("configVmBox", boxInfo[0]);
-        context.put("configVmBoxUrl", boxInfo[1]);
+        context.put("configVmBox", vagrantBoxName);
+        context.put("configVmBoxUrl", vagrantBoxUrl);
         context.put("configVmNetworkIp", hostName);
         context.put("vmCustomizeMemory", "8192");
 

@@ -34,8 +34,8 @@ public class OracleConfigStandard extends ConnectionConfiguration {
     }
 
     @Override
-    public Set<String> getRequiredPackages() {
-        Set<String> requiredPackages = super.getRequiredPackages();
+    public Set<String> getRequiredPackages(String vagrantBoxName) {
+        Set<String> requiredPackages = super.getRequiredPackages(vagrantBoxName);
         requiredPackages.addAll(Arrays.asList("binutils",
                 "compat-libcap1",
                 "gcc",
@@ -61,7 +61,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
     }
 
     @Override
-    public String getPuppetInit() {
+    public String getPuppetInit(String box) {
         return "package { $oracle_packages: ensure => \"installed\" }\n" +
                 "\n" +
                 "oradb::installdb{ '12.1.0.1_Linux-x86-64':\n" +

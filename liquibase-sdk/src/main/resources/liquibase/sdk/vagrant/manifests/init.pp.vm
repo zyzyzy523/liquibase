@@ -5,6 +5,11 @@ exec { "apt-update":
     }
 }
 
+user { 'liquibase':
+    password: 'liquibase'
+}
+
+Firewall <| |> -> Package <| |>
 Exec["apt-update"] -> Package <| |>
 
 #foreach ( $package in $requiredPackages )

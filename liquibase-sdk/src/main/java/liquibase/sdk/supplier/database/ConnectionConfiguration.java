@@ -35,7 +35,7 @@ public abstract class ConnectionConfiguration implements Cloneable {
         return new HashSet<String>();
     }
 
-    public Set<String> getPuppetForges() {
+    public Set<String> getPuppetForges(String boxName) {
         HashSet<String> forges = new HashSet<String>();
         forges.add("http://forge.puppetlabs.com");
 
@@ -46,11 +46,11 @@ public abstract class ConnectionConfiguration implements Cloneable {
         return "linux";
     }
 
-    public Set<String> getRequiredPackages() {
+    public Set<String> getRequiredPackages(String vagrantBoxName) {
         return new HashSet<String>();
     }
 
-    public String getPuppetInit() {
+    public String getPuppetInit(String box) {
         return null;
     }
 
