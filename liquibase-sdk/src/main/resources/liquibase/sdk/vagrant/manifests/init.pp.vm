@@ -1,3 +1,7 @@
+service { "iptables":
+  ensure => "stopped",
+}
+
 exec { "apt-update":
     command =>  $operatingsystem ? {
         ubuntu => "/usr/bin/apt-get update",
@@ -9,7 +13,6 @@ user { 'liquibase':
     password => 'liquibase'
 }
 
-Firewall <| |> -> Package <| |>
 Exec["apt-update"] -> Package <| |>
 
 #foreach ( $package in $requiredPackages )
@@ -17,19 +20,6 @@ package { "${package}":
     ensure => "installed"
 }
 #end
-
-resources { "firewall":
-  purge => true
-}
-
-Firewall {
-  before  => Class['my_firewall::post'],
-  require => Class['my_firewall::pre'],
-}
-
-class { ['my_firewall::pre', 'my_firewall::post']: }
-
-class { 'firewall': }
 
 #foreach ( $block in $puppetBlocks )
 ${block}

@@ -252,12 +252,11 @@ public class StringUtilsTest {
     @Test
     public void indent() {
         assertEquals("    a line", StringUtils.indent("a line"));
-        assertEquals("    a line", StringUtils.indent("  a line"));
         assertEquals("    line 1\n" +
                 "    line 2\n" +
                 "    line 3", StringUtils.indent("line 1\nline 2\nline 3"));
-        assertEquals("    line 1\n" +
-                "    line 2\n" +
-                "    line 3", StringUtils.indent("line 1\n line 2\n  line 3"));
+        assertEquals("existing spaces are not preserved", "    line 1\n" +
+                "     line 2\n" +
+                "      line 3", StringUtils.indent("line 1\n line 2\n  line 3"));
     }
 }

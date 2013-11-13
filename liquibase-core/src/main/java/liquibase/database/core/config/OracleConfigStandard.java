@@ -2,6 +2,7 @@ package liquibase.database.core.config;
 
 import liquibase.sdk.supplier.database.ConnectionConfiguration;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getUrl() {
-        return "jdbc:oracle:thin:@" + getHostname() + ":1521:XE";
+        return "jdbc:oracle:thin:@" + getHostname() + ":1521:"+getDatabaseUsername();
     }
 
     @Override
@@ -62,67 +63,158 @@ public class OracleConfigStandard extends ConnectionConfiguration {
 
     @Override
     public String getPuppetInit(String box) {
-        return "package { $oracle_packages: ensure => \"installed\" }\n" +
-                "\n" +
+        return "Package <| |> -> Oradb::Installdb <| |>\n"+
+                "\n"+
                 "oradb::installdb{ '12.1.0.1_Linux-x86-64':\n" +
                 "        version      => '12.1.0.1',\n" +
                 "        file         => 'linuxamd64_12c_database',\n" +
                 "        databaseType => 'SE',\n" +
-                "        oracleBase   => '/oracle',\n" +
-                "        oracleHome   => '/oracle/product/12.1/db',\n" +
-                "        user         => 'oracle',\n" +
+                "        oracleBase   => '"+ getOracleBase() +"',\n" +
+                "        oracleHome   => '"+ getOracleHome() +"',\n" +
+                "        user         => '"+ getInstallUsername() +"',\n" +
                 "        group        => 'dba',\n" +
                 "        downloadDir  => '/install/oracle/',\n" +
                 "        puppetDownloadMntPoint  => '/install/oracle/'\n" +
                 "}\n" +
                 "\n" +
-                "oradb::database{ 'liquibase':\n" +
-                "                  oracleBase              => '/oracle',\n" +
-                "                  oracleHome              => '/oracle/product/12.1/db',\n" +
-                "                  version                 => \"12.1\",\n" +
-                "                  user                    => 'oracle',\n" +
+                "oradb::database{ '"+ getSID()+"':\n" +
+                "                  oracleBase              => '"+getOracleBase()+"',\n" +
+                "                  oracleHome              => '"+getOracleHome()+"',\n" +
+                "                  version                 => '12.1',\n" +
+                "                  user                    => '"+getInstallUsername()+"',\n" +
                 "                  group                   => 'dba',\n" +
                 "                  downloadDir             => '/install/oracle/',\n" +
                 "                  action                  => 'create',\n" +
-                "                  dbName                  => 'liquibase',\n" +
-                "                  dbDomain                => 'liquibase.org',\n" +
-                "                  sysPassword             => 'oracle',\n" +
-                "                  systemPassword          => 'oracle',\n" +
-                "                  dataFileDestination     => \"/oracle/oradata\",\n" +
-                "                  recoveryAreaDestination => \"/oracle/flash_recovery_area\",\n" +
-                "                  characterSet            => \"AL32UTF8\",\n" +
-                "                  nationalCharacterSet    => \"UTF8\",\n" +
-                "                  initParams              => \"open_cursors=1000,processes=600,job_queue_processes=4\",\n" +
+                "                  dbName                  => '"+ getSID()+"',\n" +
+                "                  dbDomain                => '"+ getDatabaseDomain()+"',\n" +
+                "                  sysPassword             => '"+getSysPassword()+"',\n" +
+                "                  systemPassword          => '"+ getSystemPassword() +"',\n" +
+                "                  dataFileDestination     => '"+getOracleBase()+"/oradata',\n" +
+                "                  recoveryAreaDestination => '"+getOracleBase()+"/flash_recovery_area',\n" +
+                "                  characterSet            => '"+ getCharacterSet() +"',\n" +
+                "                  nationalCharacterSet    => '"+ getNationalCharacterSet() +"',\n" +
+                "                  initParams              => '"+ getInitParams() +"',\n" +
                 "                  sampleSchema            => 'FALSE',\n" +
-                "                  memoryPercentage        => \"40\",\n" +
-                "                  memoryTotal             => \"800\",\n" +
+                "                  memoryPercentage        => '"+ getMemoryPercentage() +"',\n" +
+                "                  memoryTotal             => '"+ getMemoryTotal() +"',\n" +
                 "                  databaseType            => \"MULTIPURPOSE\",\n" +
                 "                  require                 => Oradb::InstallDb['12.1.0.1_Linux-x86-64'],\n" +
                 "}\n" +
                 "\n" +
                 " oradb::net{ 'config net8':\n" +
-                "        oracleHome   => '/oracle/product/12.1/db',\n" +
+                "        oracleHome   => '"+getOracleHome()+"',\n" +
                 "        version      => \"12.1\",\n" +
-                "        user         => 'oracle',\n" +
+                "        user         => '"+getInstallUsername()+"',\n" +
                 "        group        => 'dba',\n" +
                 "        downloadDir  => '/install/oracle/',\n" +
-                "        require      => Oradb::Database['liquibase'],\n" +
+                "        require      => Oradb::Database['"+ getSID()+"'],\n" +
                 "   }\n" +
                 "\n" +
                 "oradb::listener{'start listener':\n" +
-                "        oracleBase   => '/oracle',\n" +
-                "        oracleHome   => '/oracle/product/12.1/db',\n" +
-                "        user         => 'oracle',\n" +
+                "        oracleBase   => '"+getOracleBase()+"',\n" +
+                "        oracleHome   => '"+getOracleHome()+"',\n" +
+                "        user         => '"+getInstallUsername()+"',\n" +
                 "        group        => 'dba',\n" +
                 "        action       => 'start',\n" +
                 "        require      => Oradb::Net['config net8'],\n" +
                 "   }\n" +
                 "\n" +
                 "oradb::autostartdatabase{ 'autostart oracle':\n" +
-                "                   oracleHome              => '/oracle/product/12.1/db',\n" +
-                "                   user                    => 'oracle',\n" +
-                "                   dbName                  => 'liquibase',\n" +
-                "                   require                 => Oradb::Database['liquibase'],\n" +
-                "}";
+                "                   oracleHome              => '"+getOracleHome()+"',\n" +
+                "                   user                    => '"+getInstallUsername()+"',\n" +
+                "                   dbName                  => '"+ getSID()+"',\n" +
+                "                   require                 => Oradb::Database['"+ getSID()+"'],\n" +
+                "}\n"+
+                "file { '"+getOracleHome()+"/puppet-setup.sh':\n" +
+                "    require      => Oradb::Autostartdatabase['autostart oracle'],\n"+
+                "    mode => '755',\n" +
+                "    content => \"#!/bin/sh\n" +
+                "\n" +
+                "export ORACLE_HOME="+getOracleHome()+";\n" +
+                "export ORACLE_SID="+ getSID()+";\n" +
+                "echo \\\"create user "+ getDatabaseUsername()+" identified by "+ getDatabasePassword()+";\n" +
+                "grant all privileges to "+ getDatabaseUsername()+";\n" +
+                "create user "+getAlternateUsername()+" identified by "+getAlternateUserPassword()+";\n" +
+                "grant all privileges to "+getAlternateUsername()+";\n" +
+                "create tablespace "+ getAlternateTablespace() +" datafile '"+getOracleBase()+"/oradata/"+ getSID()+"/"+ getAlternateTablespace()+".dbf' SIZE 5M autoextend on next 5M;    \\\" | "+getOracleHome()+"/bin/sqlplus / as sysdba; \n" +
+                "touch "+getOracleHome()+"/puppet-setup-ran.txt;\n" +
+                "\",\n" +
+                "}\n"+
+                "\n"+
+                "exec { 'execute oracle setup scripts':\n" +
+                "    require      => [File['"+getOracleHome()+"/puppet-setup.sh'], Oradb::Autostartdatabase['autostart oracle']],\n"+
+                "    path => ['/bin','/usr/bin'],\n" +
+                "    command => '"+getOracleHome()+"/puppet-setup.sh',\n" +
+                "    user => '"+getInstallUsername()+"',\n" +
+                "    creates => '"+getOracleHome()+"/puppet-setup-ran.txt',\n" +
+                "}\n";
+    }
+
+    public String getMemoryTotal() {
+        return "800";
+    }
+
+    public String getMemoryPercentage() {
+        return "40";
+    }
+
+    public String getInitParams() {
+        return "open_cursors=1000,processes=600,job_queue_processes=4";
+    }
+
+    public String getNationalCharacterSet() {
+        return "UTF8";
+    }
+
+    public String getCharacterSet() {
+        return "AL32UTF8";
+    }
+
+    public String getSystemPassword() {
+        return "oracle";
+    }
+
+    public String getSysPassword() {
+        return "oracle";
+    }
+
+    public String getDatabaseDomain() {
+        return "liquibase.org";
+    }
+
+    public String getSID() {
+        return "liquibase";
+    }
+
+    public String getInstallUsername() {
+        return "oracle";
+    }
+
+    public String getOracleHome() {
+        return "/oracle/product/12.1/db";
+    }
+
+    public String getOracleBase() {
+        return "/oracle";
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription() +
+                "SID: "+getSID()+"\n"+
+                "Oracle Base: "+getOracleBase()+"\n" +
+                "Oracle Home: "+getOracleHome()+"\n"+
+                "Database Domain: "+getDatabaseDomain()+"\n"+
+                "Installer OS Username: "+getInstallUsername()+"\n"+
+                "             Password: "+getInstallUsername()+"\n"+
+                "SYS User Password: "+getSysPassword()+"\n"+
+                "SYSTEM User Password: "+getSystemPassword()+"\n"+
+                "Init Params: "+getInitParams()+"\n"+
+                "Character Set: "+getCharacterSet()+"\n"+
+                "National Character Set: "+getNationalCharacterSet()+"\n"+
+                "\n"+
+                "NOTE: You must manually download the oracle installation files into "+new File("vagrant/install-files/oracle").getAbsolutePath()+"\n"+
+                "      You can download the install files from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html with a free OTN account\n"+
+                "      Expected files: linuxamd64_12c_database_1of2.zip and linuxamd64_12c_database_2of2.zip\n";
     }
 }

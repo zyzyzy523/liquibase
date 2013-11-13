@@ -117,8 +117,8 @@ public class AllDatabases extends ParameterSupplier {
         String url = connectionConfiguration.getUrl();
         assertNotNull("Null jdbc url", url);
 
-        String username = connectionConfiguration.getUsername();
-        String password = connectionConfiguration.getPassword();
+        String username = connectionConfiguration.getDatabaseUsername();
+        String password = connectionConfiguration.getDatabasePassword();
 
 
         JDBCDriverClassLoader jdbcDriverLoader = new JDBCDriverClassLoader();

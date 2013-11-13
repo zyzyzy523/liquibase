@@ -71,10 +71,13 @@ public class VagrantControl {
                 throw new Main.UserError("Missing database configuration after vagrant box name");
             }
 
-            System.out.println("Initializing vagrant in " + vagrantBoxDir.getAbsolutePath());
 
-            System.out.println("Vagrant box name: " + boxName);
-            System.out.println("Vagrant config: " + StringUtils.join(commandArgs, ", "));
+            System.out.println("");
+            System.out.println("Vagrant Machine Setup:");
+            printDivider();
+            System.out.println("Local Path: " + vagrantBoxDir.getAbsolutePath());
+            System.out.println(StringUtils.indent("Box name: " + boxName));
+            System.out.println(StringUtils.indent("Config(s): " + StringUtils.join(commandArgs, ", ")));
 
             Collection<ConnectionConfiguration> databases = ConnectionConfigurationFactory.getInstance().findConfigurations(commandArgs);
 
@@ -108,16 +111,27 @@ public class VagrantControl {
             this.vagrantBoxUrl = boxInfo[1];
             this.hostName = hostName;
 
-            System.out.println("Vagrant vm url: "+vagrantBoxUrl);
-            System.out.println("Hostname: "+hostName);
+            System.out.println(StringUtils.indent("Base Box Url: "+vagrantBoxUrl));
+            System.out.println(StringUtils.indent("Hostname: "+hostName));
 
+            System.out.println("");
 
+            for (ConnectionConfiguration config : databases) {
+                System.out.println("Connection Configuration For '"+config.toString()+"':");
+                printDivider();
+                System.out.println(StringUtils.indent(config.getDescription()));
+                System.out.println("");
+            }
 
             writeVagrantFile(databases);
             writePuppetFiles(databases);
         } catch (Exception e) {
             throw new UnexpectedLiquibaseException(e);
         }
+    }
+
+    private void printDivider() {
+        System.out.println("---------------------------------------------------");
     }
 
     public void provision() {
@@ -185,7 +199,10 @@ public class VagrantControl {
             System.out.println("Error running vagrant");
             e.printStackTrace();
         }
-        System.out.println("Out code: " + out);
+        if (out != 0) {
+            System.out.println("Error running Vagrant. Return code " + out);
+        }
+
     }
 
     private void writePuppetFiles(Collection<ConnectionConfiguration> databases) throws Exception {

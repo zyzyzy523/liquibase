@@ -15,12 +15,28 @@ public abstract class ConnectionConfiguration implements Cloneable {
 
     public abstract String getUrl();
 
-    public String getUsername() {
+    public String getDatabaseUsername() {
         return "liquibase";
     }
 
-    public String getPassword() {
+    public String getDatabasePassword() {
         return "liquibase";
+    }
+
+    public String getAlternateUsername() {
+        return "liquibaseb";
+    }
+
+    public String getAlternateUserPassword() {
+        return "liquibase";
+    }
+
+    public String getAlternateSchema() {
+        return "liquibaseb";
+    }
+
+    public String getAlternateTablespace() {
+        return "liquibase2";
     }
 
     public String getHostname() {
@@ -60,5 +76,20 @@ public abstract class ConnectionConfiguration implements Cloneable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    @Override
+    public String toString() {
+        return getDatabaseShortName()+"["+getConfigurationName()+"]";
+    }
+
+    public String getDescription() {
+        return "JDBC Url: "+getUrl()+"\n"+
+                "Standard User: "+ getDatabaseUsername()+"\n"+
+                "         Password: "+ getDatabasePassword()+"\n"+
+                "Alternate User: "+ getAlternateUsername()+"\n"+
+                "          Password: "+ getAlternateUserPassword()+"\n"+
+                "Alternate Schema: "+ getAlternateSchema()+"\n"+
+                "Alternate Tablespace: "+ getAlternateTablespace()+"\n";
     }
 }

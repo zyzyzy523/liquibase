@@ -38,8 +38,8 @@ public class PostgresConfigStandard extends ConnectionConfiguration {
                 "}\n" +
                 "\n" +
                 "postgresql::server::db { 'liquibase':\n" +
-                "  user     => '"+getUsername()+"',\n" +
-                "  password => '"+getPassword()+"'\n" +
+                "  user     => '"+ getDatabaseUsername()+"',\n" +
+                "  password => '"+ getDatabasePassword()+"'\n" +
                 "}\n";
     }
 }

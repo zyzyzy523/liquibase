@@ -41,15 +41,15 @@ public class MySQLConfigStandard extends ConnectionConfiguration {
                 "}\n" +
                 "\n" +
                 "mysql::db { 'liquibase':\n" +
-                "  user     => '"+getUsername()+"',\n" +
-                "  password => '"+getPassword()+"',\n" +
+                "  user     => '"+ getDatabaseUsername()+"',\n" +
+                "  password => '"+ getDatabasePassword()+"',\n" +
                 "  host     => '%',\n" +
                 "  grant    => ['all'],\n" +
                 "}\n" +
                 "\n" +
                 "mysql::db { 'liquibaseb':\n" +
-                "  user     => '"+getUsername()+"',\n" +
-                "  password => '"+getPassword()+"',\n" +
+                "  user     => '"+ getDatabaseUsername()+"',\n" +
+                "  password => '"+ getDatabasePassword()+"',\n" +
                 "  host     => '%',\n" +
                 "  grant    => ['all'],\n" +
                 "}\n";
