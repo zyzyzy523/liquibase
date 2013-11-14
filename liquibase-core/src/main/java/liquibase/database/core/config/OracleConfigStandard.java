@@ -65,8 +65,8 @@ public class OracleConfigStandard extends ConnectionConfiguration {
     public String getPuppetInit(String box) {
         return "Package <| |> -> Oradb::Installdb <| |>\n"+
                 "\n"+
-                "oradb::installdb{ '12.1.0.1_Linux-x86-64':\n" +
-                "        version      => '12.1.0.1',\n" +
+                "oradb::installdb{ '"+ getVersion() +"_Linux-x86-64':\n" +
+                "        version      => '"+ getVersion() +"',\n" +
                 "        file         => 'linuxamd64_12c_database',\n" +
                 "        databaseType => 'SE',\n" +
                 "        oracleBase   => '"+ getOracleBase() +"',\n" +
@@ -80,7 +80,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "oradb::database{ '"+ getSID()+"':\n" +
                 "                  oracleBase              => '"+getOracleBase()+"',\n" +
                 "                  oracleHome              => '"+getOracleHome()+"',\n" +
-                "                  version                 => '12.1',\n" +
+                "                  version                 => '"+ getShortVersion() +"',\n" +
                 "                  user                    => '"+getInstallUsername()+"',\n" +
                 "                  group                   => 'dba',\n" +
                 "                  downloadDir             => '/install/oracle/',\n" +
@@ -98,17 +98,8 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "                  memoryPercentage        => '"+ getMemoryPercentage() +"',\n" +
                 "                  memoryTotal             => '"+ getMemoryTotal() +"',\n" +
                 "                  databaseType            => \"MULTIPURPOSE\",\n" +
-                "                  require                 => Oradb::InstallDb['12.1.0.1_Linux-x86-64'],\n" +
+                "                  require                 => Oradb::InstallDb['"+ getVersion() +"_Linux-x86-64'],\n" +
                 "}\n" +
-                "\n" +
-                " oradb::net{ 'config net8':\n" +
-                "        oracleHome   => '"+getOracleHome()+"',\n" +
-                "        version      => \"12.1\",\n" +
-                "        user         => '"+getInstallUsername()+"',\n" +
-                "        group        => 'dba',\n" +
-                "        downloadDir  => '/install/oracle/',\n" +
-                "        require      => Oradb::Database['"+ getSID()+"'],\n" +
-                "   }\n" +
                 "\n" +
                 "oradb::listener{'start listener':\n" +
                 "        oracleBase   => '"+getOracleBase()+"',\n" +
@@ -116,7 +107,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "        user         => '"+getInstallUsername()+"',\n" +
                 "        group        => 'dba',\n" +
                 "        action       => 'start',\n" +
-                "        require      => Oradb::Net['config net8'],\n" +
+                "        require      => Oradb::Database['"+ getSID()+"'],\n" +
                 "   }\n" +
                 "\n" +
                 "oradb::autostartdatabase{ 'autostart oracle':\n" +
@@ -148,6 +139,15 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "    user => '"+getInstallUsername()+"',\n" +
                 "    creates => '"+getOracleHome()+"/puppet-setup-ran.txt',\n" +
                 "}\n";
+    }
+
+    @Override
+    public String getVersion() {
+        return "12.1.0.1";
+    }
+
+    protected String getShortVersion() {
+        return "12.1";
     }
 
     public String getMemoryTotal() {
@@ -191,7 +191,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
     }
 
     public String getOracleHome() {
-        return "/oracle/product/12.1/db";
+        return "/oracle/product/"+ getShortVersion() +"/db";
     }
 
     public String getOracleBase() {

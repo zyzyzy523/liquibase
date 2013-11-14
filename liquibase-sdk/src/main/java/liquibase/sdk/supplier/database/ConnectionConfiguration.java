@@ -85,6 +85,7 @@ public abstract class ConnectionConfiguration implements Cloneable {
 
     public String getDescription() {
         return "JDBC Url: "+getUrl()+"\n"+
+                "Version: "+getVersion()+"\n"+
                 "Standard User: "+ getDatabaseUsername()+"\n"+
                 "         Password: "+ getDatabasePassword()+"\n"+
                 "Alternate User: "+ getAlternateUsername()+"\n"+

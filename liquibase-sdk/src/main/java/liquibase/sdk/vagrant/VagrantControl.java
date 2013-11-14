@@ -27,7 +27,17 @@ public class VagrantControl {
 
     public VagrantControl(List<String> commands, CommandLine arguments) {
 //        vagrantPath = "C:\\HashiCorp\\Vagrant\\bin\\vagrant.bat";
-        String path = new ProcessBuilder().environment().get("Path");
+        Map<String, String> environment = new ProcessBuilder().environment();
+        String path = environment.get("Path");
+        if (path == null) {
+            path = environment.get("PATH");
+        }
+        if (path == null) {
+            path = environment.get("path");
+        }
+        if (path == null) {
+            throw new UnexpectedLiquibaseException("Cannot find path variable in environment. Possible variables are "+StringUtils.join(environment.keySet(), ","));
+        }
         vagrantPath = findVagrant(path);
 
         if (vagrantPath == null) {
@@ -56,10 +66,10 @@ public class VagrantControl {
                 return batch.getAbsolutePath();
             }
             if (empty.exists()) {
-                return batch.getAbsolutePath();
+                return empty.getAbsolutePath();
             }
             if (shell.exists()) {
-                return batch.getAbsolutePath();
+                return shell.getAbsolutePath();
             }
         }
         return null;
