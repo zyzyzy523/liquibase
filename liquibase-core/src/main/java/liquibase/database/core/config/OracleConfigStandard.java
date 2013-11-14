@@ -55,7 +55,8 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "libxcb",
                 "libXi",
                 "make",
-                "sysstat"
+                "sysstat",
+                "rlwrap"
                 ));
 
         return requiredPackages;
@@ -215,6 +216,8 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "\n"+
                 "NOTE: You must manually download the oracle installation files into "+new File("vagrant/install-files/oracle").getAbsolutePath()+"\n"+
                 "      You can download the install files from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html with a free OTN account\n"+
-                "      Expected files: linuxamd64_12c_database_1of2.zip and linuxamd64_12c_database_2of2.zip\n";
+                "      Expected files: linuxamd64_12c_database_1of2.zip and linuxamd64_12c_database_2of2.zip\n"+
+                "\n"+
+                "NOTE: For easier sqlplus usage, rlwrap is installed. See http://www.oraclealchemist.com/news/add-history-and-tab-completion-to-sqlplus/ for more information";
     }
 }
