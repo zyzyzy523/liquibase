@@ -216,7 +216,7 @@ public class VagrantControl {
     }
 
     private void writePuppetFiles(Collection<ConnectionConfiguration> databases) throws Exception {
-        copyFile("liquibase/sdk/vagrant/puppet-bootstrap.sh", vagrantBoxDir);
+        copyFile("liquibase/sdk/vagrant/puppet-bootstrap.sh", vagrantBoxDir).setExecutable(true);
 
         writePuppetFile(databases);
 
@@ -268,14 +268,15 @@ public class VagrantControl {
         writeVelocityFile("liquibase/sdk/vagrant/manifests/init.pp.vm", manifestsDir, context);
     }
 
-    private void copyFile(String sourcePath, File outputDir) throws Exception {
+    private File copyFile(String sourcePath, File outputDir) throws Exception {
         outputDir.mkdirs();
 
         InputStream input = this.getClass().getClassLoader().getResourceAsStream(sourcePath);
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
         String fileName = sourcePath.replaceFirst(".*/", "");
-        BufferedWriter output = new BufferedWriter(new FileWriter(new File(outputDir, fileName)));
+        File file = new File(outputDir, fileName);
+        BufferedWriter output = new BufferedWriter(new FileWriter(file));
 
         String line;
         while ((line = reader.readLine()) != null) {
@@ -284,6 +285,8 @@ public class VagrantControl {
 
         output.flush();
         output.close();
+
+        return file;
     }
 
     private void writeVagrantFile(Collection<ConnectionConfiguration> databases) throws Exception {
