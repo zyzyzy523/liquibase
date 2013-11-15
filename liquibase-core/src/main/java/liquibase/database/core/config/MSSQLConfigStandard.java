@@ -14,6 +14,11 @@ public class MSSQLConfigStandard extends ConnectionConfiguration {
     }
 
     @Override
+    public String getVagrantBoxName() {
+        return "windows";
+    }
+
+    @Override
     public String getUrl() {
         return "jdbc:sqlserver://"+ getHostname() +":1433;databaseName=liquibase";
     }

@@ -117,7 +117,7 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "                   dbName                  => '"+ getSID()+"',\n" +
                 "                   require                 => Oradb::Database['"+ getSID()+"'],\n" +
                 "}\n"+
-                "file { '"+getOracleHome()+"/puppet-setup.sh':\n" +
+                "file { '~/oracle-init.sh':\n" +
                 "    require      => Oradb::Autostartdatabase['autostart oracle'],\n"+
                 "    mode => '755',\n" +
                 "    content => \"#!/bin/sh\n" +
@@ -129,16 +129,16 @@ public class OracleConfigStandard extends ConnectionConfiguration {
                 "create user "+getAlternateUsername()+" identified by "+getAlternateUserPassword()+";\n" +
                 "grant all privileges to "+getAlternateUsername()+";\n" +
                 "create tablespace "+ getAlternateTablespace() +" datafile '"+getOracleBase()+"/oradata/"+ getSID()+"/"+ getAlternateTablespace()+".dbf' SIZE 5M autoextend on next 5M;    \\\" | "+getOracleHome()+"/bin/sqlplus / as sysdba; \n" +
-                "touch "+getOracleHome()+"/puppet-setup-ran.txt;\n" +
+                "touch ~/database-init.ran;\n" +
                 "\",\n" +
                 "}\n"+
                 "\n"+
                 "exec { 'execute oracle setup scripts':\n" +
-                "    require      => [File['"+getOracleHome()+"/puppet-setup.sh'], Oradb::Autostartdatabase['autostart oracle']],\n"+
+                "    require      => [File['~/database-init.sh'], Oradb::Autostartdatabase['autostart oracle']],\n"+
                 "    path => ['/bin','/usr/bin'],\n" +
-                "    command => '"+getOracleHome()+"/puppet-setup.sh',\n" +
+                "    command => '~/database-init.sh',\n" +
                 "    user => '"+getInstallUsername()+"',\n" +
-                "    creates => '"+getOracleHome()+"/puppet-setup-ran.txt',\n" +
+                "    creates => '~/database-init.ran',\n" +
                 "}\n";
     }
 

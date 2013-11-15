@@ -319,7 +319,7 @@ public class VagrantControl {
 
         String absoluteKey = vagrantBoxName;
         String value = properties.getProperty(absoluteKey);
-        while (value != null && !value.startsWith("http")) {
+        while (value != null && !value.contains("://")) {
             absoluteKey = properties.getProperty(absoluteKey);
             value = properties.getProperty(absoluteKey);
         }

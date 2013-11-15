@@ -15,6 +15,14 @@ public abstract class ConnectionConfiguration implements Cloneable {
 
     public abstract String getUrl();
 
+    public String getPrimaryCatalog() {
+        return "liquibase";
+    }
+
+    public String getPrimarySchema() {
+        return "liquibase";
+    }
+
     public String getDatabaseUsername() {
         return "liquibase";
     }
@@ -29,6 +37,10 @@ public abstract class ConnectionConfiguration implements Cloneable {
 
     public String getAlternateUserPassword() {
         return "liquibase";
+    }
+
+    public String getAlternateCatalog() {
+        return "liquibaseb";
     }
 
     public String getAlternateSchema() {

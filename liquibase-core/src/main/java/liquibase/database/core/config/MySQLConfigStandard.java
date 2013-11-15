@@ -40,18 +40,19 @@ public class MySQLConfigStandard extends ConnectionConfiguration {
                 "    override_options => { 'mysqld' => { 'bind_address'  => '0.0.0.0' } }, \n" +
                 "}\n" +
                 "\n" +
-                "mysql::db { 'liquibase':\n" +
+                "mysql::db { '"+getPrimaryCatalog()+"':\n" +
                 "  user     => '"+ getDatabaseUsername()+"',\n" +
                 "  password => '"+ getDatabasePassword()+"',\n" +
                 "  host     => '%',\n" +
                 "  grant    => ['all'],\n" +
                 "}\n" +
                 "\n" +
-                "mysql::db { 'liquibaseb':\n" +
-                "  user     => '"+ getDatabaseUsername()+"',\n" +
-                "  password => '"+ getDatabasePassword()+"',\n" +
+                "mysql::db { '"+getAlternateCatalog()+"':\n" +
+                "  user     => '"+ getAlternateUsername()+"',\n" +
+                "  password => '"+ getAlternateUserPassword()+"',\n" +
                 "  host     => '%',\n" +
                 "  grant    => ['all'],\n" +
                 "}\n";
+
     }
 }
