@@ -8,7 +8,9 @@ import liquibase.database.DatabaseConnection;
 import liquibase.database.OfflineConnection;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.structure.DatabaseObject;
+import liquibase.structure.core.DataType;
 import liquibase.structure.core.Index;
+import liquibase.structure.core.Schema;
 import liquibase.structure.core.Table;
 import liquibase.structure.core.View;
 import liquibase.exception.DatabaseException;
@@ -19,7 +21,6 @@ import liquibase.statement.core.GetViewDefinitionStatement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import liquibase.logging.LogFactory;
@@ -67,8 +68,9 @@ public class MSSQLDatabase extends AbstractJdbcDatabase {
         systemTablesAndViews.add("syssegments");
         systemTablesAndViews.add("sysconstraints");
 
-        super.quotingStartCharacter ="[";
-        super.quotingEndCharacter="]";
+        super.quotingStartCharacter = "[";
+        super.quotingEndCharacter = "]";
+        super.quotingEndReplacement = "]]";
     }
 
 
@@ -277,7 +279,8 @@ public class MSSQLDatabase extends AbstractJdbcDatabase {
         if (objectName.contains("(")) { //probably a function
             return objectName;
         }
-        return this.quotingStartCharacter+objectName+this.quotingEndCharacter;
+
+        return quoteObject(objectName, objectType);
     }
 
     @Override
@@ -364,5 +367,76 @@ public class MSSQLDatabase extends AbstractJdbcDatabase {
         } else {
             return caseSensitive.booleanValue();
         }
+    }
+
+    @Override
+    public int getDataTypeMaxParameters(String dataTypeName) {
+        if ("bigint".equalsIgnoreCase(dataTypeName)
+                || "bit".equalsIgnoreCase(dataTypeName)
+                || "date".equalsIgnoreCase(dataTypeName)
+                || "datetime".equalsIgnoreCase(dataTypeName)
+                || "geography".equalsIgnoreCase(dataTypeName)
+                || "geometry".equalsIgnoreCase(dataTypeName)
+                || "hierarchyid".equalsIgnoreCase(dataTypeName)
+                || "image".equalsIgnoreCase(dataTypeName)
+                || "int".equalsIgnoreCase(dataTypeName)
+                || "money".equalsIgnoreCase(dataTypeName)
+                || "ntext".equalsIgnoreCase(dataTypeName)
+                || "real".equalsIgnoreCase(dataTypeName)
+                || "smalldatetime".equalsIgnoreCase(dataTypeName)
+                || "smallint".equalsIgnoreCase(dataTypeName)
+                || "smallmoney".equalsIgnoreCase(dataTypeName)
+                || "text".equalsIgnoreCase(dataTypeName)
+                || "timestamp".equalsIgnoreCase(dataTypeName)
+                || "tinyint".equalsIgnoreCase(dataTypeName)
+                || "rowversion".equalsIgnoreCase(dataTypeName)
+                || "sql_variant".equalsIgnoreCase(dataTypeName)
+                || "sysname".equalsIgnoreCase(dataTypeName)
+                || "uniqueidentifier".equalsIgnoreCase(dataTypeName)) {
+
+            return 0;
+        }
+
+        if ("binary".equalsIgnoreCase(dataTypeName)
+                || "char".equalsIgnoreCase(dataTypeName)
+                || "datetime2".equalsIgnoreCase(dataTypeName)
+                || "datetimeoffset".equalsIgnoreCase(dataTypeName)
+                || "float".equalsIgnoreCase(dataTypeName)
+                || "nchar".equalsIgnoreCase(dataTypeName)
+                || "nvarchar".equalsIgnoreCase(dataTypeName)
+                || "time".equalsIgnoreCase(dataTypeName)
+                || "varbinary".equalsIgnoreCase(dataTypeName)
+                || "varchar".equalsIgnoreCase(dataTypeName)
+                || "xml".equalsIgnoreCase(dataTypeName)) {
+
+            return 1;
+        }
+
+        return 2;
+    }
+
+    @Override
+    public String escapeDataTypeName(String dataTypeName) {
+        int indexOfPeriod = dataTypeName.indexOf('.');
+        
+        if (indexOfPeriod < 0) {
+            if (!dataTypeName.startsWith(quotingStartCharacter)) {
+                dataTypeName = escapeObjectName(dataTypeName, DataType.class);
+            }
+            
+            return dataTypeName;
+        }
+
+        String schemaName = dataTypeName.substring(0, indexOfPeriod);
+        if (!schemaName.startsWith(quotingStartCharacter)) {
+            schemaName = escapeObjectName(schemaName, Schema.class);
+        }
+
+        dataTypeName = dataTypeName.substring(indexOfPeriod + 1, dataTypeName.length());
+        if (!dataTypeName.startsWith(quotingStartCharacter)) {
+            dataTypeName = escapeObjectName(dataTypeName, DataType.class);
+        }
+
+        return schemaName + "." + dataTypeName;
     }
 }
