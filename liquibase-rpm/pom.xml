@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.liquibase</groupId>
 		<artifactId>liquibase-parent</artifactId>
-		<version>3.7.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>liquibase-rpm</artifactId>
@@ -53,7 +53,7 @@
 		<dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 		</dependency>
 
 		<dependency>
@@ -183,12 +183,12 @@
                     <packager>Liquibase</packager>
 					<prefix>/usr/local</prefix>
 					<changelogFile>src/changelog</changelogFile>
-					<projversion>${project.version}</projversion>
+					<projversion>${revision}</projversion>
 					<versionProperty>10</versionProperty>
 
 					<mappings>
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}</directory>
+                            <directory>/opt/liquibase-${revision}</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -201,7 +201,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/lib</directory>
+                            <directory>/opt/liquibase-${revision}/lib</directory>
 
 							<dependency>
 								<includes>
@@ -215,7 +215,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/man</directory>
+                            <directory>/opt/liquibase-${revision}/man</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -231,7 +231,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}</directory>
+                            <directory>/opt/liquibase-${revision}</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -244,7 +244,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}</directory>
+                            <directory>/opt/liquibase-${revision}</directory>
 							<configuration>true</configuration>
 							<filemode>444</filemode>
                             <username>liquibase</username>
@@ -256,7 +256,7 @@
 							</sources>
 						</mapping>
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}</directory>
+                            <directory>/opt/liquibase-${revision}</directory>
 							<configuration>true</configuration>
 							<filemode>444</filemode>
                             <username>liquibase</username>
@@ -272,14 +272,14 @@
 							<directory>/usr/bin</directory>
 							<sources>
 								<softlinkSource>
-                                    <location>/opt/liquibase-${project.version}/liquibase</location>
+                                    <location>/opt/liquibase-${revision}/liquibase</location>
 								</softlinkSource>
 							</sources>
 						</mapping>
 
 						<!-- Liquibase sdk mappings -->
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk</directory>
+                            <directory>/opt/liquibase-${revision}/sdk</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -292,7 +292,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/vagrant</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/vagrant</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -308,7 +308,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/vagrant/install-files</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/vagrant/install-files</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -321,7 +321,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/workspace</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/workspace</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -340,7 +340,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/workspace/changelog/com/example</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/workspace/changelog/com/example</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -353,7 +353,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/workspace/changelog/com/example/features</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/workspace/changelog/com/example/features</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -371,7 +371,7 @@
 						</mapping>
 
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/workspace/changelog/com/example/versions</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/workspace/changelog/com/example/versions</directory>
 							<configuration>true</configuration>
 							<filemode>555</filemode>
                             <username>liquibase</username>
@@ -390,7 +390,7 @@
 
 						<!-- Put jars required by liquibase-sdk -->
 						<mapping>
-                            <directory>/opt/liquibase-${project.version}/sdk/lib-sdk</directory>
+                            <directory>/opt/liquibase-${revision}/sdk/lib-sdk</directory>
 							<dependency>
 								<includes>
 									<include>commons-cli:commons-cli</include>
@@ -409,7 +409,7 @@
 							<sources>
 								<softlinkSource>
                                     <destination>liquibase-sdk</destination>
-                                    <location>/opt/liquibase-${project.version}/sdk/liquibase-sdk.sh</location>
+                                    <location>/opt/liquibase-${revision}/sdk/liquibase-sdk.sh</location>
 								</softlinkSource>
 							</sources>
 						</mapping>
@@ -419,11 +419,11 @@
                         <script>echo "Installing liquibase ..."</script>
 					</preinstallScriptlet>
 					<postinstallScriptlet>
-                        <script>/opt/liquibase-${project.version}/man/install-man.sh</script>
+                        <script>/opt/liquibase-${revision}/man/install-man.sh</script>
 					</postinstallScriptlet>
 
 					<postremoveScriptlet>
-                        <script>rm -rf /usr/man/man1/liquibase.1.gz /opt/liquibase-${project.version}</script>
+                        <script>rm -rf /usr/man/man1/liquibase.1.gz /opt/liquibase-${revision}</script>
 					</postremoveScriptlet>
 				</configuration>
 			</plugin>

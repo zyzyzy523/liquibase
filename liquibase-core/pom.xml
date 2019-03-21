@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.liquibase</groupId>
 		<artifactId>liquibase-parent</artifactId>
-		<version>3.7.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>liquibase-core</artifactId>
@@ -17,7 +17,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<bundle.namespace>liquibase.*</bundle.namespace>
-        <project.version>3.7.0</project.version>
 	</properties>
 
 	<dependencies>
@@ -113,16 +112,10 @@
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-
     </dependencies>
 
 	<build>
-    <finalName>liquibase-${project.version}</finalName>
+    <finalName>liquibase-${revision}</finalName>
 
 		<resources>
 			<resource>

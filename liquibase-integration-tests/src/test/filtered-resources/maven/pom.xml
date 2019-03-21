@@ -11,7 +11,7 @@
 		<dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 
@@ -20,7 +20,7 @@
 			<plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-				<version>${project.version}</version>
+				<version>${revision}</version>
 				<dependencies>
                     <dependency>
                         <groupId>org.hsqldb</groupId>
