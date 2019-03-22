@@ -118,6 +118,7 @@
         <module>liquibase-core</module>
         <module>liquibase-h2</module>
         <module>liquibase-hana</module>
+        <module>liquibase-hibernate</module>
         <module>liquibase-maxdb</module>
         <module>liquibase-mssql</module>
         <module>liquibase-oracle</module>

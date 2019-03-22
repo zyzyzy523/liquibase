@@ -128,8 +128,10 @@ public class SchemaSnapshotGenerator extends JdbcSnapshotGenerator {
         ResultSet schemas = null;
         try {
             schemas = ((JdbcConnection) database.getConnection()).getMetaData().getSchemas();
-            while (schemas.next()) {
-                returnList.add(JdbcUtils.getValueForColumn(schemas, "TABLE_SCHEM", database));
+            if (schemas != null) {
+                while (schemas.next()) {
+                    returnList.add(JdbcUtils.getValueForColumn(schemas, "TABLE_SCHEM", database));
+                }
             }
         } finally {
             if (schemas != null) {
