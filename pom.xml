@@ -119,6 +119,7 @@
         <module>liquibase-h2</module>
         <module>liquibase-hana</module>
         <module>liquibase-maxdb</module>
+        <module>liquibase-mssql</module>
         <module>liquibase-redshift</module>
         <module>liquibase-teradata</module>
         <module>liquibase-vertica</module>
