@@ -33,7 +33,11 @@ import java.util.regex.Pattern;
 
 public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
 
-    private static final String LIQUIBASE_COMPLETE = "liquibase-complete";
+  /**
+   * This attribute indicates whether we need to process a column object. It is visible only
+   * in scope of snapshot process.
+   */
+  private static final String LIQUIBASE_COMPLETE = "liquibase-complete";
     protected static final String COLUMN_DEF_COL = "COLUMN_DEF";
 
     private Pattern postgresStringValuePattern = Pattern.compile("'(.*)'::[\\w ]+");
@@ -45,55 +49,82 @@ public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
     }
 
     @Override
-    protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException, InvalidExampleException {
+    protected DatabaseObject snapshotObject(DatabaseObject example, DatabaseSnapshot snapshot) throws DatabaseException {
+        Database database = snapshot.getDatabase();
+        Relation relation = ((Column) example).getRelation();
+
         if ((((Column) example).getComputed() != null) && ((Column) example).getComputed()) {
             return example;
         }
-        Relation relation = ((Column) example).getRelation();
         Schema schema = relation.getSchema();
-
-        List<CachedRow> columnMetadataRs = null;
         try {
-
             Column column = null;
 
             if (example.getAttribute(LIQUIBASE_COMPLETE, false)) {
                 column = (Column) example;
                 example.setAttribute(LIQUIBASE_COMPLETE, null);
-            } else {
-                JdbcDatabaseSnapshot.CachingDatabaseMetaData databaseMetaData =
-                    ((JdbcDatabaseSnapshot) snapshot).getMetaDataFromCache();
 
-                Database database = snapshot.getDatabase();
-                columnMetadataRs = databaseMetaData.getColumns(
-                        ((AbstractJdbcDatabase) database).getJdbcCatalogName(schema),
-                        ((AbstractJdbcDatabase) database).getJdbcSchemaName(schema),
-                        relation.getName(),
-                        example.getName()
-                );
-
-                if (!columnMetadataRs.isEmpty()) {
-                    CachedRow data = columnMetadataRs.get(0);
-                    column = readColumn(data, relation, database);
-                    setAutoIncrementDetails(column, database, snapshot);
-                }
+                return column;
             }
 
+            String catalogName = ((AbstractJdbcDatabase) database).getJdbcCatalogName(schema);
+            String schemaName = ((AbstractJdbcDatabase) database).getJdbcSchemaName(schema);
+            String tableName = relation.getName();
+            String columnName = example.getName();
+
+            JdbcDatabaseSnapshot.CachingDatabaseMetaData databaseMetaData =
+                    ((JdbcDatabaseSnapshot) snapshot).getMetaDataFromCache();
+
+            List<CachedRow> metaDataColumns = databaseMetaData.getColumns(catalogName,schemaName,tableName, columnName);
+            List<CachedRow> metaDataNotNullConst = databaseMetaData.getNotNullConst(catalogName, schemaName, tableName);
+
+            if (!metaDataColumns.isEmpty()) {
+              CachedRow data = metaDataColumns.get(0);
+              column = readColumn(data, relation, database);
+              setAutoIncrementDetails(column, database, snapshot);
+
+              populateValidateNullableIfNeeded(column, metaDataNotNullConst, database);
+            }
+
+            example.setAttribute(LIQUIBASE_COMPLETE, null);
             return column;
         } catch (DatabaseException|SQLException e) {
             throw new DatabaseException(e);
         }
     }
 
+    private void populateValidateNullableIfNeeded(Column column, List<CachedRow> metaDataNotNullConst, Database database) {
+        if(!(database instanceof OracleDatabase)) {
+            return;
+        }
+        String name = column.getName();
+        for (CachedRow cachedRow: metaDataNotNullConst) {
+            Object columnNameObj = cachedRow.get("COLUMN_NAME");
+            if (columnNameObj == null) {
+                throw new AssertionError("Please check query to fetch data for notNullConst!. "
+                    + "I didn't fetch needed data");
+            }
+            if (name.equalsIgnoreCase(columnNameObj.toString())){
+                final String VALIDATE = "VALIDATED";
+                Object validated = cachedRow.get(VALIDATE);
+                if (validated== null) {
+                    break;
+                }
+                column.setShouldValidateNullable(validated.toString().equalsIgnoreCase(VALIDATE));
+                return;
+            }
+        }
+    }
+
     @Override
-    protected void addTo(DatabaseObject foundObject, DatabaseSnapshot snapshot) throws DatabaseException, InvalidExampleException {
+    protected void addTo(DatabaseObject foundObject, DatabaseSnapshot snapshot) throws DatabaseException {
         if (!snapshot.getSnapshotControl().shouldInclude(Column.class)) {
             return;
         }
         if (foundObject instanceof Relation) {
             Database database = snapshot.getDatabase();
             Relation relation = (Relation) foundObject;
-            List<CachedRow> allColumnsMetadataRs = null;
+            List<CachedRow> allColumnsMetadataRs;
             try {
 
                 JdbcDatabaseSnapshot.CachingDatabaseMetaData databaseMetaData =
@@ -144,7 +175,7 @@ public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
                 for (CachedRow row : allColumnsMetadataRs) {
                     Column column = readColumn(row, relation, database);
                     setAutoIncrementDetails(column, database, snapshot);
-                    column.setAttribute(LIQUIBASE_COMPLETE, true);
+                    column.setAttribute(LIQUIBASE_COMPLETE, !column.isNullable());
                     relation.getColumns().add(column);
                 }
             } catch (SQLException e) {
@@ -155,7 +186,9 @@ public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
     }
 
     protected void setAutoIncrementDetails(Column column, Database database, DatabaseSnapshot snapshot) {
-        if ((column.getAutoIncrementInformation() != null) && (database instanceof MSSQLDatabase) && (database
+        if ((column.getAutoIncrementInformation() != null) &&
+            (database instanceof MSSQLDatabase) &&
+            (database
             .getConnection() != null) && !(database.getConnection() instanceof OfflineConnection)) {
             Map<String, Column.AutoIncrementInformation> autoIncrementColumns =
                 (Map) snapshot.getScratchData("autoIncrementColumns");
@@ -248,9 +281,20 @@ public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
         if (database.supportsAutoIncrement()) {
             if (table instanceof Table) {
                 if (database instanceof OracleDatabase) {
+                    Column.AutoIncrementInformation autoIncrementInfo = new Column.AutoIncrementInformation();
                     String data_default = StringUtil.trimToEmpty((String) columnMetadataResultSet.get("DATA_DEFAULT")).toLowerCase();
                     if (data_default.contains("iseq$$") && data_default.endsWith("nextval")) {
-                        column.setAutoIncrementInformation(new Column.AutoIncrementInformation());
+                        column.setAutoIncrementInformation(autoIncrementInfo);
+                    }
+
+                    Boolean isIdentityColumn = columnMetadataResultSet.yesNoToBoolean("IDENTITY_COLUMN");
+                    if (Boolean.TRUE.equals(isIdentityColumn)) { // Oracle 12+
+                        Boolean defaultOnNull = columnMetadataResultSet.yesNoToBoolean("DEFAULT_ON_NULL");
+                        String generationType = columnMetadataResultSet.getString("GENERATION_TYPE");
+                        autoIncrementInfo.setDefaultOnNull(defaultOnNull);
+                        autoIncrementInfo.setGenerationType(generationType);
+
+                        column.setAutoIncrementInformation(autoIncrementInfo);
                     }
                 } else {
                     if (columnMetadataResultSet.containsColumn("IS_AUTOINCREMENT")) {
@@ -358,7 +402,11 @@ public class ColumnSnapshotGenerator extends JdbcSnapshotGenerator {
 //                }
 //            type.setRadix(10);
             } else {
-                type.setColumnSize(columnMetadataResultSet.getInt("DATA_LENGTH"));
+                if ("FLOAT".equalsIgnoreCase(dataType)) { //FLOAT [(precision)]
+                    type.setColumnSize(columnMetadataResultSet.getInt("DATA_PRECISION"));
+                } else {
+                    type.setColumnSize(columnMetadataResultSet.getInt("DATA_LENGTH"));
+                }
 
                 boolean isTimeStampDataType = dataType.toUpperCase().contains("TIMESTAMP");
 

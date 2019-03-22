@@ -22,6 +22,7 @@ import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.PrimaryKey;
 import liquibase.structure.core.Table;
+import liquibase.util.StringUtil;
 import liquibase.structure.core.UniqueConstraint;
 
 import java.math.BigInteger;
@@ -212,14 +213,23 @@ public class MissingTableChangeGenerator extends AbstractChangeGenerator impleme
                 columnConfig.setRemarks(column.getRemarks());
             }
 
-            if (column.getAutoIncrementInformation() != null) {
-                BigInteger startWith = column.getAutoIncrementInformation().getStartWith();
-                BigInteger incrementBy = column.getAutoIncrementInformation().getIncrementBy();
+            Column.AutoIncrementInformation autoIncrementInfo = column.getAutoIncrementInformation();
+            if (autoIncrementInfo != null) {
+                BigInteger startWith = autoIncrementInfo.getStartWith();
+                BigInteger incrementBy = autoIncrementInfo.getIncrementBy();
+                String generationType = autoIncrementInfo.getGenerationType();
+                Boolean defaultOnNull = autoIncrementInfo.getDefaultOnNull();
                 if ((startWith != null) && !startWith.equals(BigInteger.ONE)) {
                     columnConfig.setStartWith(startWith);
                 }
                 if ((incrementBy != null) && !incrementBy.equals(BigInteger.ONE)) {
                     columnConfig.setIncrementBy(incrementBy);
+                }
+                if (StringUtil.isNotEmpty(generationType)) {
+                    columnConfig.setGenerationType(generationType);
+                    if (defaultOnNull != null) {
+                        columnConfig.setDefaultOnNull(defaultOnNull);
+                    }
                 }
             }
 

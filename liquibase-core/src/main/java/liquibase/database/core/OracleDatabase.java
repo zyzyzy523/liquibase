@@ -45,6 +45,8 @@ import static java.util.ResourceBundle.getBundle;
  */
 public class OracleDatabase extends AbstractJdbcDatabase {
     public static final String PRODUCT_NAME = "oracle";
+    public static final int ORACLE_V_12 = 12;
+
     private static ResourceBundle coreBundle = getBundle("liquibase/i18n/liquibase-core");
     protected final int SHORT_IDENTIFIERS_LENGTH = 30;
     protected final int LONG_IDENTIFIERS_LEGNTH = 128;
@@ -202,6 +204,20 @@ public class OracleDatabase extends AbstractJdbcDatabase {
     @Override
     public String getJdbcSchemaName(CatalogAndSchema schema) {
         return correctObjectName((schema.getCatalogName() == null) ? schema.getSchemaName() : schema.getCatalogName(), Schema.class);
+    }
+
+    @Override
+    protected String getAutoIncrementClause(final String generationType, final Boolean defaultOnNull) {
+        if (StringUtil.isEmpty(generationType)) {
+            return "";
+        }
+
+        String autoIncrementClause = "GENERATED %s AS IDENTITY"; // %s -- [ ALWAYS | BY DEFAULT [ ON NULL ] ]
+        String generationStrategy = generationType;
+        if (Boolean.TRUE.equals(defaultOnNull) && generationType.toUpperCase().equals("BY DEFAULT")) {
+            generationStrategy += " ON NULL";
+        }
+        return String.format(autoIncrementClause, generationStrategy);
     }
 
     @Override

@@ -182,11 +182,11 @@ public class Index extends AbstractDatabaseObject {
         Index o = (Index) other;
         int returnValue = 0;
 
-        if ((this.getRelation() != null) && (o.getRelation() != null)) {
-            returnValue = this.getRelation().compareTo(o.getRelation());
-            if ((returnValue == 0) && (this.getRelation().getSchema() != null) && (o.getRelation().getSchema() != null)) {
-                returnValue = StringUtil.trimToEmpty(this.getRelation().getSchema().getName()).compareToIgnoreCase(StringUtil.trimToEmpty(o.getRelation().getSchema().getName()));
-            }
+        if (this.getTable() != null && o.getTable() != null) {
+            returnValue = this.getTable().compareTo(o.getTable());
+            /*if (returnValue == 0 && this.getTable().getSchema() != null && o.getTable().getSchema() != null) {
+                returnValue = this.getTable().getSchema().compareTo(o.getTable().getSchema());
+            }*/
         }
 
         if (returnValue == 0) {

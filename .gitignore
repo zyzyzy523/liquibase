@@ -22,6 +22,8 @@ derby.log
 
 atlassian-ide-plugin.xml
 _issues
+**/original-pom.xml
+original-pom.xml
 /liquibase-integration-tests/liquibase
 /liquibase-integration-tests/liquibase.trace.db
 /liquibase-integration-tests/liquibase.mv.db

@@ -183,6 +183,27 @@ public class Column extends AbstractDatabaseObject {
         return this;
     }
 
+    /**
+     * VALIDATE keyword defines whether a all constraints on a column in a table
+     * should be checked if it refers to a valid row or not.
+     * @return true if ENABLE VALIDATE (this is the default), or false if ENABLE NOVALIDATE.
+     */
+    public boolean shouldValidate() {
+        return getAttribute("validate", true);
+    }
+
+    /**
+     * @param shouldValidateNullable - if shouldValidateNullable is set to FALSE then the constraint will be created
+     * with the 'ENABLE NOVALIDATE' mode. This means the constraint would be created, but that no
+     * check will be done to ensure old data has valid not null constraint - only new data would be checked
+     * to see if it complies with the constraint logic. The default state for not null constraint is to
+     * have 'ENABLE VALIDATE' set.
+     */
+    public Column setShouldValidateNullable(boolean shouldValidateNullable) {
+        this.setAttribute("validateNullable", shouldValidateNullable);
+        return this;
+    }
+
     public String toString(boolean includeRelation) {
         if (includeRelation) {
             return toString();
@@ -215,16 +236,15 @@ public class Column extends AbstractDatabaseObject {
                 return 1;
             } else if ((this.getRelation() == null) && (o.getRelation() != null)) {
                 return -1;
-            } else {
+            } else if (this.getRelation() != null && o.getRelation() != null) {
                 returnValue = this.getRelation().compareTo(o.getRelation());
-                if ((returnValue == 0) && (this.getRelation().getSchema() != null) && (o.getRelation().getSchema() !=
-                    null)) {
-                    returnValue = StringUtil.trimToEmpty(this.getSchema().getName()).compareTo(StringUtil.trimToEmpty(o.getRelation().getSchema().getName()));
+                if (returnValue == 0 && this.getRelation().getSchema() != null && o.getRelation().getSchema() != null) {
+                    returnValue = this.getSchema().compareTo(o.getRelation().getSchema());
                 }
             }
 
             if (returnValue == 0) {
-                returnValue = this.toString().compareTo(o.toString());
+                returnValue = this.toString().toUpperCase().compareTo(o.toString().toUpperCase());
             }
 
             return returnValue;
@@ -242,7 +262,7 @@ public class Column extends AbstractDatabaseObject {
 
             Column column = (Column) o;
 
-            return toString().equalsIgnoreCase(column.toString());
+            return this.compareTo(column) == 0;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -364,6 +384,8 @@ public class Column extends AbstractDatabaseObject {
     public static class AutoIncrementInformation extends AbstractLiquibaseSerializable {
         private BigInteger startWith;
         private BigInteger incrementBy;
+        private Boolean defaultOnNull;
+        private String generationType;
 
         public AutoIncrementInformation() {
             this(1, 1);
@@ -382,9 +404,26 @@ public class Column extends AbstractDatabaseObject {
             return incrementBy;
         }
 
+        public void setDefaultOnNull(Boolean defaultOnNull) {
+            this.defaultOnNull = defaultOnNull;
+        }
+
+        public Boolean getDefaultOnNull() {
+            return defaultOnNull;
+        }
+
+        public void setGenerationType(String generationType) {
+            this.generationType = generationType;
+        }
+
+        public String getGenerationType() {
+            return generationType;
+        }
+
         @Override
         public String toString() {
-            return "AUTO INCREMENT START WITH " + startWith + " INCREMENT BY " + incrementBy;
+            return String.format("GENERATED %s %sAUTO INCREMENT START WITH %d INCREMENT BY %d",
+                    this.generationType, Boolean.TRUE.equals(this.defaultOnNull) ? "ON NULL " : "", startWith, incrementBy);
         }
 
         @Override
@@ -401,6 +440,8 @@ public class Column extends AbstractDatabaseObject {
         public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
             this.startWith = (BigInteger) convertEscaped(parsedNode.getChildValue(null, "startWith"));
             this.incrementBy = (BigInteger) convertEscaped(parsedNode.getChildValue(null, "incrementBy"));
+            this.defaultOnNull = parsedNode.getChildValue(null, "defaultOnNull", Boolean.class);
+            this.generationType = parsedNode.getChildValue(null, "generationType", String.class);
         }
     }
 }

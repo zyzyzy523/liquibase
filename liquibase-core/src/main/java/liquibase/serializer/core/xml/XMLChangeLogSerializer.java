@@ -373,8 +373,17 @@ public class XMLChangeLogSerializer implements ChangeLogSerializer {
             if (constraints.isDeferrable() != null) {
                 constraintsElement.setAttribute("deferrable", constraints.isDeferrable().toString());
             }
-            if (constraints.shouldValidate() != null) {
-                constraintsElement.setAttribute("validate", constraints.shouldValidate().toString());
+            if (constraints.shouldValidateNullable() != null) {
+                constraintsElement.setAttribute("validateNullable", constraints.shouldValidateNullable().toString());
+            }
+            if (constraints.shouldValidateUnique() != null) {
+                constraintsElement.setAttribute("validateUnique", constraints.shouldValidateUnique().toString());
+            }
+            if (constraints.shouldValidatePrimaryKey() != null) {
+                constraintsElement.setAttribute("validatePrimaryKey", constraints.shouldValidatePrimaryKey().toString());
+            }
+            if (constraints.shouldValidateForeignKey() != null) {
+                constraintsElement.setAttribute("validateForeignKey", constraints.shouldValidateForeignKey().toString());
             }
             if (constraints.isDeleteCascade() != null) {
                 constraintsElement.setAttribute("deleteCascade", constraints.isDeleteCascade().toString());
@@ -445,6 +454,7 @@ public class XMLChangeLogSerializer implements ChangeLogSerializer {
             }
         }
         String textContent = StringUtil.trimToEmpty(XMLUtil.getTextContent(node));
+        textContent = escapeXml(textContent);
         buffer.append(">").append(textContent);
 
         boolean sawChildren = false;
@@ -476,6 +486,14 @@ public class XMLChangeLogSerializer implements ChangeLogSerializer {
     @Override
     public int getPriority() {
         return PRIORITY_DEFAULT;
+    }
+
+    /**
+     * Provided as a way for sub-classes to override and be able to convert a string
+     * that might have XML reserved characters to an XML-escaped version of that string.
+     */
+    public String escapeXml(String valueToEscape) {
+        return valueToEscape;
     }
 
 }
