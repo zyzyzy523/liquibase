@@ -78,10 +78,10 @@ public class CreateTableGeneratorTeradata extends CreateTableGenerator {
             }
 
             if (isAutoIncrement &&
-                    (database.getAutoIncrementClause(null, null) != null) &&
-                    (!database.getAutoIncrementClause(null, null).equals(""))) {
+                    (database.getAutoIncrementClause(null, null, null, null) != null) &&
+                    (!database.getAutoIncrementClause(null, null, null, null).equals(""))) {
                 if (database.supportsAutoIncrement()) {
-                    buffer.append(" ").append(database.getAutoIncrementClause(null, null)).append(" ");
+                    buffer.append(" ").append(database.getAutoIncrementClause(null, null, null, null)).append(" ");
                 } else {
                     Scope.getCurrentScope().getLog(getClass()).warning(database.getShortName() + " does not support autoincrement columns as request for " + (database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName())));
                 }
