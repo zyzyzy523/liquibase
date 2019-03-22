@@ -122,6 +122,7 @@
         <module>liquibase-maxdb</module>
         <module>liquibase-mssql</module>
         <module>liquibase-oracle</module>
+        <module>liquibase-postgresql</module>
         <module>liquibase-redshift</module>
         <module>liquibase-teradata</module>
         <module>liquibase-vertica</module>

@@ -79,55 +79,55 @@ public class HibernateIntegrationTest {
         database = null;
         compareControl = null;
     }
-
-    /**
-     * Generates a changelog from the Hibernate mapping, creates the database
-     * according to the changelog, compares, the database with the mapping.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void runGeneratedChangeLog() throws Exception {
-
-        Logger log = Scope.getCurrentScope().getLog(getClass());
-
-        Liquibase liquibase = new Liquibase((String) null, new ClassLoaderResourceAccessor(), database);
-
-        Database hibernateDatabase = new HibernateClassicDatabase();
-//        hibernateDatabase.setDefaultSchemaName("PUBLIC");
-//        hibernateDatabase.setDefaultCatalogName("TESTDB");
-        hibernateDatabase.setConnection(new JdbcConnection(new HibernateConnection("hibernate:classic:" + HIBERNATE_CONFIG_FILE, new ClassLoaderResourceAccessor())));
-
-        DiffResult diffResult = liquibase.diff(hibernateDatabase, database, compareControl);
-
-        assertTrue(diffResult.getMissingObjects().size() > 0);
-
-        File outFile = File.createTempFile("lb-test", ".xml");
-        OutputStream outChangeLog = new FileOutputStream(outFile);
-        String changeLogString = toChangeLog(diffResult);
-        outChangeLog.write(changeLogString.getBytes("UTF-8"));
-        outChangeLog.close();
-
-        log.info("Changelog:\n" + changeLogString);
-
-        liquibase = new Liquibase(outFile.toString(), new FileSystemResourceAccessor(new File(System.getProperty("java.io.tmpdir"))), database);
-        StringWriter stringWriter = new StringWriter();
-        liquibase.update((String) null, stringWriter);
-        log.info(stringWriter.toString());
-        liquibase.update((String) null);
-
-        diffResult = liquibase.diff(hibernateDatabase, database, compareControl);
-
-        ignoreDatabaseChangeLogTable(diffResult);
-        ignoreConversionFromFloatToDouble64(diffResult);
-
-        String differences = toString(diffResult);
-
-        assertEquals(differences, 0, diffResult.getMissingObjects().size());
-        assertEquals(differences, 0, diffResult.getUnexpectedObjects().size());
-//        assertEquals(differences, 0, diffResult.getChangedObjects().size());  //unimportant differences in schema name and datatypes causing test to fail
-
-    }
+//
+//    /**
+//     * Generates a changelog from the Hibernate mapping, creates the database
+//     * according to the changelog, compares, the database with the mapping.
+//     *
+//     * @throws Exception
+//     */
+//    @Test
+//    public void runGeneratedChangeLog() throws Exception {
+//
+//        Logger log = Scope.getCurrentScope().getLog(getClass());
+//
+//        Liquibase liquibase = new Liquibase((String) null, new ClassLoaderResourceAccessor(), database);
+//
+//        Database hibernateDatabase = new HibernateClassicDatabase();
+////        hibernateDatabase.setDefaultSchemaName("PUBLIC");
+////        hibernateDatabase.setDefaultCatalogName("TESTDB");
+//        hibernateDatabase.setConnection(new JdbcConnection(new HibernateConnection("hibernate:classic:" + HIBERNATE_CONFIG_FILE, new ClassLoaderResourceAccessor())));
+//
+//        DiffResult diffResult = liquibase.diff(hibernateDatabase, database, compareControl);
+//
+//        assertTrue(diffResult.getMissingObjects().size() > 0);
+//
+//        File outFile = File.createTempFile("lb-test", ".xml");
+//        OutputStream outChangeLog = new FileOutputStream(outFile);
+//        String changeLogString = toChangeLog(diffResult);
+//        outChangeLog.write(changeLogString.getBytes("UTF-8"));
+//        outChangeLog.close();
+//
+//        log.info("Changelog:\n" + changeLogString);
+//
+//        liquibase = new Liquibase(outFile.toString(), new FileSystemResourceAccessor(new File(System.getProperty("java.io.tmpdir"))), database);
+//        StringWriter stringWriter = new StringWriter();
+//        liquibase.update((String) null, stringWriter);
+//        log.info(stringWriter.toString());
+//        liquibase.update((String) null);
+//
+//        diffResult = liquibase.diff(hibernateDatabase, database, compareControl);
+//
+//        ignoreDatabaseChangeLogTable(diffResult);
+//        ignoreConversionFromFloatToDouble64(diffResult);
+//
+//        String differences = toString(diffResult);
+//
+//        assertEquals(differences, 0, diffResult.getMissingObjects().size());
+//        assertEquals(differences, 0, diffResult.getUnexpectedObjects().size());
+////        assertEquals(differences, 0, diffResult.getChangedObjects().size());  //unimportant differences in schema name and datatypes causing test to fail
+//
+//    }
 
     /**
      * Creates a database using Hibernate SchemaExport and compare the database
