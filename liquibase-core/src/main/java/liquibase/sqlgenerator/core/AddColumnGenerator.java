@@ -105,7 +105,7 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
             result.add(new UnparsedSql(alterTable, getAffectedColumns(columns)));
 
             for (AddColumnStatement statement : columns) {
-                addUniqueConstrantStatements(statement, database, result);
+                addUniqueConstraintStatements(statement, database, result);
                 addForeignKeyStatements(statement, database, result);
             }
 
@@ -124,7 +124,7 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
         List<Sql> returnSql = new ArrayList<>();
         returnSql.add(new UnparsedSql(alterTable, getAffectedColumn(statement)));
 
-        addUniqueConstrantStatements(statement, database, returnSql);
+        addUniqueConstraintStatements(statement, database, returnSql);
         addForeignKeyStatements(statement, database, returnSql);
 
         return returnSql.toArray(new Sql[returnSql.size()]);
@@ -141,13 +141,16 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
 
         if (statement.isAutoIncrement() && database.supportsAutoIncrement()) {
             AutoIncrementConstraint autoIncrementConstraint = statement.getAutoIncrementConstraint();
-            alterTable += " " + database.getAutoIncrementClause(autoIncrementConstraint.getStartWith(), autoIncrementConstraint.getIncrementBy());
+            alterTable += " " + database.getAutoIncrementClause(autoIncrementConstraint.getStartWith(), autoIncrementConstraint.getIncrementBy(), autoIncrementConstraint.getGenerationType(), autoIncrementConstraint.getDefaultOnNull());
         }
 
         alterTable += getDefaultClause(statement, database);
 
         if (!statement.isNullable()) {
             alterTable += " NOT NULL";
+            if (database instanceof OracleDatabase) {
+                alterTable+= !statement.shouldValidateNullable() ? " ENABLE NOVALIDATE " : "";
+            }
         } else {
             if ((database instanceof SybaseDatabase) || (database instanceof SybaseASADatabase) || (database
                 instanceof MySQLDatabase) || ((database instanceof MSSQLDatabase) && "timestamp".equalsIgnoreCase
@@ -158,6 +161,9 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
 
         if (statement.isPrimaryKey()) {
             alterTable += " PRIMARY KEY";
+          if (database instanceof OracleDatabase) {
+            alterTable+= !statement.shouldValidatePrimaryKey() ? " ENABLE NOVALIDATE " : "";
+          }
         }
 
         if((database instanceof MySQLDatabase) && (statement.getRemarks() != null)) {
@@ -185,9 +191,10 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
                 .setName(statement.getColumnName());
     }
 
-    protected void addUniqueConstrantStatements(AddColumnStatement statement, Database database, List<Sql> returnSql) {
+    protected void addUniqueConstraintStatements(AddColumnStatement statement, Database database, List<Sql> returnSql) {
         if (statement.isUnique()) {
             AddUniqueConstraintStatement addConstraintStmt = new AddUniqueConstraintStatement(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), ColumnConfig.arrayFromNames(statement.getColumnName()), statement.getUniqueStatementName());
+            addConstraintStmt.setShouldValidate(statement.shouldValidateUnique());
             returnSql.addAll(Arrays.asList(SqlGeneratorFactory.getInstance().generateSql(addConstraintStmt, database)));
         }
     }
@@ -218,6 +225,7 @@ public class AddColumnGenerator extends AbstractSqlGenerator<AddColumnStatement>
 
 
                 AddForeignKeyConstraintStatement addForeignKeyConstraintStatement = new AddForeignKeyConstraintStatement(fkConstraint.getForeignKeyName(), statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), ColumnConfig.arrayFromNames(statement.getColumnName()), null, refSchemaName, refTableName, ColumnConfig.arrayFromNames(refColName));
+                addForeignKeyConstraintStatement.setShouldValidate(fkConstraint.shouldValidateForeignKey());
                 returnSql.addAll(Arrays.asList(SqlGeneratorFactory.getInstance().generateSql(addForeignKeyConstraintStatement, database)));
             }
         }

@@ -1,6 +1,7 @@
 package liquibase.changelog;
 
 import liquibase.ContextExpression;
+import liquibase.LabelExpression;
 import liquibase.Labels;
 import liquibase.Scope;
 import liquibase.change.Change;
@@ -31,7 +32,9 @@ import liquibase.statement.SqlStatement;
 import liquibase.util.StreamUtil;
 import liquibase.util.StringUtil;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Encapsulates a changeSet and all its associated changes.
@@ -781,6 +784,10 @@ public class ChangeSet implements Conditional, ChangeLogChild {
         this.ignore = ignore;
     }
 
+    public boolean isInheritableIgnore() {
+        DatabaseChangeLog changeLog = getChangeLog();
+        return changeLog.isIncludeIgnore();
+    }
     public Collection<ContextExpression> getInheritableContexts() {
         Collection<ContextExpression> expressions = new ArrayList<>();
         DatabaseChangeLog changeLog = getChangeLog();
@@ -792,6 +799,19 @@ public class ChangeSet implements Conditional, ChangeLogChild {
             ContextExpression includeExpression = changeLog.getIncludeContexts();
             if ((includeExpression != null) && !includeExpression.isEmpty()) {
                 expressions.add(includeExpression);
+            }
+            changeLog = changeLog.getParentChangeLog();
+        }
+        return Collections.unmodifiableCollection(expressions);
+    }
+
+    public Collection<LabelExpression> getInheritableLabels() {
+        Collection<LabelExpression> expressions = new ArrayList<LabelExpression>();
+        DatabaseChangeLog changeLog = getChangeLog();
+        while (changeLog != null) {
+            LabelExpression expression = changeLog.getIncludeLabels();
+            if (expression != null && !expression.isEmpty()) {
+                expressions.add(expression);
             }
             changeLog = changeLog.getParentChangeLog();
         }

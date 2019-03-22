@@ -23,7 +23,7 @@ public class SqlGeneratorFactoryTest {
 
     @Before
     public void setUp() {
-        statement = new AddAutoIncrementStatement(null, null, "person", "name", "varchar(255)", null, null);
+        statement = new AddAutoIncrementStatement(null, null, "person", "name", "varchar(255)", null, null, null, null);
         database = new H2Database();
         factory = SqlGeneratorFactory.getInstance();
     }

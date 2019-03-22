@@ -55,8 +55,8 @@ public class Table extends Relation {
 
         Table that = (Table) o;
 
-        if ((this.getSchema() != null) && (that.getSchema() != null)) {
-            boolean schemasTheSame = StringUtil.trimToEmpty(this.getSchema().getName()).equalsIgnoreCase(StringUtil.trimToEmpty(that.getSchema().getName()));
+        if (this.getSchema() != null && that.getSchema() != null) {
+            boolean schemasTheSame = this.getSchema().equals(that.getSchema());
             if (!schemasTheSame) {
                 return false;
             }
