@@ -120,6 +120,7 @@
         <module>liquibase-hana</module>
         <module>liquibase-maxdb</module>
         <module>liquibase-redshift</module>
+        <module>liquibase-sqlfire</module>
         <module>liquibase-teradata</module>
         <module>liquibase-vertica</module>
         <module>liquibase-maven-plugin</module>
