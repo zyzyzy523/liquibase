@@ -117,6 +117,7 @@
     <modules>
         <module>liquibase-core</module>
         <module>liquibase-h2</module>
+        <module>liquibase-hana</module>
         <module>liquibase-vertica</module>
         <module>liquibase-maven-plugin</module>
         <module>liquibase-cdi</module>
