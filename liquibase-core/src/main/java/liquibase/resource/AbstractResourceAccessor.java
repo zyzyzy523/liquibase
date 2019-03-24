@@ -1,6 +1,7 @@
 package liquibase.resource;
 
 import liquibase.AbstractExtensibleObject;
+import liquibase.Scope;
 
 import java.io.IOException;
 import java.io.InputStream;

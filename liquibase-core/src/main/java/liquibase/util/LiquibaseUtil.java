@@ -12,7 +12,7 @@ public class LiquibaseUtil {
         Properties buildInfo = new Properties();
         ClassLoader classLoader = LiquibaseUtil.class.getClassLoader();
 
-        URL buildInfoFile = classLoader.getResource("buildinfo.properties");
+        URL buildInfoFile = classLoader.getResource("liquibase.build.properties");
         InputStream in = null;
         try {
             if (buildInfoFile != null) {

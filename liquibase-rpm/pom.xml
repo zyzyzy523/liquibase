@@ -1,115 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.liquibase</groupId>
-		<artifactId>liquibase-parent</artifactId>
-		<version>${revision}</version>
-	</parent>
+    <parent>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-base-module</artifactId>
+        <version>${revision}</version>
+        <relativePath>../base-module.pom.xml</relativePath>
+    </parent>
 
 	<artifactId>liquibase-rpm</artifactId>
-	<packaging>jar</packaging>
-    <url>http://www.liquibase.org/</url>
 
-    <name>Liquibase RPM Packager</name>
-    <description>Liquibase is an open source database-independent library for tracking, managing and applying database schema changes. It was started in 2006 to allow easier tracking of database changes, especially in an agile software development environment.</description>
-	<organization>
-        <name>Liquibase.org</name>
-        <url>http://www.liquibase.org</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-			<name>Apache License, Version 2.0</name>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<email>Adrien.Sales@gmail.com</email>
-			<id>adriens</id>
-			<name>Adrien SALES</name>
-			<organization>Github</organization>
-			<organizationUrl>https://github.com/adriens/liquibase</organizationUrl>
-			<roles>
-				<role>Developer (Liquibase)</role>
-				<role>Projet creator (Liquibase)</role>
-				<role>Test (Liquibase)</role>
-			</roles>
-			<timezone>+11</timezone>
-			<url>https://github.com/adriens</url>
-		</developer>
-	</developers>
-
-	<properties>
-		<!-- No longer needed when parent POM is included -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
-	<dependencies>
-		<dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-			<version>${revision}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>${snakeyaml.version}</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${postgresql.version}</version>
-		</dependency>
-
-		<!-- Liquibase sdk dependencies -->
-		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>${commons-cli.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>${hamcrest-core.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<locales>en</locales>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-
 			<!-- Get back liquibase binaries from repo -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -429,33 +335,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.9</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changes-plugin</artifactId>
-				<version>2.10</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>changes-report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>

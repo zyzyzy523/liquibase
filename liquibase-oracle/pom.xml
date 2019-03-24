@@ -1,51 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>liquibase-oracle</artifactId>
-    <version>${revision}</version>
-    <packaging>jar</packaging>
 
-    <name>Liquibase Database Support: Oracle</name>
+    <artifactId>liquibase-oracle</artifactId>
 
     <parent>
         <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-parent</artifactId>
+        <artifactId>liquibase-base-module</artifactId>
         <version>${revision}</version>
+        <relativePath>../base-module.pom.xml</relativePath>
     </parent>
 
-    <properties>
-        <oracle.version>11.2.0.3</oracle.version>
-    </properties>
-
     <dependencies>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${revision}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- TO PHYSICALLY RUN TESTS AGAINST THE DATABASE UNCOMMENT THIS DEPENDENCY -->
         <!-- NOT ENABLE BY DEFAULT SO BUILDSERVER RUNS SUCCESSFULLY -->
         <!-- Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html -->
         <!--<dependency>-->
-            <!--<groupId>com.oracle</groupId>-->
-            <!--<artifactId>ojdbc6</artifactId>-->
-            <!--<version>${oracle.version}</version>-->
-            <!--<scope>test</scope>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>ojdbc6</artifactId>-->
+        <!--<version>11.2.0.3</version>-->
+        <!--<scope>test</scope>-->
         <!--</dependency>-->
     </dependencies>
 </project>
