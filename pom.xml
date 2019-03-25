@@ -157,29 +157,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>debian</id>
-            <activation>
-                <os>
-                    <family>linux</family>
-                </os>
-            </activation>
-            <modules>
-                <module>liquibase-debian</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>rpm</id>
-            <activation>
-                <os>
-                    <family>linux</family>
-                </os>
-            </activation>
-            <modules>
-                <module>liquibase-rpm</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>
