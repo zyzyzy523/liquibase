@@ -29,36 +29,36 @@
 
     <build>
         <plugins>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-            <!--<version>3.1.0</version>-->
-            <!--<configuration>-->
-            <!--<author>false</author>-->
-            <!--<includeDependencySources>true</includeDependencySources>-->
-            <!--<doctitle>Liquibase ${project.version} API</doctitle>-->
-            <!--<dependencySourceIncludes>-->
-            <!--<dependencySourceInclude>org.liquibase:*</dependencySourceInclude>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <author>false</author>
+                    <includeDependencySources>true</includeDependencySources>
+                    <doctitle>Liquibase ${project.version} API</doctitle>
+                    <dependencySourceIncludes>
+                        <dependencySourceInclude>org.liquibase:*</dependencySourceInclude>
 
-            <!--</dependencySourceIncludes>-->
-            <!--<quiet>true</quiet>-->
-            <!--<doclint>none</doclint>-->
-            <!--<encoding>UTF-8</encoding>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>aggregate</id>-->
-            <!--<goals>-->
-            <!--<goal>aggregate</goal>-->
-            <!--</goals>-->
-            <!--<phase>package</phase>-->
-            <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
-            <!--&lt;!&ndash;&lt;!&ndash; Specific configuration for the aggregate report &ndash;&gt;&ndash;&gt;-->
-            <!--&lt;!&ndash;...&ndash;&gt;-->
-            <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+                    </dependencySourceIncludes>
+                    <quiet>true</quiet>
+                    <doclint>none</doclint>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>aggregate</id>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <!--<configuration>-->
+                        <!--&lt;!&ndash; Specific configuration for the aggregate report &ndash;&gt;-->
+                        <!--...-->
+                        <!--</configuration>-->
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -169,7 +169,7 @@
                             <mappings>
 
                                 <mapping>
-                                    <directory>/opt/liquibase-${revision}</directory>
+                                    <directory>/opt/liquibase</directory>
                                     <sources>
                                         <source>
                                             <location>${project.build.directory}/liquibase-${revision}</location>
