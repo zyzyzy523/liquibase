@@ -64,7 +64,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <finalName>liquibase-${version}-bin</finalName>
+                    <finalName>liquibase-${version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
                         <descriptor>src/main/assembly/assembly-jar.xml</descriptor>
@@ -99,7 +99,7 @@
                             <deb>${project.build.directory}/liquibase-${revision}.deb</deb>
                             <dataSet>
                                 <data>
-                                    <src>${project.build.directory}/liquibase-${revision}-bin</src>
+                                    <src>${project.build.directory}/liquibase-${revision}</src>
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
@@ -172,7 +172,7 @@
                                     <directory>/opt/liquibase-${revision}</directory>
                                     <sources>
                                         <source>
-                                            <location>${project.build.directory}/liquibase-${revision}-bin</location>
+                                            <location>${project.build.directory}/liquibase-${revision}</location>
                                         </source>
                                     </sources>
                                 </mapping>

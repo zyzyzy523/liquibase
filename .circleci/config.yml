@@ -77,11 +77,13 @@ jobs:
           command: |
             mkdir /home/circleci/circle_artifacts
             export CIRCLE_ARTIFACTS=/home/circleci/circle_artifacts
-            cp liquibase-dist/target/liquibase*-bin.zip ${CIRCLE_ARTIFACTS}
-            cp liquibase-dist/target/liquibase*-bin.tar.gz ${CIRCLE_ARTIFACTS}
+            cp liquibase-dist/target/liquibase*.zip ${CIRCLE_ARTIFACTS}
+            cp liquibase-dist/target/liquibase*.tar.gz ${CIRCLE_ARTIFACTS}
             cp liquibase-dist/target/liquibase*.jar ${CIRCLE_ARTIFACTS}
             cp liquibase-dist/target/rpm/liquibase/RPMS/noarch/liquibase-*.noarch.rpm ${CIRCLE_ARTIFACTS}
             cp liquibase-dist/target/*.deb ${CIRCLE_ARTIFACTS}
+
+            rm ${CIRCLE_ARTIFACTS}/liquibase-dist*
           when: always
 
       - store_test_results:
