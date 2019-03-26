@@ -71,21 +71,22 @@
 
     <modules>
         <module>liquibase-ant</module>
+        <module>liquibase-cdi</module>
         <module>liquibase-core</module>
+        <module>liquibase-dist</module>
         <module>liquibase-h2</module>
         <module>liquibase-hana</module>
         <module>liquibase-hibernate</module>
+        <module>liquibase-integration-tests</module>
         <module>liquibase-maxdb</module>
+        <module>liquibase-maven-plugin</module>
         <module>liquibase-mssql</module>
         <module>liquibase-oracle</module>
         <module>liquibase-postgresql</module>
         <module>liquibase-redshift</module>
+        <module>liquibase-servlet</module>
         <module>liquibase-teradata</module>
         <module>liquibase-vertica</module>
-        <module>liquibase-maven-plugin</module>
-        <module>liquibase-cdi</module>
-        <module>liquibase-integration-tests</module>
-        <module>liquibase-dist</module>
     </modules>
 
     <properties>
