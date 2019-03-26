@@ -86,6 +86,7 @@
         <module>liquibase-postgresql</module>
         <module>liquibase-redshift</module>
         <module>liquibase-servlet</module>
+        <module>liquibase-spring</module>
         <module>liquibase-teradata</module>
         <module>liquibase-vertica</module>
     </modules>
