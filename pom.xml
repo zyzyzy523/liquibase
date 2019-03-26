@@ -70,6 +70,7 @@
     </developers>
 
     <modules>
+        <module>liquibase-ant</module>
         <module>liquibase-core</module>
         <module>liquibase-h2</module>
         <module>liquibase-hana</module>

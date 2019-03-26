@@ -1,8 +1,8 @@
 package liquibase.integration.ant;
 
-import liquibase.integration.ant.AntTaskLogger;
 import liquibase.logging.LogService;
 import liquibase.logging.Logger;
+import liquibase.plugin.Plugin;
 import org.apache.tools.ant.Task;
 
 import java.util.logging.Level;
@@ -21,7 +21,7 @@ public final class AntTaskLogService implements LogService {
 
     @Override
     public int getPriority() {
-        return PRIORITY_NOT_APPLICABLE;
+        return Plugin.PRIORITY_NOT_APPLICABLE;
     }
 
     @Override

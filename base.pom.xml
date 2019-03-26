@@ -134,6 +134,14 @@
     </dependencyManagement>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/java</directory>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/groovy</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -203,11 +211,11 @@
             </plugin>
 
             <!--<plugin>-->
-                <!--<artifactId>maven-install-plugin</artifactId>-->
-                <!--<version>2.5.2</version>-->
-                <!--<configuration>-->
-                    <!--<skip>true</skip>-->
-                <!--</configuration>-->
+            <!--<artifactId>maven-install-plugin</artifactId>-->
+            <!--<version>2.5.2</version>-->
+            <!--<configuration>-->
+            <!--<skip>true</skip>-->
+            <!--</configuration>-->
             <!--</plugin>-->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>

@@ -22,6 +22,11 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>liquibase-ant</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liquibase-hibernate</artifactId>
             <version>${revision}</version>
         </dependency>
