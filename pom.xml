@@ -83,6 +83,7 @@
         <module>liquibase-maven-plugin</module>
         <module>liquibase-mssql</module>
         <module>liquibase-oracle</module>
+        <module>liquibase-osgi</module>
         <module>liquibase-postgresql</module>
         <module>liquibase-redshift</module>
         <module>liquibase-servlet</module>

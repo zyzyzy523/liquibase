@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>liquibase-osgi</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>liquibase-servlet</artifactId>
             <version>${revision}</version>
         </dependency>
