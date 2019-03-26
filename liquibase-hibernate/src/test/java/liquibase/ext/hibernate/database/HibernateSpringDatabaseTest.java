@@ -17,8 +17,6 @@ import org.junit.Test;
 
 import com.example.ejb3.auction.Bid;
 import com.example.ejb3.auction.BuyNow;
-import com.example.pojo.auction.AuctionItem;
-import com.example.pojo.auction.Watcher;
 
 import static org.junit.Assert.*;
 

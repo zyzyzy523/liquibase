@@ -72,6 +72,7 @@
     <modules>
         <module>liquibase-ant</module>
         <module>liquibase-cdi</module>
+        <module>liquibase-cli</module>
         <module>liquibase-core</module>
         <module>liquibase-dist</module>
         <module>liquibase-h2</module>
