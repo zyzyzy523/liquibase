@@ -46,7 +46,7 @@ jobs:
 
       - run:
           name: Build and test
-          command: mvn --batch-mode clean package
+          command: mvn --batch-mode clean package -P build-rpm
 
       - save_cache:
           paths:

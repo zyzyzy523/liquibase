@@ -84,34 +84,36 @@ public class FileSystemResourceAccessor extends AbstractResourceAccessor {
             if (isCompressedFile(rootPath)) {
                 String finalPath = streamPath;
 
-                try (ZipFile zipFile = new ZipFile(rootPath.toFile())) {
-                    if (relativeTo != null) {
-                        ZipEntry relativeEntry = zipFile.getEntry(relativeTo);
-                        if (relativeEntry == null || relativeEntry.isDirectory()) {
-                            //not a file, maybe a directory
-                            finalPath = relativeTo + "/" + streamPath;
+                ZipFile zipFile = new ZipFile(rootPath.toFile());
+                if (relativeTo != null) {
+                    ZipEntry relativeEntry = zipFile.getEntry(relativeTo);
+                    if (relativeEntry == null || relativeEntry.isDirectory()) {
+                        //not a file, maybe a directory
+                        finalPath = relativeTo + "/" + streamPath;
+                    } else {
+                        //is a file, find path relative to parent
+                        String actualRelativeTo = relativeTo;
+                        if (actualRelativeTo.contains("/")) {
+                            actualRelativeTo = relativeTo.replaceFirst("/[^/]+?$", "");
                         } else {
-                            //is a file, find path relative to parent
-                            String actualRelativeTo = relativeTo;
-                            if (actualRelativeTo.contains("/")) {
-                                actualRelativeTo = relativeTo.replaceFirst("/[^/]+?$", "");
-                            } else {
-                                actualRelativeTo = "";
-                            }
-                            finalPath = actualRelativeTo + "/" + streamPath;
+                            actualRelativeTo = "";
                         }
-
+                        finalPath = actualRelativeTo + "/" + streamPath;
                     }
 
+                }
 
-                    //resolve any ..'s and duplicated /'s and convert back to standard '/' separator format
-                    finalPath = Paths.get(finalPath.replaceFirst("^/", "")).normalize().toString().replace("\\", "/");
 
-                    ZipEntry entry = zipFile.getEntry(finalPath);
-                    if (entry != null) {
-                        stream = zipFile.getInputStream(entry);
-                        streamURI = URI.create(rootPath.normalize().toUri() + "!" + entry.toString());
-                    }
+                //resolve any ..'s and duplicated /'s and convert back to standard '/' separator format
+                finalPath = Paths.get(finalPath.replaceFirst("^/", "")).normalize().toString().replace("\\", "/");
+
+                ZipEntry entry = zipFile.getEntry(finalPath);
+                if (entry == null) {
+                    zipFile.close();
+                } else {
+                    stream = zipFile.getInputStream(entry);
+                    streamURI = URI.create(rootPath.normalize().toUri() + "!" + entry.toString());
+
                 }
             } else {
                 Path finalRootPath = rootPath;
@@ -211,7 +213,7 @@ public class FileSystemResourceAccessor extends AbstractResourceAccessor {
                     if (relativeTo != null) {
                         basePath = basePath.resolve(relativeTo);
                         if (!Files.exists(basePath)) {
-                            Scope.getCurrentScope().getLog(getClass()).info("Relative path "+relativeTo+" in "+rootPath+" does not exist");
+                            Scope.getCurrentScope().getLog(getClass()).info("Relative path " + relativeTo + " in " + rootPath + " does not exist");
                             continue;
                         } else if (Files.isRegularFile(basePath)) {
                             basePath = basePath.getParent();
@@ -232,7 +234,7 @@ public class FileSystemResourceAccessor extends AbstractResourceAccessor {
                 if (relativeTo != null) {
                     basePath = basePath.resolve(relativeTo);
                     if (!Files.exists(basePath)) {
-                        Scope.getCurrentScope().getLog(getClass()).info("Relative path "+relativeTo+" in "+rootPath+" does not exist");
+                        Scope.getCurrentScope().getLog(getClass()).info("Relative path " + relativeTo + " in " + rootPath + " does not exist");
                         continue;
                     } else if (Files.isRegularFile(basePath)) {
                         basePath = basePath.getParent();

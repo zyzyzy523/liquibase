@@ -134,15 +134,10 @@
 
     <profiles>
         <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <family>linux</family>
-                </os>
-            </activation>
+            <!-- rpm packager dependency. WARNING, rpmbuild required to build -->
+            <id>build-rpm</id>
             <build>
                 <plugins>
-                    <!-- rpm packager dependency. WARNING, rpmbuild required to build -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>rpm-maven-plugin</artifactId>

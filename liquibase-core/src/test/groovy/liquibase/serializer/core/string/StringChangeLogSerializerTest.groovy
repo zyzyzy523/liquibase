@@ -259,29 +259,27 @@ public class StringChangeLogSerializerTest extends Specification {
                 "]"
     }
 
-    @Unroll("#featureName: #change.class.name")
-    def "general field serialization check"() throws Exception {
-        expect:
-        setFields(change);
-
-        if (change instanceof CreateProcedureChange) {
-            ((CreateProcedureChange) change).setRelativeToChangelogFile(false)
-            ((CreateProcedureChange) change).setPath(null)
-        } else if (change instanceof CreateViewChange) {
-            ((CreateViewChange) change).setRelativeToChangelogFile(false)
-            ((CreateViewChange) change).setPath(null)
-        }
-
-        change.setChangeSet(new ChangeSet("test", "author", false, false, null, null, null, null))
-
-        String string = new StringChangeLogSerializer().serialize(change, false);
-//            System.out.println(string);
-//            System.out.println("-------------");
-        assert string.indexOf("@") < 0: "@ in string.  Probably poorly serialized object reference." + string;
-
-        where:
-        change << Scope.getCurrentScope().getSingleton(ChangeFactory.class).findAllInstances()
-    }
+//    @Unroll("#featureName: #change.class.name")
+//    def "general field serialization check"() throws Exception {
+//        expect:
+//        setFields(change);
+//
+//        if (change instanceof CreateProcedureChange) {
+//            ((CreateProcedureChange) change).setRelativeToChangelogFile(false)
+//            ((CreateProcedureChange) change).setPath(null)
+//        } else if (change instanceof CreateViewChange) {
+//            ((CreateViewChange) change).setRelativeToChangelogFile(false)
+//            ((CreateViewChange) change).setPath(null)
+//        }
+//
+//        change.setChangeSet(new ChangeSet("test", "author", false, false, null, null, null, null))
+//
+//        String string = new StringChangeLogSerializer().serialize(change, false);
+//        assert string.indexOf("@") < 0: "@ in string.  Probably poorly serialized object reference." + string;
+//
+//        where:
+//        change << Scope.getCurrentScope().getSingleton(ChangeFactory.class).findAllInstances()
+//    }
 
     private void setFields(Object object) throws Exception {
         Class clazz = object.getClass();
