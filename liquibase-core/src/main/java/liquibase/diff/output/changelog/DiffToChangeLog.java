@@ -243,92 +243,92 @@ public class DiffToChangeLog {
     }
 
     private List<DatabaseObject> sortObjects(final String type, Collection<DatabaseObject> objects, Database database) {
-
-        if ((diffOutputControl.getSchemaComparisons() != null) && !objects.isEmpty() && supportsSortingObjects
-            (database) && (database.getConnection() != null) && !(database.getConnection() instanceof OfflineConnection)) {
-            List<String> schemas = new ArrayList<>();
-            CompareControl.SchemaComparison[] schemaComparisons = this.diffOutputControl.getSchemaComparisons();
-            if (schemaComparisons != null) {
-                for (CompareControl.SchemaComparison comparison : schemaComparisons) {
-                    String schemaName = comparison.getReferenceSchema().getSchemaName();
-                    if (schemaName == null) {
-                        schemaName = database.getDefaultSchemaName();
-                    }
-                    schemas.add(schemaName);
-                }
-            }
-
-            if (schemas.isEmpty()) {
-                schemas.add(database.getDefaultSchemaName());
-            }
-
-            try {
-                final List<String> dependencyOrder = new ArrayList<>();
-                DependencyUtil.NodeValueListener<String> nameListener = new DependencyUtil.NodeValueListener<String>() {
-                    @Override
-                    public void evaluating(String nodeValue) {
-                        dependencyOrder.add(nodeValue);
-                    }
-                };
-
-                DependencyUtil.DependencyGraph graph = new DependencyUtil.DependencyGraph(nameListener);
-                addDependencies(graph, schemas, database);
-                graph.computeDependencies();
-
-                if (!dependencyOrder.isEmpty()) {
-
-                    final List<DatabaseObject> toSort = new ArrayList<>();
-                    final List<DatabaseObject> toNotSort = new ArrayList<>();
-
-                    for (DatabaseObject obj : objects) {
-                        if (!(obj instanceof Column)) {
-                            String schemaName = null;
-                            if (obj.getSchema() != null) {
-                                schemaName = obj.getSchema().getName();
-                            }
-
-                            String name = schemaName + "." + obj.getName();
-                            if (dependencyOrder.contains(name)) {
-                                toSort.add(obj);
-                            } else {
-                                toNotSort.add(obj);
-                            }
-                        } else {
-                            toNotSort.add(obj);
-                        }
-                    }
-
-                    Collections.sort(toSort, new Comparator<DatabaseObject>() {
-                        @Override
-                        public int compare(DatabaseObject o1, DatabaseObject o2) {
-                            String o1Schema = null;
-                            if (o1.getSchema() != null) {
-                                o1Schema = o1.getSchema().getName();
-                            }
-
-                            String o2Schema = null;
-                            if (o2.getSchema() != null) {
-                                o2Schema = o2.getSchema().getName();
-                            }
-
-                            Integer o1Order = dependencyOrder.indexOf(o1Schema + "." + o1.getName());
-                            int o2Order = dependencyOrder.indexOf(o2Schema + "." + o2.getName());
-
-                            int order = o1Order.compareTo(o2Order);
-                            if ("unexpected".equals(type)) {
-                                order = order * -1;
-                            }
-                            return order;
-                        }
-                    });
-
-                    toSort.addAll(toNotSort);
-                    return toSort;
-                }
-            } catch (DatabaseException e) {
-                Scope.getCurrentScope().getLog(getClass()).fine(LogType.LOG, "Cannot get object dependencies: " + e.getMessage());
-            }
-        }
+//
+//        if ((diffOutputControl.getSchemaComparisons() != null) && !objects.isEmpty() && supportsSortingObjects
+//            (database) && (database.getConnection() != null) && !(database.getConnection() instanceof OfflineConnection)) {
+//            List<String> schemas = new ArrayList<>();
+//            CompareControl.SchemaComparison[] schemaComparisons = this.diffOutputControl.getSchemaComparisons();
+//            if (schemaComparisons != null) {
+//                for (CompareControl.SchemaComparison comparison : schemaComparisons) {
+//                    String schemaName = comparison.getReferenceSchema().getSchemaName();
+//                    if (schemaName == null) {
+//                        schemaName = database.getDefaultSchemaName();
+//                    }
+//                    schemas.add(schemaName);
+//                }
+//            }
+//
+//            if (schemas.isEmpty()) {
+//                schemas.add(database.getDefaultSchemaName());
+//            }
+//
+//            try {
+//                final List<String> dependencyOrder = new ArrayList<>();
+//                DependencyUtil.NodeValueListener<String> nameListener = new DependencyUtil.NodeValueListener<String>() {
+//                    @Override
+//                    public void evaluating(String nodeValue) {
+//                        dependencyOrder.add(nodeValue);
+//                    }
+//                };
+//
+//                DependencyUtil.DependencyGraph graph = new DependencyUtil.DependencyGraph(nameListener);
+//                addDependencies(graph, schemas, database);
+//                graph.computeDependencies();
+//
+//                if (!dependencyOrder.isEmpty()) {
+//
+//                    final List<DatabaseObject> toSort = new ArrayList<>();
+//                    final List<DatabaseObject> toNotSort = new ArrayList<>();
+//
+//                    for (DatabaseObject obj : objects) {
+//                        if (!(obj instanceof Column)) {
+//                            String schemaName = null;
+//                            if (obj.getSchema() != null) {
+//                                schemaName = obj.getSchema().getName();
+//                            }
+//
+//                            String name = schemaName + "." + obj.getName();
+//                            if (dependencyOrder.contains(name)) {
+//                                toSort.add(obj);
+//                            } else {
+//                                toNotSort.add(obj);
+//                            }
+//                        } else {
+//                            toNotSort.add(obj);
+//                        }
+//                    }
+//
+//                    Collections.sort(toSort, new Comparator<DatabaseObject>() {
+//                        @Override
+//                        public int compare(DatabaseObject o1, DatabaseObject o2) {
+//                            String o1Schema = null;
+//                            if (o1.getSchema() != null) {
+//                                o1Schema = o1.getSchema().getName();
+//                            }
+//
+//                            String o2Schema = null;
+//                            if (o2.getSchema() != null) {
+//                                o2Schema = o2.getSchema().getName();
+//                            }
+//
+//                            Integer o1Order = dependencyOrder.indexOf(o1Schema + "." + o1.getName());
+//                            int o2Order = dependencyOrder.indexOf(o2Schema + "." + o2.getName());
+//
+//                            int order = o1Order.compareTo(o2Order);
+//                            if ("unexpected".equals(type)) {
+//                                order = order * -1;
+//                            }
+//                            return order;
+//                        }
+//                    });
+//
+//                    toSort.addAll(toNotSort);
+//                    return toSort;
+//                }
+//            } catch (DatabaseException e) {
+//                Scope.getCurrentScope().getLog(getClass()).fine(LogType.LOG, "Cannot get object dependencies: " + e.getMessage());
+//            }
+//        }
 
         return new ArrayList<>(objects);
     }
@@ -388,156 +388,156 @@ public class DiffToChangeLog {
     /**
      * Adds dependencies to the graph as schema.object_name.
      */
-    protected void addDependencies(DependencyUtil.DependencyGraph<String> graph, List<String> schemas, Database database) throws DatabaseException {
-        if (database instanceof DB2Database) {
-            Executor executor = ExecutorService.getInstance().getExecutor(database);
-            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement("select TABSCHEMA, TABNAME, BSCHEMA, BNAME from syscat.tabdep where (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                        @Override
-                        public String toString(String obj) {
-                            return "TABSCHEMA='" + obj + "'";
-                        }
-                    }
-            ) + ")"));
-            for (Map<String, ?> row : rs) {
-                String tabName = StringUtil.trimToNull((String) row.get("TABSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("TABNAME"));
-                String bName = StringUtil.trimToNull((String) row.get("BSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("BNAME"));
-
-                graph.add(bName, tabName);
-            }
-        } else if (database instanceof Db2zDatabase) {
-            Executor executor = ExecutorService.getInstance().getExecutor(database);
-            String db2ZosSql = "SELECT DSCHEMA AS TABSCHEMA, DNAME AS TABNAME, BSCHEMA, BNAME FROM SYSIBM.SYSDEPENDENCIES WHERE (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                        @Override
-                        public String toString(String obj) {
-                            return "DSCHEMA='" + obj + "'";
-                        }
-                    }
-            ) + ")";
-            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement(db2ZosSql));
-            for (Map<String, ?> row : rs) {
-                String tabName = StringUtil.trimToNull((String) row.get("TABSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("TABNAME"));
-                String bName = StringUtil.trimToNull((String) row.get("BSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("BNAME"));
-
-                graph.add(bName, tabName);
-            }
-        } else if (database instanceof OracleDatabase) {
-            Executor executor = ExecutorService.getInstance().getExecutor(database);
-            List<Map<String, ?>> rs = queryForDependencies(executor, schemas);
-            for (Map<String, ?> row : rs) {
-                String tabName = null;
-                if (tryDbaDependencies) {
-                    tabName =
-                        StringUtil.trimToNull((String) row.get("OWNER")) + "." +
-                        StringUtil.trimToNull((String) row.get("NAME"));
-                }
-                else {
-                    tabName =
-                        StringUtil.trimToNull((String) row.get("REFERENCED_OWNER")) + "." +
-                        StringUtil.trimToNull((String) row.get("NAME"));
-                }
-                String bName =
-                    StringUtil.trimToNull((String) row.get("REFERENCED_OWNER")) + "." +
-                    StringUtil.trimToNull((String) row.get("REFERENCED_NAME"));
-
-                graph.add(bName, tabName);
-            }
-        } else if (database instanceof MSSQLDatabase) {
-            Executor executor = ExecutorService.getInstance().getExecutor(database);
-            String sql = "select object_schema_name(referencing_id) as referencing_schema_name, object_name(referencing_id) as referencing_name, object_name(referenced_id) as referenced_name, object_schema_name(referenced_id) as referenced_schema_name  from sys.sql_expression_dependencies depz where (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                        @Override
-                        public String toString(String obj) {
-                            return "object_schema_name(referenced_id)='" + obj + "'";
-                        }
-                    }
-            ) + ")";
-            sql += " UNION select object_schema_name(object_id) as referencing_schema_name, object_name(object_id) as referencing_name, object_name(parent_object_id) as referenced_name, object_schema_name(parent_object_id) as referenced_schema_name " +
-                    "from sys.objects " +
-                    "where parent_object_id > 0 " +
-                    "and is_ms_shipped=0 " +
-                    "and (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                        @Override
-                        public String toString(String obj) {
-                            return "object_schema_name(object_id)='" + obj + "'";
-                        }
-                    }
-            ) + ")";
-
-            sql += " UNION select object_schema_name(fk.object_id) as referencing_schema_name, fk.name as referencing_name, i.name as referenced_name, object_schema_name(i.object_id) as referenced_schema_name " +
-                    "from sys.foreign_keys fk " +
-                    "join sys.indexes i on fk.referenced_object_id=i.object_id and fk.key_index_id=i.index_id " +
-                    "where fk.is_ms_shipped=0 " +
-                    "and (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                        @Override
-                        public String toString(String obj) {
-                            return "object_schema_name(fk.object_id)='" + obj + "'";
-                        }
-                    }
-            ) + ")";
-
-            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, object_name(i.object_id) as referencing_name, s.name as referenced_name, null as referenced_schema_name " +
-                    "from sys.indexes i " +
-                    "join sys.partition_schemes s on i.data_space_id = s.data_space_id";
-
-            sql += " UNION select null as referencing_schema_name, s.name as referencing_name, f.name as referenced_name, null as referenced_schema_name from sys.partition_functions f " +
-                    "join sys.partition_schemes s on s.function_id=f.function_id";
-
-            sql += " UNION select null as referencing_schema_name, s.name as referencing_name, fg.name as referenced_name, null as referenced_schema_name from sys.partition_schemes s " +
-                    "join sys.destination_data_spaces ds on s.data_space_id=ds.partition_scheme_id " +
-                    "join sys.filegroups fg on ds.data_space_id=fg.data_space_id";
-
-            //get data file -> filegroup dependencies
-            sql += " UNION select distinct null as referencing_schema_name, f.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.database_files f " +
-                    "join sys.data_spaces ds on f.data_space_id=ds.data_space_id " +
-                    "where f.data_space_id > 1";
-
-            //get table -> filestream dependencies
-            sql += " UNION select object_schema_name(t.object_id) as referencing_schema_name, t.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.tables t " +
-                    "join sys.data_spaces ds on t.filestream_data_space_id=ds.data_space_id " +
-                    "where t.filestream_data_space_id > 1";
-
-            //get table -> filestream dependencies
-            sql += " UNION select object_schema_name(t.object_id) as referencing_schema_name, t.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.tables t " +
-                    "join sys.data_spaces ds on t.lob_data_space_id=ds.data_space_id " +
-                    "where t.lob_data_space_id > 1";
-
-            //get index -> filegroup dependencies
-            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, i.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.indexes i " +
-                    "join sys.data_spaces ds on i.data_space_id=ds.data_space_id " +
-                    "where i.data_space_id > 1";
-
-            //get index -> table dependencies
-            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, i.name as referencing_name, object_name(i.object_id) as referenced_name, object_schema_name(i.object_id) as referenced_schema_name from sys.indexes i " +
-                    "where " + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                @Override
-                public String toString(String obj) {
-                    return "object_schema_name(i.object_id)='" + obj + "'";
-                }
-            });
-
-            //get schema -> base object dependencies
-            sql += " UNION SELECT SCHEMA_NAME(SCHEMA_ID) as referencing_schema_name, name as referencing_name, PARSENAME(BASE_OBJECT_NAME,1) AS referenced_name, (CASE WHEN PARSENAME(BASE_OBJECT_NAME,2) IS NULL THEN schema_name(schema_id) else PARSENAME(BASE_OBJECT_NAME,2) END) AS referenced_schema_name FROM SYS.SYNONYMS WHERE is_ms_shipped='false' AND " + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
-                @Override
-                public String toString(String obj) {
-                    return "SCHEMA_NAME(SCHEMA_ID)='" + obj + "'";
-                }
-            });
-
-            //get non-clustered indexes -> unique clustered indexes on views dependencies
-            sql += " UNION select object_schema_name(c.object_id) as referencing_schema_name, c.name as referencing_name, object_schema_name(nc.object_id) as referenced_schema_name, nc.name as referenced_name from sys.indexes c join sys.indexes nc on c.object_id=nc.object_id JOIN sys.objects o ON c.object_id = o.object_id where  c.index_id != nc.index_id and c.type_desc='CLUSTERED' and c.is_unique='true' and (not(nc.type_desc='CLUSTERED') OR nc.is_unique='false') AND o.type_desc='VIEW' AND o.name='AR_DETAIL_OPEN'";
-
-            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement(sql));
-            if (!rs.isEmpty()) {
-                for (Map<String, ?> row : rs) {
-                    String bName = StringUtil.trimToNull((String) row.get("REFERENCED_SCHEMA_NAME")) + "." + StringUtil.trimToNull((String) row.get("REFERENCED_NAME"));
-                    String tabName = StringUtil.trimToNull((String) row.get("REFERENCING_SCHEMA_NAME")) + "." + StringUtil.trimToNull((String) row.get("REFERENCING_NAME"));
-
-                    if (!bName.equals(tabName)) {
-                        graph.add(bName, tabName);
-                    }
-                }
-            }
-        }
-    }
+//    protected void addDependencies(DependencyUtil.DependencyGraph<String> graph, List<String> schemas, Database database) throws DatabaseException {
+//        if (database instanceof DB2Database) {
+//            Executor executor = ExecutorService.getInstance().getExecutor(database);
+//            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement("select TABSCHEMA, TABNAME, BSCHEMA, BNAME from syscat.tabdep where (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                        @Override
+//                        public String toString(String obj) {
+//                            return "TABSCHEMA='" + obj + "'";
+//                        }
+//                    }
+//            ) + ")"));
+//            for (Map<String, ?> row : rs) {
+//                String tabName = StringUtil.trimToNull((String) row.get("TABSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("TABNAME"));
+//                String bName = StringUtil.trimToNull((String) row.get("BSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("BNAME"));
+//
+//                graph.add(bName, tabName);
+//            }
+//        } else if (database instanceof Db2zDatabase) {
+//            Executor executor = ExecutorService.getInstance().getExecutor(database);
+//            String db2ZosSql = "SELECT DSCHEMA AS TABSCHEMA, DNAME AS TABNAME, BSCHEMA, BNAME FROM SYSIBM.SYSDEPENDENCIES WHERE (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                        @Override
+//                        public String toString(String obj) {
+//                            return "DSCHEMA='" + obj + "'";
+//                        }
+//                    }
+//            ) + ")";
+//            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement(db2ZosSql));
+//            for (Map<String, ?> row : rs) {
+//                String tabName = StringUtil.trimToNull((String) row.get("TABSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("TABNAME"));
+//                String bName = StringUtil.trimToNull((String) row.get("BSCHEMA")) + "." + StringUtil.trimToNull((String) row.get("BNAME"));
+//
+//                graph.add(bName, tabName);
+//            }
+//        } else if (database instanceof OracleDatabase) {
+//            Executor executor = ExecutorService.getInstance().getExecutor(database);
+//            List<Map<String, ?>> rs = queryForDependencies(executor, schemas);
+//            for (Map<String, ?> row : rs) {
+//                String tabName = null;
+//                if (tryDbaDependencies) {
+//                    tabName =
+//                        StringUtil.trimToNull((String) row.get("OWNER")) + "." +
+//                        StringUtil.trimToNull((String) row.get("NAME"));
+//                }
+//                else {
+//                    tabName =
+//                        StringUtil.trimToNull((String) row.get("REFERENCED_OWNER")) + "." +
+//                        StringUtil.trimToNull((String) row.get("NAME"));
+//                }
+//                String bName =
+//                    StringUtil.trimToNull((String) row.get("REFERENCED_OWNER")) + "." +
+//                    StringUtil.trimToNull((String) row.get("REFERENCED_NAME"));
+//
+//                graph.add(bName, tabName);
+//            }
+//        } else if (database instanceof MSSQLDatabase) {
+//            Executor executor = ExecutorService.getInstance().getExecutor(database);
+//            String sql = "select object_schema_name(referencing_id) as referencing_schema_name, object_name(referencing_id) as referencing_name, object_name(referenced_id) as referenced_name, object_schema_name(referenced_id) as referenced_schema_name  from sys.sql_expression_dependencies depz where (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                        @Override
+//                        public String toString(String obj) {
+//                            return "object_schema_name(referenced_id)='" + obj + "'";
+//                        }
+//                    }
+//            ) + ")";
+//            sql += " UNION select object_schema_name(object_id) as referencing_schema_name, object_name(object_id) as referencing_name, object_name(parent_object_id) as referenced_name, object_schema_name(parent_object_id) as referenced_schema_name " +
+//                    "from sys.objects " +
+//                    "where parent_object_id > 0 " +
+//                    "and is_ms_shipped=0 " +
+//                    "and (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                        @Override
+//                        public String toString(String obj) {
+//                            return "object_schema_name(object_id)='" + obj + "'";
+//                        }
+//                    }
+//            ) + ")";
+//
+//            sql += " UNION select object_schema_name(fk.object_id) as referencing_schema_name, fk.name as referencing_name, i.name as referenced_name, object_schema_name(i.object_id) as referenced_schema_name " +
+//                    "from sys.foreign_keys fk " +
+//                    "join sys.indexes i on fk.referenced_object_id=i.object_id and fk.key_index_id=i.index_id " +
+//                    "where fk.is_ms_shipped=0 " +
+//                    "and (" + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                        @Override
+//                        public String toString(String obj) {
+//                            return "object_schema_name(fk.object_id)='" + obj + "'";
+//                        }
+//                    }
+//            ) + ")";
+//
+//            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, object_name(i.object_id) as referencing_name, s.name as referenced_name, null as referenced_schema_name " +
+//                    "from sys.indexes i " +
+//                    "join sys.partition_schemes s on i.data_space_id = s.data_space_id";
+//
+//            sql += " UNION select null as referencing_schema_name, s.name as referencing_name, f.name as referenced_name, null as referenced_schema_name from sys.partition_functions f " +
+//                    "join sys.partition_schemes s on s.function_id=f.function_id";
+//
+//            sql += " UNION select null as referencing_schema_name, s.name as referencing_name, fg.name as referenced_name, null as referenced_schema_name from sys.partition_schemes s " +
+//                    "join sys.destination_data_spaces ds on s.data_space_id=ds.partition_scheme_id " +
+//                    "join sys.filegroups fg on ds.data_space_id=fg.data_space_id";
+//
+//            //get data file -> filegroup dependencies
+//            sql += " UNION select distinct null as referencing_schema_name, f.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.database_files f " +
+//                    "join sys.data_spaces ds on f.data_space_id=ds.data_space_id " +
+//                    "where f.data_space_id > 1";
+//
+//            //get table -> filestream dependencies
+//            sql += " UNION select object_schema_name(t.object_id) as referencing_schema_name, t.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.tables t " +
+//                    "join sys.data_spaces ds on t.filestream_data_space_id=ds.data_space_id " +
+//                    "where t.filestream_data_space_id > 1";
+//
+//            //get table -> filestream dependencies
+//            sql += " UNION select object_schema_name(t.object_id) as referencing_schema_name, t.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.tables t " +
+//                    "join sys.data_spaces ds on t.lob_data_space_id=ds.data_space_id " +
+//                    "where t.lob_data_space_id > 1";
+//
+//            //get index -> filegroup dependencies
+//            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, i.name as referencing_name, ds.name as referenced_name, null as referenced_schema_name from sys.indexes i " +
+//                    "join sys.data_spaces ds on i.data_space_id=ds.data_space_id " +
+//                    "where i.data_space_id > 1";
+//
+//            //get index -> table dependencies
+//            sql += " UNION select object_schema_name(i.object_id) as referencing_schema_name, i.name as referencing_name, object_name(i.object_id) as referenced_name, object_schema_name(i.object_id) as referenced_schema_name from sys.indexes i " +
+//                    "where " + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                @Override
+//                public String toString(String obj) {
+//                    return "object_schema_name(i.object_id)='" + obj + "'";
+//                }
+//            });
+//
+//            //get schema -> base object dependencies
+//            sql += " UNION SELECT SCHEMA_NAME(SCHEMA_ID) as referencing_schema_name, name as referencing_name, PARSENAME(BASE_OBJECT_NAME,1) AS referenced_name, (CASE WHEN PARSENAME(BASE_OBJECT_NAME,2) IS NULL THEN schema_name(schema_id) else PARSENAME(BASE_OBJECT_NAME,2) END) AS referenced_schema_name FROM SYS.SYNONYMS WHERE is_ms_shipped='false' AND " + StringUtil.join(schemas, " OR ", new StringUtil.StringUtilFormatter<String>() {
+//                @Override
+//                public String toString(String obj) {
+//                    return "SCHEMA_NAME(SCHEMA_ID)='" + obj + "'";
+//                }
+//            });
+//
+//            //get non-clustered indexes -> unique clustered indexes on views dependencies
+//            sql += " UNION select object_schema_name(c.object_id) as referencing_schema_name, c.name as referencing_name, object_schema_name(nc.object_id) as referenced_schema_name, nc.name as referenced_name from sys.indexes c join sys.indexes nc on c.object_id=nc.object_id JOIN sys.objects o ON c.object_id = o.object_id where  c.index_id != nc.index_id and c.type_desc='CLUSTERED' and c.is_unique='true' and (not(nc.type_desc='CLUSTERED') OR nc.is_unique='false') AND o.type_desc='VIEW' AND o.name='AR_DETAIL_OPEN'";
+//
+//            List<Map<String, ?>> rs = executor.queryForList(new RawSqlStatement(sql));
+//            if (!rs.isEmpty()) {
+//                for (Map<String, ?> row : rs) {
+//                    String bName = StringUtil.trimToNull((String) row.get("REFERENCED_SCHEMA_NAME")) + "." + StringUtil.trimToNull((String) row.get("REFERENCED_NAME"));
+//                    String tabName = StringUtil.trimToNull((String) row.get("REFERENCING_SCHEMA_NAME")) + "." + StringUtil.trimToNull((String) row.get("REFERENCING_NAME"));
+//
+//                    if (!bName.equals(tabName)) {
+//                        graph.add(bName, tabName);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     protected List<Class<? extends DatabaseObject>> getOrderedOutputTypes(Class<? extends ChangeGenerator> generatorType) {
 

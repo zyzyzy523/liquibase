@@ -1,23 +1,77 @@
 package liquibase.util;
 
+import liquibase.DependencyObject;
 import liquibase.Scope;
-import liquibase.logging.LogType;
+import liquibase.exception.DependencyException;
+import liquibase.logging.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class DependencyUtil {
+/**
+ * Utility class for managing dependencies between objects.
+ */
+public abstract class DependencyUtil {
+
+    /**
+     * Sorts the passed {@link DependencyObject}(s) by their dependencies.
+     */
+    public static <Type extends DependencyObject> List<Type> sort(Collection<Type> objects) throws DependencyException {
+
+        Logger log = Scope.getCurrentScope().getLog(DependencyUtil.class);
+
+        final Map<Class, Type> instanceByClass = new HashMap<>();
+        for (Type obj : objects) {
+            instanceByClass.put(obj.getClass(), obj);
+        }
+
+        final List<Type> returnList = new ArrayList<>();
+        DependencyGraph graph = new DependencyGraph(new NodeValueListener<Class>() {
+            @Override
+            public void evaluating(Class nodeValue) {
+                if (nodeValue != null) {
+                    Type originalObject = instanceByClass.get(nodeValue);
+                    if (originalObject == null) {
+                        log.fine(nodeValue.getName()+" was declared as a dependency, but no instance of that class was passed");
+                    }
+                    returnList.add(originalObject);
+                }
+            }
+        });
+
+        for (DependencyObject object : objects) {
+            Class[] mustBeBefore = object.mustBeBefore();
+            Class[] mustBeAfter = object.mustBeAfter();
+
+            Class objectClass = object.getClass();
+            if ((mustBeBefore == null || mustBeBefore.length == 0) && (mustBeAfter == null || mustBeAfter.length == 0)) {
+                graph.add(objectClass, null);
+            } else {
+                if (mustBeAfter != null) {
+                    for (Class beAfter : mustBeAfter) {
+                        graph.add(beAfter, objectClass);
+                    }
+                }
+                if (mustBeBefore != null) {
+                    for (Class beBefore : mustBeBefore) {
+                        graph.add(objectClass, beBefore);
+                    }
+                }
+            }
+        }
+
+        graph.computeDependencies();
+
+        log.fine("Final dependency order: "+ StringUtil.join(returnList, ", ", new StringUtil.ToStringFormatter()));
+        return returnList;
+    }
 
 
-    public static class DependencyGraph<T> {
+    private static class DependencyGraph<T> {
 
         private HashMap<T, GraphNode<T>> nodes = new HashMap<>();
         private NodeValueListener<T> listener;
         private List<GraphNode<T>> evaluatedNodes = new ArrayList<>();
 
-        private int recursiveSizeCheck = -1;
 
         public DependencyGraph(NodeValueListener<T> listener) {
             this.listener = listener;
@@ -51,14 +105,12 @@ public class DependencyUtil {
         public void computeDependencies() {
             List<GraphNode<T>> orphanNodes = getOrphanNodes();
             List<GraphNode<T>> nextNodesToDisplay = new ArrayList<>();
-            if (orphanNodes != null) {
-                for (GraphNode<T> node : orphanNodes) {
-                    listener.evaluating(node.value);
-                    evaluatedNodes.add(node);
-                    nextNodesToDisplay.addAll(node.getGoingOutNodes());
-                }
-                computeDependencies(nextNodesToDisplay);
+            for (GraphNode<T> node : orphanNodes) {
+                listener.evaluating(node.value);
+                evaluatedNodes.add(node);
+                nextNodesToDisplay.addAll(node.getGoingOutNodes());
             }
+            computeDependencies(nextNodesToDisplay);
         }
 
         private void computeDependencies(List<GraphNode<T>> nodes) {
@@ -85,24 +137,7 @@ public class DependencyUtil {
                     }
                 }
             }
-            if ((nextNodesToDisplay != null) && !nextNodesToDisplay.isEmpty()) {
-                if (nextNodesToDisplay.size() == recursiveSizeCheck) {
-                    //Recursion is not making progress, heading to a stack overflow exception.
-                    //Probably some cycles in there somewhere, so pull out a node and re-try
-                    GraphNode nodeToRemove = null;
-                    int nodeToRemoveLinks = Integer.MAX_VALUE;
-                    for (GraphNode node : nextNodesToDisplay) {
-                        List links = node.getComingInNodes();
-                        if ((links != null) && (links.size() < nodeToRemoveLinks)) {
-                            nodeToRemove = node;
-                            nodeToRemoveLinks = links.size();
-                        }
-                    }
-                    Scope.getCurrentScope().getLog(getClass()).fine(LogType.LOG, "Potential StackOverflowException. Pro-actively removing "+nodeToRemove.value+" with "+nodeToRemoveLinks+" incoming nodes");
-                    nextNodesToDisplay.remove(nodeToRemove);
-                }
-
-                recursiveSizeCheck = nextNodesToDisplay.size();
+            if (nextNodesToDisplay != null) {
                 computeDependencies(nextNodesToDisplay);
             }
             // here the recursive call ends
@@ -158,7 +193,7 @@ public class DependencyUtil {
     }
 
 
-    public interface NodeValueListener<T> {
+    private interface NodeValueListener<T> {
         void evaluating(T nodeValue);
     }
 
