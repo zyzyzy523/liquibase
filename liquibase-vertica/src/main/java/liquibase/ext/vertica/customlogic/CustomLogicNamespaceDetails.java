@@ -2,9 +2,9 @@ package liquibase.ext.vertica.customlogic;
 
 import liquibase.parser.LiquibaseParser;
 import liquibase.parser.NamespaceDetails;
-import liquibase.parser.core.xml.XMLChangeLogSAXParser;
+import liquibase.parser.xml.XmlParser;
 import liquibase.serializer.LiquibaseSerializer;
-import liquibase.serializer.core.xml.XMLChangeLogSerializer;
+import liquibase.parser.xml.XmlUnparser;
 
 public class CustomLogicNamespaceDetails implements NamespaceDetails {
 
@@ -18,7 +18,7 @@ public class CustomLogicNamespaceDetails implements NamespaceDetails {
 
     @Override
     public boolean supports(LiquibaseSerializer serializer, String namespace) {
-        if (namespaceCorrect(namespace) && serializer instanceof XMLChangeLogSerializer) {
+        if (namespaceCorrect(namespace) && serializer instanceof XmlUnparser) {
             return true;
         }
         return false;
@@ -26,7 +26,7 @@ public class CustomLogicNamespaceDetails implements NamespaceDetails {
 
     @Override
     public boolean supports(LiquibaseParser parser, String namespace) {
-        if (namespaceCorrect(namespace) && parser instanceof XMLChangeLogSAXParser) {
+        if (namespaceCorrect(namespace) && parser instanceof XmlParser) {
             return true;
         }
         return false;

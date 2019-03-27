@@ -1,9 +1,28 @@
 package liquibase.parser
 
-import spock.lang.Specification
 
+import liquibase.Scope
+import liquibase.parser.json.JsonParser
+import liquibase.parser.xml.XmlParser
+import liquibase.parser.yaml.YamlParser
+import spock.lang.Specification
+import spock.lang.Unroll
 
 class ParserFactoryTest extends Specification {
+
+
+    @Unroll
+    def "Can find standard parsers"() {
+        expect:
+        Scope.getCurrentScope().getSingleton(ParserFactory).getParser(path).class == expected
+
+        where:
+        path  | expected
+        "com/example/test.xml" | XmlParser
+        "com/example/test.json" | JsonParser
+        "com/example/test.yaml" | YamlParser
+
+    }
 
 //    MockResourceAccessor resourceAccessor;
 //    Scope scope;
@@ -17,7 +36,7 @@ class ParserFactoryTest extends Specification {
 //
 //    def "can build object"() {
 //        when:
-//        resourceAccessor.addData("com/example/path.xml", """
+//        resourceAccessor.addResource("com/example/path.xml", """
 //<changeLog $XmlParserTest.MOCK_XSD_HEADER logicalPath="com/example/logical.xml">
 //</changeLog>
 //""")

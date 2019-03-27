@@ -42,7 +42,7 @@ public class UnknownChangeLogFormatLoggingTest {
 //    @Test
 //    public void testUnknownFileTypeWarning() throws Exception {
 //        ArgumentCaptor<String> loggerCaptor = ArgumentCaptor.forClass(String.class);
-//        new XMLChangeLogSAXParser().parse("liquibase/parser/core/xml/unknownIncludedFileChangeLog.xml", new ChangeLogParameters(), new JUnitResourceAccessor());
+//        new XmlParser().parse("liquibase/parser/core/xml/unknownIncludedFileChangeLog.xml", new ChangeLogParameters(), new JUnitResourceAccessor());
 //        Mockito.verify(mockLogger, Mockito.atLeastOnce()).warning(Matchers.eq(LogType.LOG), loggerCaptor.capture());
 //        final String recordedValue = loggerCaptor.getValue();
 //        Assert.assertTrue("The warning should contain a path to the unrecognized file", recordedValue.contains("liquibase/parser/core/xml/preconditionsChangeLog"));

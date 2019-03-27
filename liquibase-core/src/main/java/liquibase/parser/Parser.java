@@ -1,7 +1,6 @@
 package liquibase.parser;
 
 import liquibase.ExtensibleObject;
-import liquibase.Scope;
 import liquibase.SingletonObject;
 import liquibase.exception.ParseException;
 import liquibase.plugin.Plugin;
@@ -20,7 +19,7 @@ public interface Parser extends Plugin, ExtensibleObject, SingletonObject {
     /**
      * Parse the given path into a {@link ParsedNode}
      */
-    ParsedNode parse(String path) throws ParseException;
+    ParsedNode parse(String relativeTo, String path) throws ParseException;
 
     /**
      * Outputs a pseudo version of the original version of the given parsedNode.

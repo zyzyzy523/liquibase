@@ -50,14 +50,14 @@ public abstract class AbstractParsedNodeMapping<ObjectType extends ExtensibleObj
                 ParsedNode collectionNode = node.addChild(attr);
                 for (Object childObject : (Collection) childValue) {
                     if (childObject instanceof ExtensibleObject) {
-                        scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(childObject, objectToConvert.getClass(), null, collectionNode, scope);
+                        scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(childObject, objectToConvert.getClass(), null, collectionNode);
                     } else {
                         collectionNode.addChild("value").setValue(childObject);
                     }
                 }
             } else {
                 if (childValue instanceof ExtensibleObject) {
-                    scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(childValue, objectToConvert.getClass(), attr, node, scope);
+                    scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(childValue, objectToConvert.getClass(), attr, node);
                 } else {
                     node.addChild(attr).setValue(childValue);
                 }
@@ -71,7 +71,7 @@ public abstract class AbstractParsedNodeMapping<ObjectType extends ExtensibleObj
      * Default implementation creates a new instance using {@link #createObject(ParsedNode, Class, Class, String)},
      * then for each child in the parsed node, sets the same attribute value on the instance to return.
      * If any attributes are ParsedNodes or or collections of ParsedNodes,
-     * it will call {@link ParsedNodeMappingFactory#toObject(ParsedNode, Class, Class, String, Scope)} before setting the value on the instance to return.
+     * it will call {@link ParsedNodeMappingFactory#toObject(ParsedNode, Class, Class, String)} before setting the value on the instance to return.
      */
     @Override
     public ObjectType toObject(ParsedNode parsedNode, Class<ObjectType> objectType, Class containerType, String containerAttribute) throws ParseException {
@@ -121,10 +121,10 @@ public abstract class AbstractParsedNodeMapping<ObjectType extends ExtensibleObj
 
                 if (child.getChildren().size() > 0) {
                     for (ParsedNode valueEntry : child.getChildren()) {
-                        collection.add(scope.getSingleton(ParsedNodeMappingFactory.class).toObject(valueEntry, collectionElementClass, returnObject.getClass(), child.getName(), scope));
+                        collection.add(scope.getSingleton(ParsedNodeMappingFactory.class).toObject(valueEntry, collectionElementClass, returnObject.getClass(), child.getName()));
                     }
                 } else if (child.getValue() instanceof ParsedNode) {
-                    collection.add(scope.getSingleton(ParsedNodeMappingFactory.class).toObject((ParsedNode) child.getValue(), collectionElementClass, returnObject.getClass(), child.getName(), scope));
+                    collection.add(scope.getSingleton(ParsedNodeMappingFactory.class).toObject((ParsedNode) child.getValue(), collectionElementClass, returnObject.getClass(), child.getName()));
                 } else {
                     if (child.getValue() != null) {
                         collection.add(child.getValue(null, collectionElementClass));
@@ -133,12 +133,12 @@ public abstract class AbstractParsedNodeMapping<ObjectType extends ExtensibleObj
             } else {
                 if (child.getChildren().size() == 0) {
                     if (child.getValue() instanceof ParsedNode) {
-                        returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject((ParsedNode) child.getValue(), attributeClass, returnObject.getClass(), child.getName(), scope));
+                        returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject((ParsedNode) child.getValue(), attributeClass, returnObject.getClass(), child.getName()));
                     } else {
-                        returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject(child, attributeClass, returnObject.getClass(), child.getName(), scope));
+                        returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject(child, attributeClass, returnObject.getClass(), child.getName()));
                     }
                 } else {
-                    returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject(child, attributeClass, returnObject.getClass(), child.getName(), scope));
+                    returnObject.set(child.getName(), scope.getSingleton(ParsedNodeMappingFactory.class).toObject(child, attributeClass, returnObject.getClass(), child.getName()));
                 }
             }
         }

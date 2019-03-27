@@ -11,7 +11,7 @@ import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.integration.ant.type.ChangeLogOutputFile;
 import liquibase.serializer.ChangeLogSerializer;
 import liquibase.serializer.ChangeLogSerializerFactory;
-import liquibase.serializer.core.json.JsonChangeLogSerializer;
+import liquibase.parser.json.JsonUnparser;
 import liquibase.serializer.core.string.StringChangeLogSerializer;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -98,10 +98,6 @@ public class GenerateChangeLogTask extends BaseLiquibaseTask {
         return diffOutputControl;
     }
 
-    public void addConfiguredJson(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(new JsonChangeLogSerializer());
-        changeLogOutputFiles.add(changeLogOutputFile);
-    }
 
     public void addConfiguredXml(ChangeLogOutputFile changeLogOutputFile) {
         changeLogOutputFile.setChangeLogSerializer(ChangeLogSerializerFactory.getInstance().getSerializer("xml"));

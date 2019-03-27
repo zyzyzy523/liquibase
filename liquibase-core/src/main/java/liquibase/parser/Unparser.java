@@ -1,7 +1,6 @@
 package liquibase.parser;
 
 import liquibase.ExtensibleObject;
-import liquibase.Scope;
 import liquibase.SingletonObject;
 import liquibase.exception.ParseException;
 import liquibase.plugin.Plugin;
@@ -22,7 +21,7 @@ public interface Unparser extends Plugin, ExtensibleObject, SingletonObject {
     /**
      * Outputs the passed node to the output stream.
      */
-    void unparse(ParsedNode node, OutputStream output, Scope scope) throws ParseException;
+    void unparse(ParsedNode node, OutputStream output) throws ParseException;
 
     /**
      * Outputs a pseudo version of the original version of the given parsedNode.

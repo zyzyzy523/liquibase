@@ -1,6 +1,5 @@
 package liquibase.parser.postprocessor;
 
-import liquibase.Scope;
 import liquibase.exception.DependencyException;
 import liquibase.plugin.AbstractPluginFactory;
 import liquibase.util.DependencyUtil;

@@ -61,6 +61,9 @@ public class Scope {
             Scope rootScope = new Scope();
             scopeManager.setCurrentScope(rootScope);
 
+            //replace initial empty resource accessor with classpath one. Have to wait for now so that Scope.getCurrentScope() returns non-null in standard logic
+            rootScope.values.put(Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(Scope.class.getClassLoader()));
+
             LogService overrideLogService = rootScope.getSingleton(LogServiceFactory.class).getDefaultLogService();
             if (overrideLogService == null) {
                 throw new UnexpectedLiquibaseException("Cannot find default log service");

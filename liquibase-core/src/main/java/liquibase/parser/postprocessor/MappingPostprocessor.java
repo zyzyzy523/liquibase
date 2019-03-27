@@ -2,7 +2,6 @@ package liquibase.parser.postprocessor;
 
 import liquibase.DependencyObject;
 import liquibase.ExtensibleObject;
-import liquibase.Scope;
 import liquibase.exception.ParseException;
 import liquibase.plugin.Plugin;
 
@@ -17,6 +16,6 @@ public interface MappingPostprocessor extends Plugin, DependencyObject<MappingPo
      * Note: this method is only called once during the parsing process and is called on the root object,
      * so this method will often traverse down the object to make whatever changes are needed.
      */
-    void process(Object object, Scope scope) throws ParseException;
+    void process(Object object) throws ParseException;
 
 }

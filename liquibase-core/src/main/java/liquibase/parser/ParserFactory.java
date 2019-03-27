@@ -50,7 +50,7 @@ public class ParserFactory extends AbstractPluginFactory<Parser> {
         }
         try {
 
-            ParsedNode rootNode = parser.parse(sourcePath);
+            ParsedNode rootNode = parser.parse(null, sourcePath);
 
             return parse(rootNode, objectType);
         } catch (ParseException e) {
@@ -103,16 +103,16 @@ public class ParserFactory extends AbstractPluginFactory<Parser> {
             for (ParsedNodePreprocessor preprocessor : scope.getSingleton(ParsedNodePreprocessorFactory.class).getPreprocessors()) {
 //                MDC.put(LogUtil.MDC_PREPROCESSOR, preprocessor.getClass().getName());
 //                try {
-                    preprocessor.process(parsedNode, scope);
+                    preprocessor.process(parsedNode);
 //                } finally {
 //                    MDC.remove(LogUtil.MDC_PREPROCESSOR);
 //                }
             }
 
-            ObjectType returnObject = scope.getSingleton(ParsedNodeMappingFactory.class).toObject(parsedNode, objectType, null, null, scope);
+            ObjectType returnObject = scope.getSingleton(ParsedNodeMappingFactory.class).toObject(parsedNode, objectType, null, null);
 
             for (MappingPostprocessor postprocessor : scope.getSingleton(MappingPostprocessorFactory.class).getPostprocessors()) {
-                postprocessor.process(returnObject, scope);
+                postprocessor.process(returnObject);
             }
 
             return returnObject;

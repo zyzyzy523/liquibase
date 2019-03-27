@@ -33,8 +33,8 @@ public class UnparserFactory extends AbstractPluginFactory<Unparser> {
     /**
      * Returns the {@link Unparser} to use for the given path.
      */
-    public Unparser getUnparser(String path, Scope scope) {
-        return getPlugin(scope, path);
+    public Unparser getUnparser(String path) {
+        return getPlugin(path);
     }
 
     /**
@@ -45,7 +45,7 @@ public class UnparserFactory extends AbstractPluginFactory<Unparser> {
      *
      * @throws ParseException
      */
-    public void unparse(Object object, OutputStream outputStream, String outputPath, Scope scope) throws ParseException {
+    public void unparse(Object object, OutputStream outputStream, String outputPath) throws ParseException {
         if (object == null) {
             return;
         }
@@ -57,18 +57,19 @@ public class UnparserFactory extends AbstractPluginFactory<Unparser> {
             throw new ParseException("No outputStream set", null);
         }
         try {
-            ParsedNode parsedObject = scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(object, null, null, null, scope);
+            Scope scope = Scope.getCurrentScope();
+            ParsedNode parsedObject = scope.getSingleton(ParsedNodeMappingFactory.class).toParsedNode(object, null, null, null);
 
             for (ParsedNodeUnprocessor unprocessor : scope.getSingleton(ParsedNodeUnprocessorFactory.class).getUnprocessors()) {
-                unprocessor.unprocess(parsedObject, scope);
+                unprocessor.unprocess(parsedObject);
             }
 
-            Unparser unparser = getUnparser(outputPath, scope);
+            Unparser unparser = getUnparser(outputPath);
             try {
                 if (unparser == null) {
                     throw new ParseException("Could not find an unparser for " + outputPath, null);
                 }
-                unparser.unparse(parsedObject, outputStream, scope);
+                unparser.unparse(parsedObject, outputStream);
             } catch (ParseException e) {
                 String message = e.getMessage();
                 ParsedNode problemNode = e.getProblemNode();

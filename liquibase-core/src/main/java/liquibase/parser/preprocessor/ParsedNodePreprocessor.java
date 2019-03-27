@@ -2,7 +2,6 @@ package liquibase.parser.preprocessor;
 
 import liquibase.DependencyObject;
 import liquibase.ExtensibleObject;
-import liquibase.Scope;
 import liquibase.exception.ParseException;
 import liquibase.parser.ParsedNode;
 import liquibase.plugin.Plugin;
@@ -18,5 +17,5 @@ public interface ParsedNodePreprocessor extends Plugin, DependencyObject<ParsedN
      * Note: this method is only called once during the parsing process and is called on the root parsed node,
      * so normally this method must find child and grandchild nodes that need to be changed
      */
-    void process(ParsedNode node, Scope scope) throws ParseException;
+    void process(ParsedNode node) throws ParseException;
 }

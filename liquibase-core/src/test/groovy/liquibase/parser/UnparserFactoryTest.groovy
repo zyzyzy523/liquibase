@@ -1,9 +1,26 @@
 package liquibase.parser
 
+import liquibase.Scope
+import liquibase.parser.json.JsonUnparser
+import liquibase.parser.xml.XmlUnparser
+import liquibase.parser.yaml.YamlUnparser
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class UnparserFactoryTest extends Specification {
 
+    @Unroll
+    def "Can find standard unparsers"() {
+        expect:
+        Scope.getCurrentScope().getSingleton(UnparserFactory).getUnparser(path).class == expected
+
+        where:
+        path  | expected
+        "com/example/test.xml" | XmlUnparser
+        "com/example/test.json" | JsonUnparser
+        "com/example/test.yaml" | YamlUnparser
+
+    }
 //    @Unroll
 //    def "unparse object to xml"() {
 //        expect:
