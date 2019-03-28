@@ -7,9 +7,9 @@ import liquibase.changelog.ChangeSet
 import liquibase.changelog.ChangeLog
 import liquibase.configuration.LiquibaseConfiguration
 import liquibase.exception.ChangeLogParseException
-import liquibase.precondition.core.PreconditionContainer
+import liquibase.parser.sql.FormattedSqlChangeLogParser
+import liquibase.precondition.Preconditions
 import liquibase.precondition.core.SqlPrecondition
-import liquibase.resource.ResourceAccessor
 import liquibase.util.StringUtil
 import org.hamcrest.Matchers
 import spock.lang.Specification
@@ -207,11 +207,11 @@ select 1
         ChangeSet cs = changeLog.getChangeSets().get(8)
         cs.getAuthor() == "bboisvert"
         cs.getId() == "with_preconditions"
-        PreconditionContainer pc = cs.getPreconditions()
+        Preconditions pc = cs.getPreconditions()
         pc != null
-        pc.getOnFail() == PreconditionContainer.FailOption.MARK_RAN
-        pc.getOnError() == PreconditionContainer.ErrorOption.HALT
-        pc.getOnSqlOutput() == PreconditionContainer.OnSqlOutputOption.FAIL
+        pc.getOnFail() == Preconditions.FailOption.MARK_RAN
+        pc.getOnError() == Preconditions.ErrorOption.HALT
+        pc.getOnSqlOutput() == Preconditions.OnSqlOutputOption.FAIL
         pc.getNestedPreconditions().size() == 2
         assert pc.getNestedPreconditions().get(0) instanceof SqlPrecondition
         SqlPrecondition p0 = (SqlPrecondition) pc.getNestedPreconditions().get(0)

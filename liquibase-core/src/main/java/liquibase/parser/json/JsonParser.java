@@ -4,8 +4,8 @@ import com.google.gson.*;
 import liquibase.Scope;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
-import liquibase.parser.AbstractParser;
 import liquibase.parser.ParsedNode;
+import liquibase.parser.yaml.AbstractParsedNodeParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +17,10 @@ import java.io.Reader;
  *
  * @see ParsedNodeTypeAdapter
  */
-public class JsonParser extends AbstractParser {
+public class JsonParser extends AbstractParsedNodeParser {
 
     @Override
-    public int getPriority(String path) {
+    public int getPriority(String relativeTo, String path, Class objectType) {
         if ((path.toLowerCase().endsWith(".json"))) {
             return PRIORITY_DEFAULT;
         }
@@ -28,7 +28,7 @@ public class JsonParser extends AbstractParser {
     }
 
     @Override
-    public ParsedNode parse(String relativeTo, String path) throws ParseException {
+    public ParsedNode parseToParsedNode(String relativeTo, String path, Class objectType) throws ParseException {
         try (InputStream inputStream = Scope.getCurrentScope().getResourceAccessor().openStream(relativeTo, path)) {
             if (inputStream == null) {
                 throw new ParseException("Could not find file to parse: " + path + (relativeTo != null ? " relative to " + relativeTo : ""), null);

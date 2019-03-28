@@ -10,7 +10,7 @@ class YamlParserTest extends Specification {
 
     def "throws exception if nothing matches"() {
         when:
-        new YamlParser().parse(null, "com/example/invalid.yaml")
+        new YamlParser().parse(null, "com/example/invalid.yaml",)
 
         then:
         def e = thrown(ParseException)
@@ -26,7 +26,7 @@ class YamlParserTest extends Specification {
                 .addResource("com/example/test.yaml", yaml)
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new YamlParser().parse(null, "com/example/test.yaml")
+            parsedNode = new YamlParser().parse(null, "com/example/test.yaml",)
         })
 
         then:
@@ -121,7 +121,7 @@ rootNode
                 .addResource("com/example/test.yaml", yaml)
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new YamlParser().parse(null, "com/example/test.yaml")
+            parsedNode = new YamlParser().parse(null, "com/example/test.yaml",)
         })
 
         then:

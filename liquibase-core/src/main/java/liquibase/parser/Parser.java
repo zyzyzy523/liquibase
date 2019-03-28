@@ -14,12 +14,9 @@ import liquibase.plugin.Plugin;
  */
 public interface Parser extends Plugin, ExtensibleObject, SingletonObject {
 
-    int getPriority(String path);
+    int getPriority(String relativeTo, String path, Class objectType);
 
-    /**
-     * Parse the given path into a {@link ParsedNode}
-     */
-    ParsedNode parse(String relativeTo, String path) throws ParseException;
+    <ObjectType> ObjectType parse(String relativeTo, String sourcePath, Class<ObjectType> objectType) throws ParseException;
 
     /**
      * Outputs a pseudo version of the original version of the given parsedNode.

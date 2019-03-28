@@ -3,8 +3,8 @@ package liquibase.parser.xml;
 import liquibase.Scope;
 import liquibase.exception.ParseException;
 import liquibase.logging.Logger;
-import liquibase.parser.AbstractParser;
 import liquibase.parser.ParsedNode;
+import liquibase.parser.yaml.AbstractParsedNodeParser;
 import liquibase.util.StringUtil;
 import org.xml.sax.*;
 import org.xml.sax.ext.EntityResolver2;
@@ -21,7 +21,7 @@ import java.util.Deque;
  * Standard parser for XML files. Expects files to have a .xml extension.
  * Find entities using {@link XmlEntityResolver} before looking for them on the network.
  */
-public class XmlParser extends AbstractParser {
+public class XmlParser extends AbstractParsedNodeParser {
 
     public static final String LIQUIBASE_SCHEMA_VERSION = "3.6";
 
@@ -38,7 +38,7 @@ public class XmlParser extends AbstractParser {
     }
 
     @Override
-    public int getPriority(String path) {
+    public int getPriority(String relativeTo, String path, Class objectType) {
         if (path.toLowerCase().endsWith(".xml")) {
             return PRIORITY_DEFAULT;
         }
@@ -46,7 +46,7 @@ public class XmlParser extends AbstractParser {
     }
 
     @Override
-    public ParsedNode parse(String relativeTo, String path) throws ParseException {
+    public ParsedNode parseToParsedNode(String relativeTo, String path, Class objectType) throws ParseException {
         try {
             SAXParser parser = saxParserFactory.newSAXParser();
             try {

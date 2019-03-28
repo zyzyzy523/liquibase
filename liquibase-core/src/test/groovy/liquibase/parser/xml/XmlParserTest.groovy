@@ -13,7 +13,7 @@ class XmlParserTest extends Specification {
     @Unroll
     def "throws exception if file does not exist"() {
         when:
-        new XmlParser().parse(relativeTo, path)
+        new XmlParser().parse(relativeTo, path,)
 
         then:
         def e = thrown(ParseException)
@@ -34,7 +34,7 @@ class XmlParserTest extends Specification {
                 .addMockXsd("rootNode")
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new XmlParser().parse(null, "com/example/test.xml")
+            parsedNode = new XmlParser().parse(null, "com/example/test.xml",)
         })
 
         then:
@@ -59,7 +59,7 @@ class XmlParserTest extends Specification {
                 .addMockXsd("rootNode")
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new XmlParser().parse(null, "com/example/test.xml")
+            parsedNode = new XmlParser().parse(null, "com/example/test.xml",)
         })
 
         then:

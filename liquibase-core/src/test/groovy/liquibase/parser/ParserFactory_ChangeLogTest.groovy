@@ -3,10 +3,8 @@ package liquibase.parser
 import liquibase.Scope
 import liquibase.changelog.ChangeLog
 import liquibase.resource.FileSystemResourceAccessor
-import liquibase.resource.MockResourceAccessor
 import liquibase.test.TestContext
 import liquibase.util.StringUtil
-import liquibase.util.TestUtil
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -30,7 +28,7 @@ class ParserFactory_ChangeLogTest extends Specification {
 
         def changelog = null
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            changelog = Scope.currentScope.getSingleton(ParserFactory).parse(fileObject.name, ChangeLog)
+            changelog = Scope.currentScope.getSingleton(ParserFactory).parse(null, fileObject.name, ChangeLog)
         })
 
         then:

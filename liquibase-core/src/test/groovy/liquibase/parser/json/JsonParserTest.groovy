@@ -10,7 +10,7 @@ class JsonParserTest extends Specification {
 
     def "throws exception if nothing matches"() {
         when:
-        new JsonParser().parse(null, "com/example/invalid.json")
+        new JsonParser().parse(null, "com/example/invalid.json",)
 
         then:
         def e = thrown(ParseException)
@@ -25,7 +25,7 @@ class JsonParserTest extends Specification {
                 .addResource("com/example/test.json", json)
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new JsonParser().parse(null, "com/example/test.json")
+            parsedNode = new JsonParser().parse(null, "com/example/test.json",)
         })
 
         then:
@@ -85,7 +85,7 @@ rootNode
                 .addResource("com/example/test.json", json)
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            parsedNode = new JsonParser().parse(null, "com/example/test.json")
+            parsedNode = new JsonParser().parse(null, "com/example/test.json",)
         })
 
         then:

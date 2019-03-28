@@ -5,6 +5,7 @@ import liquibase.database.Database;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.parser.ParsedNode;
 import liquibase.precondition.Preconditions;
 import liquibase.resource.ResourceAccessor;
@@ -155,7 +156,7 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
 
     public void addChangeSet(ChangeSet changeSet) {
 //        if (changeSet.getRunOrder() == null) {
-//            ListIterator<ChangeSet> it = this.changeSets.listIterator(this.changeSets.size());
+//            ListIterator<ChangeLogEntry> it = this.items.listIterator(this.items.size());
 //            boolean added = false;
 //            while (it.hasPrevious() && !added) {
 //                if (!"last".equals(it.previous().getRunOrder())) {
@@ -186,6 +187,7 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
 //        } else {
 //            throw new UnexpectedLiquibaseException("Unknown runOrder: " + changeSet.getRunOrder());
 //        }
+        this.items.add(changeSet);
     }
 //
 //    @Override

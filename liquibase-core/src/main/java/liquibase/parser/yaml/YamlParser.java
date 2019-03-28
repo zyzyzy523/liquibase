@@ -3,7 +3,6 @@ package liquibase.parser.yaml;
 import liquibase.Scope;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
-import liquibase.parser.AbstractParser;
 import liquibase.parser.ParsedNode;
 import org.yaml.snakeyaml.Yaml;
 
@@ -15,10 +14,10 @@ import java.util.Map;
 /**
  * Parses yaml files using SnakeYAML.
  */
-public class YamlParser extends AbstractParser {
+public class YamlParser extends AbstractParsedNodeParser {
 
     @Override
-    public int getPriority(String path) {
+    public int getPriority(String relativeTo, String path, Class objectType) {
         if ((path.toLowerCase().endsWith(".yaml") || path.toLowerCase().endsWith(".yml"))) {
             return PRIORITY_DEFAULT;
         }
@@ -26,7 +25,7 @@ public class YamlParser extends AbstractParser {
     }
 
     @Override
-    public ParsedNode parse(String relativeTo, String path) throws ParseException {
+    public ParsedNode parseToParsedNode(String relativeTo, String path, Class objectType) throws ParseException {
         Yaml yaml = new Yaml();
 
         try (InputStream inputStream = Scope.getCurrentScope().getResourceAccessor().openStream(relativeTo, path)) {
