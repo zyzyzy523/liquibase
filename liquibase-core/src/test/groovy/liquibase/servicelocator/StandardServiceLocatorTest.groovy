@@ -12,7 +12,6 @@ import liquibase.lockservice.LockService
 
 import liquibase.diff.compare.DatabaseObjectComparator
 
-import liquibase.parser.SnapshotParser
 import liquibase.precondition.Precondition
 import liquibase.serializer.ChangeLogSerializer
 import liquibase.serializer.SnapshotSerializer
@@ -43,7 +42,6 @@ class StandardServiceLocatorTest extends Specification {
                 DatabaseObjectComparator.class,
                 ChangeGenerator.class,
                 LockService.class,
-                SnapshotParser.class,
                 Precondition.class,
                 ChangeLogSerializer.class,
                 SnapshotSerializer.class,

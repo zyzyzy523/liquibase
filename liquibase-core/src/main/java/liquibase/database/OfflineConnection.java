@@ -7,10 +7,8 @@ import liquibase.changelog.OfflineChangeLogHistoryService;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.logging.LogService;
 import liquibase.logging.LogType;
-import liquibase.parser.SnapshotParser;
-import liquibase.parser.SnapshotParserFactory;
+import liquibase.parser.Parser;
 import liquibase.resource.ResourceAccessor;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.EmptyDatabaseSnapshot;
@@ -91,9 +89,7 @@ public class OfflineConnection implements DatabaseConnection {
                 } else if ("snapshot".equals(paramEntry.getKey())) {
                     String snapshotFile = paramEntry.getValue();
                     try {
-                        SnapshotParser parser = SnapshotParserFactory.getInstance()
-                                .getParser(snapshotFile, resourceAccessor);
-                        this.snapshot = parser.parse(snapshotFile, resourceAccessor);
+                        this.snapshot = Scope.getCurrentScope().getSingleton(Parser.class).parse(null, snapshotFile, DatabaseSnapshot.class);
                         this.productVersion = this.snapshot.getDatabase().getDatabaseProductVersion();
                         this.snapshot.getDatabase().setConnection(this);
 
