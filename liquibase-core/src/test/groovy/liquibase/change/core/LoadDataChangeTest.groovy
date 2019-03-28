@@ -354,7 +354,7 @@ public class LoadDataChangeTest extends StandardChangeTest {
     def "relativeToChangelogFile works"() throws Exception {
         when:
         ChangeSet changeSet = new ChangeSet(null, null, true, false,
-                "liquibase/empty.changelog.xml",
+                "liquibase/empty.xml",
                 null, null, false, null, null);
 
         LoadDataChange relativeChange = new LoadDataChange();

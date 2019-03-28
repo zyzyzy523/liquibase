@@ -3,18 +3,19 @@ package liquibase.precondition.core
 import liquibase.exception.SetupException
 import liquibase.parser.core.ParsedNode
 import liquibase.parser.core.ParsedNodeException
+import liquibase.precondition.Preconditions
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
 import spock.lang.Specification
 
-class PreconditionContainerTest extends Specification {
+class PreconditionsTest extends Specification {
 
     @Shared resourceSupplier = new ResourceSupplier()
 
     def "load handles empty node with params"() {
         when:
         def node = new ParsedNode(null, "preConditions").addChildren([onFail: "MARK_RAN", onError: "CONTINUE", onSqlOutput: "IGNORE", onFailMessage: "I Failed", onErrorMessage: "I Errored"])
-        def container = new PreconditionContainer()
+        def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -34,7 +35,7 @@ class PreconditionContainerTest extends Specification {
     def "load handles node with single in value"() {
         when:
         def node = new ParsedNode(null, "preConditions").addChildren([onFail: "MARK_RAN"]).setValue(new ParsedNode(null, "tableExists").addChildren([tableName: "my_table"]))
-        def container = new PreconditionContainer()
+        def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -56,7 +57,7 @@ class PreconditionContainerTest extends Specification {
                 new ParsedNode(null, "runningAs").addChildren([username: "my_user"]),
                 new ParsedNode(null, "tableExists").addChildren([tableName: "my_table"]),
         ])
-        def container = new PreconditionContainer()
+        def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -79,7 +80,7 @@ class PreconditionContainerTest extends Specification {
                 .addChild(new ParsedNode(null, "runningAs").addChildren([username: "my_user"]))
                 .addChild(new ParsedNode(null, "tableExists").addChildren([tableName: "my_table"]))
 
-        def container = new PreconditionContainer()
+        def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -106,7 +107,7 @@ class PreconditionContainerTest extends Specification {
                 )
                 .addChild(new ParsedNode(null, "tableExists").addChildren([tableName: "my_table"]))
 
-        def container = new PreconditionContainer()
+        def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {

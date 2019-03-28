@@ -14,33 +14,9 @@ import liquibase.structure.core.Schema;
 import liquibase.structure.core.View;
 
 public class ViewExistsPrecondition extends AbstractPrecondition {
-    private String catalogName;
-    private String schemaName;
-    private String viewName;
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getViewName() {
-        return viewName;
-    }
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
+    public String catalogName;
+    public String schemaName;
+    public String viewName;
 
     @Override
     public Warnings warn(Database database) {
@@ -55,13 +31,13 @@ public class ViewExistsPrecondition extends AbstractPrecondition {
     @Override
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
-    	String currentSchemaName;
+        String currentSchemaName;
         String currentCatalogName;
-    	try {
-            currentCatalogName = getCatalogName();
-            currentSchemaName = getSchemaName();
-            if (!SnapshotGeneratorFactory.getInstance().has(new View().setName(database.correctObjectName(getViewName(), View.class)).setSchema(new Schema(currentCatalogName, currentSchemaName)), database)) {
-                throw new PreconditionFailedException("View "+database.escapeTableName(currentCatalogName, currentSchemaName, getViewName())+" does not exist", changeLog, this);
+        try {
+            currentCatalogName = catalogName;
+            currentSchemaName = schemaName;
+            if (!SnapshotGeneratorFactory.getInstance().has(new View().setName(database.correctObjectName(viewName, View.class)).setSchema(new Schema(currentCatalogName, currentSchemaName)), database)) {
+                throw new PreconditionFailedException("View " + database.escapeTableName(currentCatalogName, currentSchemaName, viewName) + " does not exist", changeLog, this);
             }
         } catch (PreconditionFailedException e) {
             throw e;
@@ -69,11 +45,6 @@ public class ViewExistsPrecondition extends AbstractPrecondition {
             throw new PreconditionErrorException(e, changeLog, this);
         }
     }
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public String getName() {

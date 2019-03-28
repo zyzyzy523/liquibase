@@ -12,25 +12,8 @@ import liquibase.statement.core.RawSqlStatement;
 
 public class SqlPrecondition extends AbstractPrecondition {
 
-    private String expectedResult;
-    private String sql;
-
-
-    public String getExpectedResult() {
-        return expectedResult;
-    }
-
-    public void setExpectedResult(String expectedResult) {
-        this.expectedResult = expectedResult;
-    }
-
-    public String getSql() {
-        return sql;
-    }
-
-    public void setSql(String sql) {
-        this.sql = sql;
-    }
+    public String expectedResult;
+    public String sql;
 
     @Override
     public Warnings warn(Database database) {
@@ -47,26 +30,21 @@ public class SqlPrecondition extends AbstractPrecondition {
             throws PreconditionFailedException, PreconditionErrorException {
         DatabaseConnection connection = database.getConnection();
         try {
-            Object oResult = ExecutorService.getInstance().getExecutor(database).queryForObject(new RawSqlStatement(getSql().replaceFirst(";$","")), String.class);
+            Object oResult = ExecutorService.getInstance().getExecutor(database).queryForObject(new RawSqlStatement(sql.replaceFirst(";$", "")), String.class);
             String result = oResult.toString();
             if (result == null) {
                 throw new PreconditionFailedException("No rows returned from SQL Precondition", changeLog, this);
             }
 
-            String expectedResult = getExpectedResult();
+            String expectedResult = this.expectedResult;
             if (!expectedResult.equals(result)) {
-                throw new PreconditionFailedException("SQL Precondition failed.  Expected '"+ expectedResult +"' got '"+result+"'", changeLog, this);
+                throw new PreconditionFailedException("SQL Precondition failed.  Expected '" + expectedResult + "' got '" + result + "'", changeLog, this);
             }
 
         } catch (DatabaseException e) {
             throw new PreconditionErrorException(e, changeLog, this);
         }
     }
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public String getName() {

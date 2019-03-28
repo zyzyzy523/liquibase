@@ -14,38 +14,9 @@ import liquibase.precondition.AbstractPrecondition;
 
 public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
 
-    private String changeLogFile;
-    private String id;
-    private String author;
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
-    public String getChangeLogFile() {
-        return changeLogFile;
-    }
-
-    public void setChangeLogFile(String changeLogFile) {
-        this.changeLogFile = changeLogFile;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+    public String changeLogFile;
+    public String id;
+    public String author;
 
     @Override
     public Warnings warn(Database database) {
@@ -56,7 +27,7 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
     public ValidationErrors validate(Database database) {
         return new ValidationErrors();
     }
-    
+
     @Override
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
@@ -66,11 +37,11 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
         } else {
             objectQuotingStrategy = changeSet.getObjectQuotingStrategy();
         }
-        String changeLogFile = getChangeLogFile();
+        String changeLogFile = this.changeLogFile;
         if (changeLogFile == null) {
             changeLogFile = changeLog.logicalPath;
         }
-        ChangeSet interestedChangeSet = new ChangeSet(getId(), getAuthor(), false, false, changeLogFile, null, null, false, objectQuotingStrategy, changeLog);
+        ChangeSet interestedChangeSet = new ChangeSet(id, author, false, false, changeLogFile, null, null, false, objectQuotingStrategy, changeLog);
         RanChangeSet ranChangeSet;
         try {
             ranChangeSet = database.getRanChangeSet(interestedChangeSet);
@@ -78,7 +49,7 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
             throw new PreconditionErrorException(e, changeLog, this);
         }
         if ((ranChangeSet == null) || (ranChangeSet.getExecType() == null) || !ranChangeSet.getExecType().ran) {
-            throw new PreconditionFailedException("Change Set '"+interestedChangeSet.toString(false)+"' has not been run", changeLog, this);
+            throw new PreconditionFailedException("Change Set '" + interestedChangeSet.toString(false) + "' has not been run", changeLog, this);
         }
     }
 

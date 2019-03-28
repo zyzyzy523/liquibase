@@ -1,5 +1,6 @@
 package liquibase.precondition;
 
+import liquibase.ExtensibleObject;
 import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
@@ -8,23 +9,21 @@ import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
-import liquibase.serializer.LiquibaseSerializable;
+import liquibase.plugin.Plugin;
 
 /**
- * Marker interface for preconditions.  May become an annotation in the future.
+ * Defines checks that can be performed
  */
-public interface Precondition {
-    public String getName();
+public interface Precondition extends ExtensibleObject, Plugin {
+    String getName();
 
-    public Warnings warn(Database database);
+    int getPriority(String preconditionName);
 
-    public ValidationErrors validate(Database database);
+    Warnings warn(Database database);
 
-    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
-            throws PreconditionFailedException, PreconditionErrorException;
+    ValidationErrors validate(Database database);
+
+    void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException;
 
 
 }

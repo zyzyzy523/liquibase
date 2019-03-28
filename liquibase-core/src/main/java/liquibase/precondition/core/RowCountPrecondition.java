@@ -15,42 +15,10 @@ import liquibase.util.StringUtil;
 
 public class RowCountPrecondition extends AbstractPrecondition {
 
-    private String catalogName;
-    private String schemaName;
-    private String tableName;
-    private Integer expectedRows;
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = StringUtil.trimToNull(schemaName);
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public Integer getExpectedRows() {
-        return expectedRows;
-    }
-
-    public void setExpectedRows(Integer expectedRows) {
-        this.expectedRows = expectedRows;
-    }
+    public String catalogName;
+    public String schemaName;
+    public String tableName;
+    public Integer expectedRows;
 
     @Override
     public Warnings warn(Database database) {
@@ -85,13 +53,8 @@ public class RowCountPrecondition extends AbstractPrecondition {
     }
 
     protected String getFailureMessage(int result) {
-        return "Table "+tableName+" is not empty. Contains "+result+" rows";
+        return "Table " + tableName + " is not empty. Contains " + result + " rows";
     }
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public String getName() {

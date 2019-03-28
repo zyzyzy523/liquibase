@@ -20,11 +20,6 @@ import java.util.List;
  */
 public class OrPrecondition extends PreconditionLogic {
 
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
     @Override
     public Warnings warn(Database database) {
         return new Warnings();

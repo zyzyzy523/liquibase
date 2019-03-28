@@ -14,7 +14,7 @@ import liquibase.resource.ResourceAccessor;
 
 import java.util.Set;
 
-public class MockPrecondition implements Precondition {
+public class MockPrecondition extends AbstractPrecondition {
     @Override
     public String getName() {
         return "mock";

@@ -50,7 +50,7 @@ class XMLChangeLogSAXHandler extends DefaultHandler {
         }
 
         changeFactory = Scope.getCurrentScope().getSingleton(ChangeFactory.class);
-        preconditionFactory = PreconditionFactory.getInstance();
+        preconditionFactory = Scope.getCurrentScope().getSingleton(PreconditionFactory.class);
         sqlVisitorFactory = SqlVisitorFactory.getInstance();
         changeLogParserFactory = ChangeLogParserFactory.getInstance();
     }

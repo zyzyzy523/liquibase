@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+Expected Output:
+ChangeLog{items=[Preconditions{items=[DBMSPrecondition{type=mysql}, TableExistsPrecondition{catalogName=my_cat, tableName=test_table}], onError=HALT, onFail=HALT, onSqlOutput=IGNORE}], physicalPath=simple_precondition.xml}
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <preConditions>
+        <dbms type="mysql"/>
+        <tableExists catalogName="my_cat" tableName="test_table"/>
+    </preConditions>
+</databaseChangeLog>

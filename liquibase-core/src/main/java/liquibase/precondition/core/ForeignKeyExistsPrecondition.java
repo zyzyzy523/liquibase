@@ -16,47 +16,10 @@ import liquibase.structure.core.Table;
 import liquibase.util.StringUtil;
 
 public class ForeignKeyExistsPrecondition extends AbstractPrecondition {
-    private String catalogName;
-    private String schemaName;
-    private String foreignKeyTableName;
-    private String foreignKeyName;
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getForeignKeyTableName() {
-        return foreignKeyTableName;
-    }
-
-    public void setForeignKeyTableName(String foreignKeyTableName) {
-        this.foreignKeyTableName = foreignKeyTableName;
-    }
-
-    public String getForeignKeyName() {
-        return foreignKeyName;
-    }
-
-    public void setForeignKeyName(String foreignKeyName) {
-        this.foreignKeyName = foreignKeyName;
-    }
+    public String catalogName;
+    public String schemaName;
+    public String foreignKeyTableName;
+    public String foreignKeyName;
 
     @Override
     public Warnings warn(Database database) {
@@ -72,18 +35,18 @@ public class ForeignKeyExistsPrecondition extends AbstractPrecondition {
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
         try {
             ForeignKey example = new ForeignKey();
-            example.setName(getForeignKeyName());
+            example.setName(foreignKeyName);
             example.setForeignKeyTable(new Table());
-            if (StringUtil.trimToNull(getForeignKeyTableName()) != null) {
-                example.getForeignKeyTable().setName(getForeignKeyTableName());
+            if (StringUtil.trimToNull(foreignKeyTableName) != null) {
+                example.getForeignKeyTable().setName(foreignKeyTableName);
             }
-            example.getForeignKeyTable().setSchema(new Schema(getCatalogName(), getSchemaName()));
+            example.getForeignKeyTable().setSchema(new Schema(catalogName, schemaName));
 
             if (!SnapshotGeneratorFactory.getInstance().has(example, database)) {
                 throw new PreconditionFailedException("Foreign Key " +
-                    database.escapeIndexName(catalogName, schemaName, foreignKeyName) + " does not exist",
-                    changeLog,
-                    this
+                        database.escapeIndexName(catalogName, schemaName, foreignKeyName) + " does not exist",
+                        changeLog,
+                        this
                 );
             }
         } catch (PreconditionFailedException e) {

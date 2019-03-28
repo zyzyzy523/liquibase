@@ -12,36 +12,12 @@ import liquibase.structure.core.Schema;
 import liquibase.structure.core.Sequence;
 
 public class SequenceExistsPrecondition extends AbstractPrecondition {
-    private String catalogName;
-    private String schemaName;
-    private String sequenceName;
+    public String catalogName;
+    public String schemaName;
+    public String sequenceName;
 
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getSequenceName() {
-        return sequenceName;
-    }
-
-    public void setSequenceName(String sequenceName) {
-        this.sequenceName = sequenceName;
-    }
-
-        @Override
-        public Warnings warn(Database database) {
+    @Override
+    public Warnings warn(Database database) {
         return new Warnings();
     }
 
@@ -54,20 +30,15 @@ public class SequenceExistsPrecondition extends AbstractPrecondition {
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         DatabaseSnapshot snapshot;
-        Schema schema = new Schema(getCatalogName(), getSchemaName());
+        Schema schema = new Schema(catalogName, schemaName);
         try {
-            if (!SnapshotGeneratorFactory.getInstance().has(new Sequence().setName(getSequenceName()).setSchema(schema), database)) {
-                throw new PreconditionFailedException("Sequence "+database.escapeSequenceName(getCatalogName(), getSchemaName(), getSequenceName())+" does not exist", changeLog, this);
+            if (!SnapshotGeneratorFactory.getInstance().has(new Sequence().setName(sequenceName).setSchema(schema), database)) {
+                throw new PreconditionFailedException("Sequence " + database.escapeSequenceName(catalogName, schemaName, sequenceName) + " does not exist", changeLog, this);
             }
         } catch (LiquibaseException e) {
             throw new PreconditionErrorException(e, changeLog, this);
         }
     }
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public String getName() {

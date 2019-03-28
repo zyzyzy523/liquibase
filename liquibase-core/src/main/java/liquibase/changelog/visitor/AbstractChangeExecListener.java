@@ -8,8 +8,8 @@ import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
-import liquibase.precondition.core.PreconditionContainer.ErrorOption;
-import liquibase.precondition.core.PreconditionContainer.FailOption;
+import liquibase.precondition.Preconditions.ErrorOption;
+import liquibase.precondition.Preconditions.FailOption;
 
 /*
  * Default implementation of the ChangeExecListener so that sub classes can just override the methods

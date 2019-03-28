@@ -8,7 +8,7 @@ import liquibase.changelog.ChangeSet.RunStatus;
 import liquibase.database.Database;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
-import liquibase.precondition.core.PreconditionContainer;
+import liquibase.precondition.Preconditions;
 
 /**
  * An implementation of ChangeExecListener can be called by UpdateVisitor or
@@ -47,9 +47,9 @@ public interface ChangeExecListener {
      */
     void rolledBack(ChangeSet changeSet, ChangeLog changeLog, Database database);
 
-    void preconditionFailed(PreconditionFailedException error, PreconditionContainer.FailOption onFail);
+    void preconditionFailed(PreconditionFailedException error, Preconditions.FailOption onFail);
 
-    void preconditionErrored(PreconditionErrorException error, PreconditionContainer.ErrorOption onError);
+    void preconditionErrored(PreconditionErrorException error, Preconditions.ErrorOption onError);
 
     void willRun(Change change, ChangeSet changeSet, ChangeLog changeLog, Database database);
 

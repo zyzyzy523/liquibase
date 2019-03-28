@@ -5,7 +5,7 @@ import liquibase.change.ConstraintsConfig
 import liquibase.change.core.AddAutoIncrementChange
 import liquibase.change.core.CreateTableChange
 import liquibase.exception.UnexpectedLiquibaseException
-import liquibase.precondition.core.PreconditionContainer
+import liquibase.precondition.Preconditions
 import liquibase.statement.DatabaseFunction
 import liquibase.statement.SequenceCurrentValueFunction
 import liquibase.statement.SequenceNextValueFunction
@@ -60,11 +60,11 @@ class ObjectUtilTest extends Specification {
         object                       | property               | value         | finalValueType
         new CreateTableChange()      | "tableName"            | "my_table"    | String.class
         new AddAutoIncrementChange() | "startWith"            | "123"         | BigInteger.class
-        new ConstraintsConfig()      | "primaryKey"           | "true"        | Boolean.class
-        new ConstraintsConfig()      | "primaryKey"           | "false"       | Boolean.class
-        new ColumnConfig()           | "valueComputed"        | "my_func()"   | DatabaseFunction.class
-        new ColumnConfig()           | "valueSequenceNext"    | "seq_next"    | SequenceNextValueFunction.class
-        new ColumnConfig()           | "valueSequenceCurrent" | "seq_current" | SequenceCurrentValueFunction.class
-        new PreconditionContainer()  | "onSqlOutput"          | "IGNORE"      | PreconditionContainer.OnSqlOutputOption.class
+        new ConstraintsConfig() | "primaryKey"           | "true"        | Boolean.class
+        new ConstraintsConfig() | "primaryKey"           | "false"       | Boolean.class
+        new ColumnConfig()      | "valueComputed"        | "my_func()"   | DatabaseFunction.class
+        new ColumnConfig()      | "valueSequenceNext"    | "seq_next"    | SequenceNextValueFunction.class
+        new ColumnConfig()      | "valueSequenceCurrent" | "seq_current" | SequenceCurrentValueFunction.class
+        new Preconditions()     | "onSqlOutput"          | "IGNORE"      | Preconditions.OnSqlOutputOption.class
     }
 }

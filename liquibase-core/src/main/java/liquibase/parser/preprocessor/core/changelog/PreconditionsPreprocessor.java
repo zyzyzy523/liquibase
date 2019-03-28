@@ -1,8 +1,6 @@
 package liquibase.parser.preprocessor.core.changelog;
 
 import liquibase.Scope;
-import liquibase.change.Change;
-import liquibase.change.ChangeFactory;
 import liquibase.exception.ParseException;
 import liquibase.parser.ParsedNode;
 import liquibase.parser.preprocessor.AbstractParsedNodePreprocessor;
@@ -14,7 +12,7 @@ import java.util.SortedSet;
 /**
  * {@link liquibase.changelog.ChangeLog} related preprocessing.
  */
-public class ChangeSetPreprocessor extends AbstractParsedNodePreprocessor {
+public class PreconditionsPreprocessor extends AbstractParsedNodePreprocessor {
 
     @Override
     public Class<? extends ParsedNodePreprocessor>[] mustBeBefore() {
@@ -25,12 +23,15 @@ public class ChangeSetPreprocessor extends AbstractParsedNodePreprocessor {
 
     @Override
     public void process(ParsedNode node) throws ParseException {
-        SortedSet<String> changeNames = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getDefinedChanges();
+        //standardize capitalization
+        node.renameChildren("preConditions", "preconditions");
 
-        for (ParsedNode changesetNode : node.getChildren("changeSet", true)) {
-            ParsedNode changes = changesetNode.getChild("changes", true);
-            for (String changeName : changeNames) {
-                changesetNode.moveChildren(changeName, changes);
+        SortedSet<String> preconditionNames = Scope.getCurrentScope().getSingleton(PreconditionFactory.class).getNames();
+
+        for (ParsedNode preconditionsNode : node.getChildren("preconditions", true)) {
+            ParsedNode itemsNode = preconditionsNode.getChild("items", true);
+            for (String preconditionName : preconditionNames) {
+                preconditionsNode.moveChildren(preconditionName, itemsNode);
             }
         }
     }

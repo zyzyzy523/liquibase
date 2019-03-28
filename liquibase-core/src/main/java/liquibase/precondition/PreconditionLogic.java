@@ -1,5 +1,6 @@
 package liquibase.precondition;
 
+import liquibase.Scope;
 import liquibase.parser.core.ParsedNode;
 import liquibase.parser.core.ParsedNodeException;
 import liquibase.resource.ResourceAccessor;
@@ -32,13 +33,13 @@ public abstract class PreconditionLogic extends AbstractPrecondition {
 //        }
 //    }
 
-    protected Precondition toPrecondition(ParsedNode node, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        Precondition precondition = PreconditionFactory.getInstance().create(node.getName());
+//    protected Precondition toPrecondition(ParsedNode node, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//        Precondition precondition = Scope.getCurrentScope().getSingleton(PreconditionFactory.class).getPrecondition(node.getName());
 //        if (precondition == null) {
 //            return null;
 //        }
 //
 //        precondition.load(node, resourceAccessor);
-        return precondition;
-    }
+//        return precondition;
+//    }
 }

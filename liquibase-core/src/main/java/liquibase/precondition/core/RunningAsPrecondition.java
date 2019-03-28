@@ -15,19 +15,7 @@ import liquibase.precondition.AbstractPrecondition;
  */
 public class RunningAsPrecondition extends AbstractPrecondition {
 
-    private String username;
-
-    public RunningAsPrecondition() {
-        username = "";
-    }
-
-    public void setUsername(String aUserName) {
-        username = aUserName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
+    public String username;
 
     @Override
     public Warnings warn(Database database) {
@@ -47,14 +35,9 @@ public class RunningAsPrecondition extends AbstractPrecondition {
             loggedusername = loggedusername.substring(0, loggedusername.indexOf('@'));
         }
         if (!username.equalsIgnoreCase(loggedusername)) {
-            throw new PreconditionFailedException("RunningAs Precondition failed: expected "+username+", was "+loggedusername, changeLog, this);
+            throw new PreconditionFailedException("RunningAs Precondition failed: expected " + username + ", was " + loggedusername, changeLog, this);
         }
     }
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public String getName() {

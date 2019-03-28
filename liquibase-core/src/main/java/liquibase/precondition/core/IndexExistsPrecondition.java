@@ -17,56 +17,11 @@ import liquibase.structure.core.Table;
 import liquibase.util.StringUtil;
 
 public class IndexExistsPrecondition extends AbstractPrecondition {
-    private String catalogName;
-    private String schemaName;
-    private String tableName;
-    private String columnNames;
-    private String indexName;
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getIndexName() {
-        return indexName;
-    }
-
-    public void setIndexName(String indexName) {
-        this.indexName = indexName;
-    }
-
-    public String getColumnNames() {
-        return columnNames;
-    }
-
-    public void setColumnNames(String columnNames) {
-        this.columnNames = columnNames;
-    }
+    public String catalogName;
+    public String schemaName;
+    public String tableName;
+    public String columnNames;
+    public String indexName;
 
     @Override
     public Warnings warn(Database database) {
@@ -76,7 +31,7 @@ public class IndexExistsPrecondition extends AbstractPrecondition {
     @Override
     public ValidationErrors validate(Database database) {
         ValidationErrors validationErrors = new ValidationErrors();
-        if (getIndexName() == null && (getTableName() == null || getColumnNames() == null)) {
+        if (indexName == null && (tableName == null || columnNames == null)) {
             validationErrors.addError("indexName OR (tableName and columnNames) is required");
         }
         return validationErrors;
@@ -86,35 +41,35 @@ public class IndexExistsPrecondition extends AbstractPrecondition {
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         try {
-            Schema schema = new Schema(getCatalogName(), getSchemaName());
+            Schema schema = new Schema(catalogName, schemaName);
             Index example = new Index();
-            String tableName = StringUtil.trimToNull(getTableName());
+            String tableName = StringUtil.trimToNull(this.tableName);
             if (tableName != null) {
-                example.setRelation((Table) new Table()
-                        .setName(database.correctObjectName(getTableName(), Table.class))
+                example.setRelation(new Table()
+                        .setName(database.correctObjectName(tableName, Table.class))
                         .setSchema(schema));
             }
-            example.setName(database.correctObjectName(getIndexName(), Index.class));
-            if (StringUtil.trimToNull(getColumnNames()) != null) {
-                for (String column : getColumnNames().split("\\s*,\\s*")) {
+            example.setName(database.correctObjectName(indexName, Index.class));
+            if (StringUtil.trimToNull(columnNames) != null) {
+                for (String column : columnNames.split("\\s*,\\s*")) {
                     example.addColumn(new Column(database.correctObjectName(column, Column.class)));
                 }
             }
             if (!SnapshotGeneratorFactory.getInstance().has(example, database)) {
                 String name = "";
 
-                if (getIndexName() != null) {
-                    name += database.escapeObjectName(getIndexName(), Index.class);
+                if (indexName != null) {
+                    name += database.escapeObjectName(indexName, Index.class);
                 }
 
                 if (tableName != null) {
-                    name += " on "+database.escapeObjectName(getTableName(), Table.class);
+                    name += " on " + database.escapeObjectName(tableName, Table.class);
 
-                    if (StringUtil.trimToNull(getColumnNames()) != null) {
-                        name += " columns "+getColumnNames();
+                    if (StringUtil.trimToNull(columnNames) != null) {
+                        name += " columns " + columnNames;
                     }
                 }
-                throw new PreconditionFailedException("Index "+ name +" does not exist", changeLog, this);
+                throw new PreconditionFailedException("Index " + name + " does not exist", changeLog, this);
             }
         } catch (Exception e) {
             if (e instanceof PreconditionFailedException) {
@@ -133,15 +88,15 @@ public class IndexExistsPrecondition extends AbstractPrecondition {
     public String toString() {
         String string = "Index Exists Precondition: ";
 
-        if (getIndexName() != null) {
-            string += getIndexName();
+        if (indexName != null) {
+            string += indexName;
         }
 
         if (tableName != null) {
-            string += " on "+getTableName();
+            string += " on " + tableName;
 
-            if (StringUtil.trimToNull(getColumnNames()) != null) {
-                string += " columns "+getColumnNames();
+            if (StringUtil.trimToNull(columnNames) != null) {
+                string += " columns " + columnNames;
             }
         }
 

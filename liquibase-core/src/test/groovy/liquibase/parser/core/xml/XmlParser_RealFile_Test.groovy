@@ -28,6 +28,7 @@ import liquibase.database.core.MockDatabase
 import liquibase.exception.ChangeLogParseException
 import liquibase.parser.xml.XmlParser
 import liquibase.precondition.CustomPreconditionWrapper
+import liquibase.precondition.Preconditions
 import liquibase.precondition.core.*
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import liquibase.sql.visitor.AppendSqlVisitor
@@ -222,7 +223,7 @@ public class XmlParser_RealFile_Test extends Specification {
         changeLog.getLogicalFilePath() == path
         changeLog.getPhysicalFilePath() == path
 
-        ((PreconditionContainer) changeLog.getPreconditions().getNestedPreconditions()[0]).getNestedPreconditions().size() == 0
+        ((Preconditions) changeLog.getPreconditions().getNestedPreconditions()[0]).getNestedPreconditions().size() == 0
         changeLog.getChangeSets().size() == 7
         changeLog.getChangeSets()[0].toString(false) == "${path}::1::nvoxland"
         changeLog.getChangeSets()[1].toString(false) == "liquibase/parser/core/xml/simpleChangeLog.xml::1::nvoxland"
@@ -252,8 +253,8 @@ public class XmlParser_RealFile_Test extends Specification {
         changeLog.getPhysicalFilePath() == doubleNestedFileName
 
         changeLog.getPreconditions().getNestedPreconditions().size() == 1
-        PreconditionContainer nested = (PreconditionContainer) changeLog.getPreconditions().getNestedPreconditions()[0];
-        ((PreconditionContainer) nested.getNestedPreconditions()[0]).getNestedPreconditions().size() == 0
+        Preconditions nested = (Preconditions) changeLog.getPreconditions().getNestedPreconditions()[0];
+        ((Preconditions) nested.getNestedPreconditions()[0]).getNestedPreconditions().size() == 0
         changeLog.getChangeSets().size() == 8
         changeLog.getChangeSets()[0].toString(false) == "${doubleNestedFileName}::1::nvoxland"
         changeLog.getChangeSets()[1].toString(false) == "${nestedFileName}::1::nvoxland"
@@ -438,25 +439,25 @@ public class XmlParser_RealFile_Test extends Specification {
         ((CreateTableChange) changeLog.getChangeSet(path, "nvoxland", "nested column and constraint objects").changes[0]).columns[0].constraints.primaryKeyName == "pk_name"
 
         and: "precondition attributes are parsed correctly"
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onSqlOutput == PreconditionContainer.OnSqlOutputOption.FAIL
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onSqlOutput == Preconditions.OnSqlOutputOption.FAIL
         changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onErrorMessage == "My Error Message"
         changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onFailMessage == "My Fail Message"
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onError == PreconditionContainer.ErrorOption.HALT
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onFail == PreconditionContainer.FailOption.HALT
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onError == Preconditions.ErrorOption.HALT
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 1").preconditions.onFail == Preconditions.FailOption.HALT
 
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onSqlOutput == PreconditionContainer.OnSqlOutputOption.IGNORE
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onSqlOutput == Preconditions.OnSqlOutputOption.IGNORE
         changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onErrorMessage == null
         changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onFailMessage == null
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onError == PreconditionContainer.ErrorOption.CONTINUE
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onFail == PreconditionContainer.FailOption.CONTINUE
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onError == Preconditions.ErrorOption.CONTINUE
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 2").preconditions.onFail == Preconditions.FailOption.CONTINUE
 
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onSqlOutput == PreconditionContainer.OnSqlOutputOption.TEST
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onError == PreconditionContainer.ErrorOption.MARK_RAN
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onFail == PreconditionContainer.FailOption.MARK_RAN
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onSqlOutput == Preconditions.OnSqlOutputOption.TEST
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onError == Preconditions.ErrorOption.MARK_RAN
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 3").preconditions.onFail == Preconditions.FailOption.MARK_RAN
 
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onSqlOutput == PreconditionContainer.OnSqlOutputOption.IGNORE
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onError == PreconditionContainer.ErrorOption.WARN
-        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onFail == PreconditionContainer.FailOption.WARN
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onSqlOutput == Preconditions.OnSqlOutputOption.IGNORE
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onError == Preconditions.ErrorOption.WARN
+        changeLog.getChangeSet(path, "nvoxland", "precondition attributes 4").preconditions.onFail == Preconditions.FailOption.WARN
 
         and: "modifySql is parsed correctly"
         changeLog.getChangeSet(path, "nvoxland", "standard changeSet").sqlVisitors.size() == 0

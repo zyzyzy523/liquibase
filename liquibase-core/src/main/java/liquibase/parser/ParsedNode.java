@@ -189,6 +189,17 @@ public class ParsedNode extends AbstractExtensibleObject {
     }
 
     /**
+     * Return true if the value of this parsed node is a simple, scalar value like a String, Number, etc.
+     */
+    public boolean isSimpleValue() {
+        return value instanceof String
+                || value instanceof Number
+                || value instanceof Date
+                || value instanceof Boolean;
+    }
+
+
+    /**
      * Uses an custom format with the name and value at the front and then the children instead of the standard {@link AbstractExtensibleObject} logic to be more readable
      */
     public String describe() {

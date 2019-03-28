@@ -8,7 +8,7 @@ import liquibase.changelog.RanChangeSet
 import liquibase.changelog.visitor.ValidatingVisitor
 import liquibase.database.Database
 import liquibase.precondition.core.NotPrecondition
-import liquibase.precondition.core.PreconditionContainer
+import liquibase.precondition.Preconditions
 import liquibase.database.core.MockDatabase
 import spock.lang.Specification
 
@@ -83,7 +83,7 @@ class ValidationFailedExceptionTest extends Specification {
         });
         // PreConditions - errors
         precondErrorChangeSet.addChange(change1)
-        precondErrorChangeSet.setPreconditions((new PreconditionContainer().addNestedPrecondition(new NotPrecondition()) ))
+        precondErrorChangeSet.setPreconditions((new Preconditions().addNestedPrecondition(new NotPrecondition()) ))
         // PreConditions - failed
         handler.visit(validationErrorsChangeSet, new ChangeLog(), null, null);
 

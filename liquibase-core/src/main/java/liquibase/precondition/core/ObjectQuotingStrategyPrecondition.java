@@ -12,12 +12,8 @@ import liquibase.exception.Warnings;
 import liquibase.precondition.AbstractPrecondition;
 
 public class ObjectQuotingStrategyPrecondition extends AbstractPrecondition {
-    private ObjectQuotingStrategy strategy;
 
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
+    public ObjectQuotingStrategy strategy;
 
     @Override
     public String getName() {
@@ -37,6 +33,7 @@ public class ObjectQuotingStrategyPrecondition extends AbstractPrecondition {
     @Override
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
+        //No longer checked since strategy is not set the same anymore
 //        try {
 //            if (changeLog.objectQuotingStrategy != strategy) {
 //                throw new PreconditionFailedException("Quoting strategy Precondition failed: expected "
@@ -47,9 +44,5 @@ public class ObjectQuotingStrategyPrecondition extends AbstractPrecondition {
 //        } catch (Exception e) {
 //            throw new PreconditionErrorException(e, changeLog, this);
 //        }
-    }
-
-    public void setStrategy(String strategy) {
-        this.strategy = ObjectQuotingStrategy.valueOf(strategy);
     }
 }

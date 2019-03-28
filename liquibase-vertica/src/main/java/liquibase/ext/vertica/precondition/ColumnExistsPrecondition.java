@@ -14,6 +14,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.parser.core.ParsedNode;
 import liquibase.parser.core.ParsedNodeException;
+import liquibase.precondition.AbstractPrecondition;
 import liquibase.precondition.Precondition;
 import liquibase.resource.ResourceAccessor;
 import liquibase.structure.core.Column;
@@ -34,7 +35,7 @@ import java.util.Set;
  */
 
 
-public class ColumnExistsPrecondition implements Precondition {
+public class ColumnExistsPrecondition extends AbstractPrecondition {
     private String catalogName;
     private String schemaName;
     private String tableName;

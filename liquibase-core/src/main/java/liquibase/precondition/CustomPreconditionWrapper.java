@@ -86,11 +86,6 @@ public class CustomPreconditionWrapper extends AbstractPrecondition {
         }
     }
 
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
     @Override
     public String getName() {
         return "customPrecondition";

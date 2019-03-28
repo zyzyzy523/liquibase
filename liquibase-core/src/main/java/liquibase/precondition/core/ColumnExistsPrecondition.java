@@ -22,47 +22,10 @@ import java.sql.Statement;
 import static java.lang.String.format;
 
 public class ColumnExistsPrecondition extends AbstractPrecondition {
-    private String catalogName;
-    private String schemaName;
-    private String tableName;
-    private String columnName;
-
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
-
-    public String getCatalogName() {
-        return catalogName;
-    }
-
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getColumnName() {
-        return columnName;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
+    public String catalogName;
+    public String schemaName;
+    public String tableName;
+    public String columnName;
 
     @Override
     public Warnings warn(Database database) {
@@ -77,8 +40,8 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
     @Override
     public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
-		if (canCheckFast(database)) {
-			checkFast(database, changeLog);
+        if (canCheckFast(database)) {
+            checkFast(database, changeLog);
 
         } else {
             checkUsingSnapshot(database, changeLog, changeSet);
@@ -87,14 +50,14 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
 
     private void checkUsingSnapshot(Database database, ChangeLog changeLog, ChangeSet changeSet) throws PreconditionFailedException, PreconditionErrorException {
         Column example = new Column();
-        if (StringUtil.trimToNull(getTableName()) != null) {
-            example.setRelation(new Table().setName(database.correctObjectName(getTableName(), Table.class)).setSchema(new Schema(getCatalogName(), getSchemaName())));
+        if (StringUtil.trimToNull(tableName) != null) {
+            example.setRelation(new Table().setName(database.correctObjectName(tableName, Table.class)).setSchema(new Schema(this.catalogName, this.schemaName)));
         }
-        example.setName(database.correctObjectName(getColumnName(), Column.class));
+        example.setName(database.correctObjectName(columnName, Column.class));
 
         try {
             if (!SnapshotGeneratorFactory.getInstance().has(example, database)) {
-                throw new PreconditionFailedException("Column '" + database.escapeColumnName(catalogName, schemaName, getTableName(), getColumnName()) + "' does not exist", changeLog, this);
+                throw new PreconditionFailedException("Column '" + database.escapeColumnName(catalogName, schemaName, tableName, columnName) + "' does not exist", changeLog, this);
             }
         } catch (LiquibaseException e) {
             throw new PreconditionErrorException(e, changeLog, this);
@@ -102,19 +65,19 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
     }
 
     private boolean canCheckFast(Database database) {
-        if (getCatalogName() != null)
+        if (this.catalogName != null)
             return false;
 
         if (!(database.getConnection() instanceof JdbcConnection))
             return false;
 
-        if (getColumnName() == null)
+        if (columnName == null)
             return false;
 
-        if (!getColumnName().matches("(?i)[a-z][a-z_0-9]*"))
+        if (!columnName.matches("(?i)[a-z][a-z_0-9]*"))
             return false;
 
-        if (!((getSchemaName() != null) || (database.getDefaultSchemaName() != null))) {
+        if (!((this.schemaName != null) || (database.getDefaultSchemaName() != null))) {
             return false;
         }
 
@@ -129,20 +92,20 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
             statement = ((JdbcConnection) database.getConnection())
                     .createStatement();
 
-            String schemaName = getSchemaName();
+            String schemaName = this.schemaName;
             if (schemaName == null) {
                 schemaName = database.getDefaultSchemaName();
             }
-            String tableName = getTableName();
-            String columnName = getColumnName();
+            String tableName = this.tableName;
+            String columnName = this.columnName;
 
             if (database instanceof PostgresDatabase) {
-                String sql = "SELECT 1 FROM pg_attribute a WHERE EXISTS (SELECT 1 FROM pg_class JOIN pg_catalog.pg_namespace ns ON ns.oid = pg_class.relnamespace WHERE lower(ns.nspname)='"+schemaName.toLowerCase()+"' AND lower(relname) = lower('"+tableName+"') AND pg_class.oid = a.attrelid) AND lower(a.attname) = lower('"+columnName+"');";
+                String sql = "SELECT 1 FROM pg_attribute a WHERE EXISTS (SELECT 1 FROM pg_class JOIN pg_catalog.pg_namespace ns ON ns.oid = pg_class.relnamespace WHERE lower(ns.nspname)='" + schemaName.toLowerCase() + "' AND lower(relname) = lower('" + tableName + "') AND pg_class.oid = a.attrelid) AND lower(a.attname) = lower('" + columnName + "');";
                 try {
                     ResultSet rs = statement.executeQuery(sql);
                     try {
                         if (rs.next()) {
-                            return ;
+                            return;
                         } else {
                             // column or table does not exist
                             throw new PreconditionFailedException(format("Column %s.%s.%s does not exist", schemaName, tableName, columnName), changeLog, this);

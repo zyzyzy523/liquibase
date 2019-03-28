@@ -18,7 +18,7 @@ import liquibase.logging.Logger;
 import liquibase.precondition.Conditional;
 import liquibase.precondition.ErrorPrecondition;
 import liquibase.precondition.FailedPrecondition;
-import liquibase.precondition.core.PreconditionContainer;
+import liquibase.precondition.Preconditions;
 import liquibase.sql.visitor.SqlVisitor;
 import liquibase.statement.SqlStatement;
 import liquibase.util.StreamUtil;
@@ -166,7 +166,7 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
     /**
      * ChangeSet level precondtions defined for this changeSet
      */
-    private PreconditionContainer preconditions;
+    private Preconditions preconditions;
 
     /**
      * SqlVisitors defined for this changeset.
@@ -517,7 +517,7 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
                 }
             } catch (PreconditionFailedException e) {
                 if (listener != null) {
-                    listener.preconditionFailed(e, preconditions.getOnFail());
+                    listener.preconditionFailed(e, preconditions.onFail);
                 }
                 StringBuffer message = new StringBuffer();
                 message.append(StreamUtil.getLineSeparator());
@@ -526,26 +526,26 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
                     message.append(StreamUtil.getLineSeparator());
                 }
 
-                if (preconditions.getOnFail().equals(PreconditionContainer.FailOption.HALT)) {
+                if (preconditions.onFail.equals(Preconditions.FailOption.HALT)) {
                     throw new MigrationFailedException(this, message.toString(), e);
-                } else if (preconditions.getOnFail().equals(PreconditionContainer.FailOption.CONTINUE)) {
+                } else if (preconditions.onFail.equals(Preconditions.FailOption.CONTINUE)) {
                     skipChange = true;
                     execType = ExecType.SKIPPED;
 
                     Scope.getCurrentScope().getLog(getClass()).info(LogType.LOG, "Continuing past: " + toString() + " despite precondition failure due to onFail='CONTINUE': " + message);
-                } else if (preconditions.getOnFail().equals(PreconditionContainer.FailOption.MARK_RAN)) {
+                } else if (preconditions.onFail.equals(Preconditions.FailOption.MARK_RAN)) {
                     execType = ExecType.MARK_RAN;
                     skipChange = true;
 
                     log.info(LogType.LOG, "Marking ChangeSet: " + toString() + " ran despite precondition failure due to onFail='MARK_RAN': " + message);
-                } else if (preconditions.getOnFail().equals(PreconditionContainer.FailOption.WARN)) {
+                } else if (preconditions.onFail.equals(Preconditions.FailOption.WARN)) {
                     execType = null; //already warned
                 } else {
-                    throw new UnexpectedLiquibaseException("Unexpected precondition onFail attribute: " + preconditions.getOnFail(), e);
+                    throw new UnexpectedLiquibaseException("Unexpected precondition onFail attribute: " + preconditions.onFail, e);
                 }
             } catch (PreconditionErrorException e) {
                 if (listener != null) {
-                    listener.preconditionErrored(e, preconditions.getOnError());
+                    listener.preconditionErrored(e, preconditions.onError);
                 }
 
                 StringBuffer message = new StringBuffer();
@@ -555,21 +555,21 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
                     message.append(StreamUtil.getLineSeparator());
                 }
 
-                if (preconditions.getOnError().equals(PreconditionContainer.ErrorOption.HALT)) {
+                if (preconditions.onError.equals(Preconditions.ErrorOption.HALT)) {
                     throw new MigrationFailedException(this, message.toString(), e);
-                } else if (preconditions.getOnError().equals(PreconditionContainer.ErrorOption.CONTINUE)) {
+                } else if (preconditions.onError.equals(Preconditions.ErrorOption.CONTINUE)) {
                     skipChange = true;
                     execType = ExecType.SKIPPED;
 
-                } else if (preconditions.getOnError().equals(PreconditionContainer.ErrorOption.MARK_RAN)) {
+                } else if (preconditions.onError.equals(Preconditions.ErrorOption.MARK_RAN)) {
                     execType = ExecType.MARK_RAN;
                     skipChange = true;
 
                     log.info(LogType.LOG, "Marking ChangeSet: " + toString() + " ran despite precondition error: " + message);
-                } else if (preconditions.getOnError().equals(PreconditionContainer.ErrorOption.WARN)) {
+                } else if (preconditions.onError.equals(Preconditions.ErrorOption.WARN)) {
                     execType = null; //already logged
                 } else {
-                    throw new UnexpectedLiquibaseException("Unexpected precondition onError attribute: " + preconditions.getOnError(), e);
+                    throw new UnexpectedLiquibaseException("Unexpected precondition onError attribute: " + preconditions.onError, e);
                 }
 
                 database.rollback();
@@ -959,13 +959,13 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
     }
 
     @Override
-    public PreconditionContainer getPreconditions() {
+    public Preconditions getPreconditions() {
         return preconditions;
     }
 
     @Override
-    public void setPreconditions(PreconditionContainer preconditionContainer) {
-        this.preconditions = preconditionContainer;
+    public void setPreconditions(Preconditions preconditions) {
+        this.preconditions = preconditions;
     }
 
     public void addSqlVisitor(SqlVisitor sqlVisitor) {

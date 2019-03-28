@@ -1,0 +1,16 @@
+#todo: better check when changes are converted to actions
+#
+#Expected Output:
+#ChangeLog{items=[null::1::bob], physicalPath=single_changeset.yaml}
+
+databaseChangeLog:
+  - changeSet:
+      author: bob
+      id: 1
+      changes:
+        - addColumn:
+            tableName: test_table
+            columns:
+              - column:
+                  name: test_col
+                  type: int

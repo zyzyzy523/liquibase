@@ -15,15 +15,8 @@ import liquibase.precondition.PreconditionLogic;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Container class for all preconditions on a change log.
- */
 public class AndPrecondition extends PreconditionLogic {
 
-//    @Override
-//    public String getSerializedObjectNamespace() {
-//        return STANDARD_CHANGELOG_NAMESPACE;
-//    }
 
     @Override
     public Warnings warn(Database database) {

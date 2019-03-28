@@ -19,7 +19,6 @@ public class ChangeLogPreprocessor extends AbstractParsedNodePreprocessor {
 
     /**
      * Remove the now-unused legacy quoting strategy.
-     * Move changeSet nodes into the changeLogEntries collection.
      */
     @Override
     public void process(ParsedNode node) throws ParseException {
@@ -29,9 +28,11 @@ public class ChangeLogPreprocessor extends AbstractParsedNodePreprocessor {
             quotingStrategy.remove();
         }
 
-        ParsedNode changeLogEntries = node.getChild("changeLogEntries", true);
-        for (ParsedNode changeSetNode : node.getChildren("changeSet", false)) {
-            changeSetNode.moveTo(changeLogEntries);
+        ParsedNode items = node.getChild("items", true);
+        for (String childName : new String[] {"changeSet", "preconditions"}) {
+            for (ParsedNode changeSetNode : node.getChildren(childName, false)) {
+                changeSetNode.moveTo(items);
+            }
         }
     }
 }

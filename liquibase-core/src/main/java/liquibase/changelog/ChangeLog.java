@@ -6,7 +6,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
 import liquibase.exception.SetupException;
 import liquibase.parser.ParsedNode;
-import liquibase.precondition.core.PreconditionContainer;
+import liquibase.precondition.Preconditions;
 import liquibase.resource.ResourceAccessor;
 
 import java.util.*;
@@ -31,7 +31,7 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
      */
     public Database.QuotingStrategy objectQuotingStrategy;
 
-    public List<ChangeLogEntry> changeLogEntries = new ArrayList<>();
+    public List<ChangeLogEntry> items = new ArrayList<>();
 
     public ChangeLog containerChangeLog;
 
@@ -42,11 +42,6 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
         this.physicalPath = physicalPath;
     }
 
-    public ChangeLog addEntry(ChangeLogEntry entry) {
-        this.changeLogEntries.add(entry);
-        return this;
-    }
-
     @Override
     public ChangeLog getContainerChangeLog() {
         return containerChangeLog;
@@ -54,7 +49,7 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
 
     public List<ChangeSet> getChangeSets() {
         List<ChangeSet> returnList = new ArrayList<>();
-        for (ChangeLogEntry entry : changeLogEntries) {
+        for (ChangeLogEntry entry : items) {
             if (entry instanceof ChangeSet) {
                 returnList.add((ChangeSet) entry);
             }
@@ -83,12 +78,12 @@ public class ChangeLog extends AbstractExtensibleObject implements ChangeLogEntr
 
 
     //    @Override
-    public PreconditionContainer getPreconditions() {
+    public Preconditions getPreconditions() {
         return null; // return preconditionContainer;
     }
 //
 //    @Override
-    public void setPreconditions(PreconditionContainer precond) {
+    public void setPreconditions(Preconditions precond) {
 //        if (precond == null) {
 //            this.preconditionContainer = new PreconditionContainer();
 //        } else {

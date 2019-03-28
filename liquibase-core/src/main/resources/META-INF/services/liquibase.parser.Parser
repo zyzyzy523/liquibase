@@ -1,3 +1,4 @@
 liquibase.parser.json.JsonParser
+liquibase.parser.sql.FormattedSqlChangeLogParser
 liquibase.parser.xml.XmlParser
 liquibase.parser.yaml.YamlParser

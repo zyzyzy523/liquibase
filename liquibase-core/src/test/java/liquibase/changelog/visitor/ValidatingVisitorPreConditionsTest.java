@@ -11,8 +11,8 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
+import liquibase.precondition.Preconditions;
 import liquibase.precondition.core.DBMSPrecondition;
-import liquibase.precondition.core.PreconditionContainer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,12 +55,12 @@ public class ValidatingVisitorPreConditionsTest {
     @Test
     public void testPreconditionForOracleOnOracleWithChangeLog() {
         // create the pre condition
-        PreconditionContainer preCondition = new PreconditionContainer();
-        preCondition.setOnFail(PreconditionContainer.FailOption.MARK_RAN.toString());
+        Preconditions preCondition = new Preconditions();
+        preCondition.onFail = Preconditions.FailOption.MARK_RAN;
 
         DBMSPrecondition dbmsPrecondition = new DBMSPrecondition();
-        dbmsPrecondition.setType("oracle");
-        preCondition.addNestedPrecondition(dbmsPrecondition);
+        dbmsPrecondition.type = "oracle";
+        preCondition.add(dbmsPrecondition);
 
         changeSet1.setPreconditions(preCondition);
 
@@ -94,12 +94,12 @@ public class ValidatingVisitorPreConditionsTest {
     @Test
     public void testPreConditionsForOracleOnMSSQLWithPreconditionTag() {
         // create the pre condition
-        PreconditionContainer preCondition = new PreconditionContainer();
-        preCondition.setOnFail(PreconditionContainer.FailOption.MARK_RAN.toString());
+        Preconditions preCondition = new Preconditions();
+        preCondition.onFail = Preconditions.FailOption.MARK_RAN;
 
         DBMSPrecondition dbmsPrecondition = new DBMSPrecondition();
-        dbmsPrecondition.setType("oracle");
-        preCondition.addNestedPrecondition(dbmsPrecondition);
+        dbmsPrecondition.type = "oracle";
+        preCondition.add(dbmsPrecondition);
 
         changeSet1.setPreconditions(preCondition);
 
@@ -138,12 +138,12 @@ public class ValidatingVisitorPreConditionsTest {
     @Test
     public void testPreConditionsForOracleOnMSSQLWithChangeLog() {
         // create the pre condition
-        PreconditionContainer preCondition = new PreconditionContainer();
-        preCondition.setOnFail(PreconditionContainer.FailOption.MARK_RAN.toString());
+        Preconditions preCondition = new Preconditions();
+        preCondition.onFail = Preconditions.FailOption.MARK_RAN;
 
         DBMSPrecondition dbmsPrecondition = new DBMSPrecondition();
-        dbmsPrecondition.setType("oracle");
-        preCondition.addNestedPrecondition(dbmsPrecondition);
+        dbmsPrecondition.type = "oracle";
+        preCondition.add(dbmsPrecondition);
 
         changeSet1.setPreconditions(preCondition);
 
