@@ -253,8 +253,4 @@ public class AddUniqueConstraintChange extends AbstractChange {
         };
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

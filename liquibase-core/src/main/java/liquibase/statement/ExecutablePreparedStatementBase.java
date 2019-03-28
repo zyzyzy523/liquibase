@@ -42,10 +42,8 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 
     private Set<Closeable> closeables;
 
-    private ResourceAccessor resourceAccessor;
-
     protected ExecutablePreparedStatementBase(Database database, String catalogName, String schemaName, String
-            tableName, List<ColumnConfig> columns, ChangeSet changeSet, ResourceAccessor resourceAccessor) {
+            tableName, List<ColumnConfig> columns, ChangeSet changeSet) {
         this.database = database;
         this.changeSet = changeSet;
         this.catalogName = catalogName;
@@ -54,7 +52,6 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
         this.columns = columns;
         this.changeSet = changeSet;
         this.closeables = new HashSet<>();
-        this.resourceAccessor = resourceAccessor;
     }
 
     private static InputStream createStream(InputStream in) {
@@ -291,7 +288,7 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
 
     private InputStream getResourceAsStream(String valueLobFile) throws IOException, LiquibaseException {
         String fileName = getFileName(valueLobFile);
-        InputStreamList streams = this.resourceAccessor.openStreams(null, fileName);
+        InputStreamList streams = Scope.getCurrentScope().getResourceAccessor().openStreams(null, fileName);
         if ((streams == null) || streams.isEmpty()) {
             return null;
         }
@@ -308,7 +305,7 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
     private String getFileName(String fileName) {
         //  Most of this method were copy-pasted from XMLChangeLogSAXHandler#handleIncludedChangeLog()
 
-        String relativeBaseFileName = changeSet.getChangeLog().getPhysicalFilePath();
+        String relativeBaseFileName = changeSet.getChangeLog().physicalPath;
 
         // workaround for FilenameUtils.normalize() returning null for relative paths like ../conf/liquibase.xml
         String tempFile = FilenameUtils.concat(FilenameUtils.getFullPath(relativeBaseFileName), fileName);
@@ -332,7 +329,7 @@ public abstract class ExecutablePreparedStatementBase implements ExecutablePrepa
         String p = path;
         File f = new File(p);
         if (!f.isAbsolute()) {
-            String basePath = FilenameUtils.getFullPath(changeSet.getChangeLog().getPhysicalFilePath());
+            String basePath = FilenameUtils.getFullPath(changeSet.getChangeLog().physicalPath);
             p = FilenameUtils.normalize(basePath + p);
         }
         return p;

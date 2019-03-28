@@ -7,13 +7,15 @@ import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
 import liquibase.database.Database;
 import liquibase.exception.*;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.statement.SqlStatement;
 import liquibase.util.ObjectUtil;
 
 import java.util.*;
+
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
 
 /**
  * Adapts CustomChange implementations to the standard change system used by Liquibase.
@@ -238,7 +240,6 @@ public class CustomChangeWrapper extends AbstractChange {
             for (String param : params) {
                 ObjectUtil.setProperty(customChange, param, paramValues.get(param));
             }
-            customChange.setFileOpener(getResourceAccessor());
             customChange.setUp();
 
             configured = true;
@@ -248,12 +249,12 @@ public class CustomChangeWrapper extends AbstractChange {
     }
 
     @Override
-    public SerializationType getSerializableFieldType(String field) {
+    public LiquibaseSerializable.SerializationType getSerializableFieldType(String field) {
         switch (field) {
             case "class":
-                return SerializationType.NAMED_FIELD;
+                return LiquibaseSerializable.SerializationType.NAMED_FIELD;
             case "param":
-                return SerializationType.NESTED_OBJECT;
+                return LiquibaseSerializable.SerializationType.NESTED_OBJECT;
             default:
                 throw new UnexpectedLiquibaseException("Unexpected CustomChangeWrapper field " + field);
         }
@@ -282,31 +283,31 @@ public class CustomChangeWrapper extends AbstractChange {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         try {
-            setClass(parsedNode.getChildValue(null, "class", String.class));
+            setClass(parsedNode.getChildValue("class", String.class, true));
         } catch (CustomChangeException e) {
-            throw new ParsedNodeException(e);
+            throw new ParseException(e, parsedNode);
         }
-        super.load(parsedNode, resourceAccessor);
+        super.load(parsedNode);
     }
 
     @Override
-    public void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        ParsedNode paramsNode = parsedNode.getChild(null, "params");
+    public void customLoadLogic(ParsedNode parsedNode) throws ParseException {
+        ParsedNode paramsNode = parsedNode.getChild("params", false);
         if (paramsNode == null) {
             paramsNode = parsedNode;
         }
 
-        for (ParsedNode child : paramsNode.getChildren(null, "param")) {
+        for (ParsedNode child : paramsNode.getChildren("param", false)) {
             Object value = child.getValue();
             if (value == null) {
-                value = child.getChildValue(null, "value");
+                value = child.getChildValue("value", String.class, true);
             }
             if (value != null) {
                 value = value.toString();
             }
-            this.setParam(child.getChildValue(null, "name", String.class), (String) value);
+            this.setParam(child.getChildValue("name", String.class, true), (String) value);
         }
 
         CustomChange customChange = null;

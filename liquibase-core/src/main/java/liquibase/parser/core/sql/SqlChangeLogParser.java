@@ -1,13 +1,13 @@
 package liquibase.parser.core.sql;
 
+import liquibase.Scope;
 import liquibase.change.core.RawSQLChange;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.ObjectQuotingStrategy;
 import liquibase.exception.ChangeLogParseException;
 import liquibase.parser.ChangeLogParser;
-import liquibase.resource.ResourceAccessor;
 import liquibase.util.StreamUtil;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.io.InputStream;
 public class SqlChangeLogParser implements ChangeLogParser {
 
     @Override
-    public boolean supports(String changeLogFile, ResourceAccessor resourceAccessor) {
+    public boolean supports(String changeLogFile) {
         return changeLogFile.endsWith(".sql");
     }
 
@@ -26,15 +26,15 @@ public class SqlChangeLogParser implements ChangeLogParser {
     }
     
     @Override
-    public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters, ResourceAccessor resourceAccessor) throws ChangeLogParseException {
+    public ChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException {
 
-        DatabaseChangeLog changeLog = new DatabaseChangeLog();
-        changeLog.setPhysicalFilePath(physicalChangeLogLocation);
+        ChangeLog changeLog = new ChangeLog();
+        changeLog.physicalPath  = physicalChangeLogLocation;
 
         RawSQLChange change = new RawSQLChange();
 
         try {
-            InputStream sqlStream = resourceAccessor.openStream(null, physicalChangeLogLocation);
+            InputStream sqlStream = Scope.getCurrentScope().getResourceAccessor().openStream(null, physicalChangeLogLocation);
             if (sqlStream == null) {
                 throw new ChangeLogParseException("File does not exist: "+physicalChangeLogLocation);
             }
@@ -43,7 +43,6 @@ public class SqlChangeLogParser implements ChangeLogParser {
         } catch (IOException e) {
             throw new ChangeLogParseException(e);
         }
-        change.setResourceAccessor(resourceAccessor);
         change.setSplitStatements(false);
         change.setStripComments(false);
 

@@ -110,7 +110,7 @@ public class InsertDataChange extends AbstractChange implements ChangeWithColumn
 
         if (needsPreparedStatement) {
             return new SqlStatement[] {
-                    new InsertExecutablePreparedStatement(database, catalogName, schemaName, tableName, columns, getChangeSet(), this.getResourceAccessor())
+                    new InsertExecutablePreparedStatement(database, catalogName, schemaName, tableName, columns, getChangeSet())
             };
         }
 
@@ -155,8 +155,4 @@ public class InsertDataChange extends AbstractChange implements ChangeWithColumn
         this.dbms = dbms;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

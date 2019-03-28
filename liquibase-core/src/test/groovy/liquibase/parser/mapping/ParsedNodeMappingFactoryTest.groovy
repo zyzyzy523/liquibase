@@ -1,21 +1,21 @@
 package liquibase.parser.mapping
 
-
+import liquibase.Scope
+import liquibase.changelog.ChangeSet
 import spock.lang.Specification
 
 class ParsedNodeMappingFactoryTest extends Specification {
 
 //    def "converting nulls returns nulls"() {
 //        when:
-//        def scope = JUnitScope.instance
-//        def mappingFactory = scope.getSingleton(ParsedNodeMappingFactory)
+//        def mappingFactory = Scope.getCurrentScope().getSingleton(ParsedNodeMappingFactory)
 //
 //        then:
-//        mappingFactory.toObject(null, ChangeSet, ChangeLog, "changeLogEntries", scope) == null
-//        mappingFactory.toObject(null, null, ChangeLog, "changeLogEntries", scope) == null
+//        mappingFactory.toObject(null, ChangeSet, ChangeLog, "changeLogEntries") == null
+//        mappingFactory.toObject(null, null, ChangeLog, "changeLogEntries") == null
 //
-//        mappingFactory.toParsedNode(null, ChangeLog, "changeLogEntries", null, scope) == null
-//        mappingFactory.toParsedNode(null, null, "changeLogEntries", null, scope) == null
+//        mappingFactory.toParsedNode(null, ChangeLog, "changeLogEntries", null) == null
+//        mappingFactory.toParsedNode(null, null, "changeLogEntries", null) == null
 //    }
 //
 //    /**

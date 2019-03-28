@@ -3,6 +3,7 @@ package liquibase.change.core;
 import liquibase.change.AbstractChange;
 import liquibase.change.ColumnConfig;
 import liquibase.change.DatabaseChangeProperty;
+import liquibase.serializer.LiquibaseSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public abstract class AbstractModifyDataChange extends AbstractChange {
         this.tableName = tableName;
     }
 
-    @DatabaseChangeProperty(serializationType = SerializationType.NESTED_OBJECT, exampleValue = "name='Bob'")
+    @DatabaseChangeProperty(serializationType = LiquibaseSerializable.SerializationType.NESTED_OBJECT, exampleValue = "name='Bob'")
     public String getWhere() {
         return where;
     }

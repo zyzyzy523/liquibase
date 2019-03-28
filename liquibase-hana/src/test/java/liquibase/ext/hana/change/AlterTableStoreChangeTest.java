@@ -2,29 +2,7 @@ package liquibase.ext.hana.change;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
 import org.junit.Test;
-
-import liquibase.Scope;
-import liquibase.change.Change;
-import liquibase.change.ChangeFactory;
-import liquibase.change.ChangeMetaData;
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.database.Database;
-import liquibase.ext.hana.HanaDatabase;
-import liquibase.ext.hana.statement.AlterTableStoreStatement;
-import liquibase.ext.hana.testing.BaseTestCase;
-import liquibase.parser.ChangeLogParserFactory;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.ResourceAccessor;
-import liquibase.sql.Sql;
-import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.statement.SqlStatement;
 
 public class AlterTableStoreChangeTest { // extends BaseTestCase {
 

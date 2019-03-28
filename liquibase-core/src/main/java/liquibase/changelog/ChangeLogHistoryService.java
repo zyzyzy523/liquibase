@@ -27,7 +27,7 @@ public interface ChangeLogHistoryService extends PrioritizedService {
     /**
      * Upgrades any existing checksums with an out of date version
      */
-    void upgradeChecksums(final DatabaseChangeLog databaseChangeLog, final Contexts contexts, LabelExpression labels) throws DatabaseException;
+    void upgradeChecksums(final ChangeLog changeLog, final Contexts contexts, LabelExpression labels) throws DatabaseException;
 
     public List<RanChangeSet> getRanChangeSets() throws DatabaseException;
 

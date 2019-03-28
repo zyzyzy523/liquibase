@@ -2,9 +2,8 @@ package liquibase.parser.core.xml;
 
 import liquibase.Scope;
 import liquibase.change.ChangeFactory;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import liquibase.parser.ChangeLogParserFactory;
 import liquibase.parser.core.ParsedNode;
@@ -28,7 +27,7 @@ class XMLChangeLogSAXHandler extends DefaultHandler {
 
     protected Logger log;
 
-	private final DatabaseChangeLog databaseChangeLog;
+	private final ChangeLog changeLog;
 	private final ResourceAccessor resourceAccessor;
 	private final ChangeLogParameters changeLogParameters;
     private final Stack<ParsedNode> nodeStack = new Stack();
@@ -40,9 +39,9 @@ class XMLChangeLogSAXHandler extends DefaultHandler {
 		log = Scope.getCurrentScope().getLog(getClass());
 		this.resourceAccessor = resourceAccessor;
 
-		databaseChangeLog = new DatabaseChangeLog();
-		databaseChangeLog.setPhysicalFilePath(physicalChangeLogLocation);
-		databaseChangeLog.setChangeLogParameters(changeLogParameters);
+		changeLog = new ChangeLog();
+		changeLog.physicalPath = physicalChangeLogLocation;
+		changeLog.setChangeLogParameters(changeLogParameters);
 
         if (changeLogParameters == null) {
             this.changeLogParameters = new ChangeLogParameters();
@@ -56,8 +55,8 @@ class XMLChangeLogSAXHandler extends DefaultHandler {
         changeLogParserFactory = ChangeLogParserFactory.getInstance();
     }
 
-	public DatabaseChangeLog getDatabaseChangeLog() {
-		return databaseChangeLog;
+	public ChangeLog getChangeLog() {
+		return changeLog;
 	}
 
     public ParsedNode getDatabaseChangeLogTree() {

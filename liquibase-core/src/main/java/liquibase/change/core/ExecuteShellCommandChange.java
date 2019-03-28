@@ -8,6 +8,7 @@ import liquibase.change.DatabaseChangeProperty;
 import liquibase.configuration.GlobalConfiguration;
 import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.database.Database;
+import liquibase.exception.ParseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
@@ -16,8 +17,7 @@ import liquibase.executor.ExecutorService;
 import liquibase.executor.LoggingExecutor;
 import liquibase.logging.LogService;
 import liquibase.logging.LogType;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
 import liquibase.statement.SqlStatement;
@@ -336,27 +336,21 @@ public class ExecuteShellCommandChange extends AbstractChange {
     }
 
     @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
-
-    @Override
-    protected void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws
-            ParsedNodeException {
-        ParsedNode argsNode = parsedNode.getChild(null, "args");
+    protected void customLoadLogic(ParsedNode parsedNode) throws
+            ParseException {
+        ParsedNode argsNode = parsedNode.getChild("args", false);
         if (argsNode == null) {
             argsNode = parsedNode;
         }
 
-        for (ParsedNode arg : argsNode.getChildren(null, "arg")) {
-            addArg(arg.getChildValue(null, "value", String.class));
+        for (ParsedNode arg : argsNode.getChildren("arg", false)) {
+            addArg(arg.getChildValue("value", String.class, true));
         }
-        String passedValue = StringUtil.trimToNull(parsedNode.getChildValue(null, "os", String.class));
+        String passedValue = StringUtil.trimToNull(parsedNode.getChildValue("os", String.class, true));
         if (passedValue == null) {
             this.os = new ArrayList<>();
         } else {
-            List<String> os = StringUtil.splitAndTrim(StringUtil.trimToEmpty(parsedNode.getChildValue(null, "os",
-                    String.class)), ",");
+            List<String> os = StringUtil.splitAndTrim(StringUtil.trimToEmpty(parsedNode.getChildValue( "os", String.class, true)), ",");
             if ((os.size() == 1) && ("".equals(os.get(0)))) {
                 this.os = null;
             } else if (!os.isEmpty()) {

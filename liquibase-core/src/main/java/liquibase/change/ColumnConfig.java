@@ -1,10 +1,12 @@
 package liquibase.change;
 
+import liquibase.AbstractExtensibleObject;
 import liquibase.exception.DateParseException;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.AbstractLiquibaseSerializable;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.serializer.ReflectionSerializer;
 import liquibase.statement.DatabaseFunction;
 import liquibase.statement.NotNullConstraint;
@@ -22,7 +24,6 @@ import liquibase.util.NowAndTodayUtil;
 
 import java.math.BigInteger;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -295,7 +296,7 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
 
             try {
                 this.valueNumeric = ValueNumeric.of(Locale.US, valueNumeric);
-            } catch (ParseException e) {
+            } catch (java.text.ParseException e) {
                 this.valueComputed = new DatabaseFunction(saved);
             }
         }
@@ -399,7 +400,7 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
         } else {
             try {
                 this.valueDate = new ISODateFormat().parse(valueDate);
-            } catch (ParseException e) {
+            } catch (java.text.ParseException e) {
                 //probably a function
                 this.valueComputed = new DatabaseFunction(valueDate);
             }
@@ -526,7 +527,7 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
                 }
                 try {
                     this.defaultValueNumeric = ValueNumeric.of(Locale.US, defaultValueNumeric);
-                } catch (ParseException e) {
+                } catch (java.text.ParseException e) {
                     this.defaultValueComputed = new DatabaseFunction(defaultValueNumeric);
                 }
             }
@@ -567,7 +568,7 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
         } else {
             try {
                 this.defaultValueDate = new ISODateFormat().parse(defaultValueDate);
-            } catch (ParseException e) {
+            } catch (java.text.ParseException e) {
                 //probably a computed date
                 this.defaultValueComputed = new DatabaseFunction(defaultValueDate);
             }
@@ -749,7 +750,6 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
         return this;
     }
 
-    @Override
     public String getSerializedObjectName() {
         return "column";
     }
@@ -772,119 +772,113 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
         this.defaultValueConstraintName = defaultValueConstraintName;
     }
 
-    @Override
-    public SerializationType getSerializableFieldType(String field) {
-        return SerializationType.NAMED_FIELD;
+//    @Override
+    public LiquibaseSerializable.SerializationType getSerializableFieldType(String field) {
+        return LiquibaseSerializable.SerializationType.NAMED_FIELD;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
-
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws liquibase.exception.ParseException {
         for (ParsedNode child : parsedNode.getChildren()) {
             if (!ObjectUtil.hasProperty(this, child.getName())) {
-                throw new ParsedNodeException("Unexpected node: "+child.getName());
+                throw new ParseException("Unexpected node: "+child.getName(), parsedNode);
             }
         }
 
 
-        name = parsedNode.getChildValue(null, "name", String.class);
-        computed = parsedNode.getChildValue(null, "computed", Boolean.class);
-        type = parsedNode.getChildValue(null, "type", String.class);
-        encoding = parsedNode.getChildValue(null, "encoding", String.class);
-        autoIncrement = parsedNode.getChildValue(null, "autoIncrement", Boolean.class);
-        startWith = parsedNode.getChildValue(null, "startWith", BigInteger.class);
-        incrementBy = parsedNode.getChildValue(null, "incrementBy", BigInteger.class);
-        remarks = parsedNode.getChildValue(null, "remarks", String.class);
-        descending = parsedNode.getChildValue(null, "descending", Boolean.class);
+        name = parsedNode.getChildValue("name", String.class, true);
+        computed = parsedNode.getChildValue("computed", Boolean.class, true);
+        type = parsedNode.getChildValue("type", String.class, true);
+        encoding = parsedNode.getChildValue("encoding", String.class, true);
+        autoIncrement = parsedNode.getChildValue("autoIncrement", Boolean.class, true);
+        startWith = parsedNode.getChildValue("startWith", BigInteger.class, true);
+        incrementBy = parsedNode.getChildValue("incrementBy", BigInteger.class, true);
+        remarks = parsedNode.getChildValue("remarks", String.class, true);
+        descending = parsedNode.getChildValue("descending", Boolean.class, true);
 
 
-        value = parsedNode.getChildValue(null, "value", String.class);
+        value = parsedNode.getChildValue("value", String.class, true);
         if (value == null) {
             value = StringUtil.trimToNull((String) parsedNode.getValue());
         }
 
-        setValueNumeric(parsedNode.getChildValue(null, "valueNumeric", String.class));
+        setValueNumeric(parsedNode.getChildValue("valueNumeric", String.class, true));
 
         try {
-            valueDate = parsedNode.getChildValue(null, "valueDate", Date.class);
-        } catch (ParsedNodeException e) {
-            valueComputed = new DatabaseFunction(parsedNode.getChildValue(null, "valueDate", String.class));
+            valueDate = parsedNode.getChildValue("valueDate", Date.class, true);
+        } catch (ParseException e) {
+            valueComputed = new DatabaseFunction(parsedNode.getChildValue("valueDate", String.class, true));
         }
-        valueBoolean = parsedNode.getChildValue(null, "valueBoolean", Boolean.class);
-        valueBlobFile = parsedNode.getChildValue(null, "valueBlobFile", String.class);
-        valueClobFile = parsedNode.getChildValue(null, "valueClobFile", String.class);
-        String valueComputedString = parsedNode.getChildValue(null, "valueComputed", String.class);
+        valueBoolean = parsedNode.getChildValue("valueBoolean", Boolean.class, true);
+        valueBlobFile = parsedNode.getChildValue("valueBlobFile", String.class, true);
+        valueClobFile = parsedNode.getChildValue("valueClobFile", String.class, true);
+        String valueComputedString = parsedNode.getChildValue("valueComputed", String.class, true);
         if (valueComputedString != null) {
             valueComputed = new DatabaseFunction(valueComputedString);
         }
-        String valueSequenceNextString = parsedNode.getChildValue(null, "valueSequenceNext", String.class);
+        String valueSequenceNextString = parsedNode.getChildValue("valueSequenceNext", String.class, true);
         if (valueSequenceNextString != null) {
             valueSequenceNext = new SequenceNextValueFunction(valueSequenceNextString);
         }
-        String valueSequenceCurrentString = parsedNode.getChildValue(null, "valueSequenceCurrent", String.class);
+        String valueSequenceCurrentString = parsedNode.getChildValue("valueSequenceCurrent", String.class, true);
         if (valueSequenceCurrentString != null) {
             valueSequenceCurrent = new SequenceCurrentValueFunction(valueSequenceCurrentString);
         }
 
 
-        defaultValueConstraintName = parsedNode.getChildValue(null, "defaultValueConstraintName", String.class);
+        defaultValueConstraintName = parsedNode.getChildValue("defaultValueConstraintName", String.class, true);
 
-        defaultValue = parsedNode.getChildValue(null, "defaultValue", String.class);
+        defaultValue = parsedNode.getChildValue("defaultValue", String.class, true);
 
-        setDefaultValueNumeric(parsedNode.getChildValue(null, "defaultValueNumeric", String.class));
+        setDefaultValueNumeric(parsedNode.getChildValue("defaultValueNumeric", String.class, true));
 
         try {
-            defaultValueDate = parsedNode.getChildValue(null, "defaultValueDate", Date.class);
-        } catch (ParsedNodeException e) {
-            defaultValueComputed = new DatabaseFunction(parsedNode.getChildValue(null, "defaultValueDate", String.class));
+            defaultValueDate = parsedNode.getChildValue("defaultValueDate", Date.class, true);
+        } catch (ParseException e) {
+            defaultValueComputed = new DatabaseFunction(parsedNode.getChildValue("defaultValueDate", String.class, true));
         }
-        defaultValueBoolean = parsedNode.getChildValue(null, "defaultValueBoolean", Boolean.class);
-        String defaultValueComputedString = parsedNode.getChildValue(null, "defaultValueComputed", String.class);
+        defaultValueBoolean = parsedNode.getChildValue("defaultValueBoolean", Boolean.class, true);
+        String defaultValueComputedString = parsedNode.getChildValue("defaultValueComputed", String.class, true);
         if (defaultValueComputedString != null) {
             defaultValueComputed = new DatabaseFunction(defaultValueComputedString);
         }
-        String defaultValueSequenceNextString = parsedNode.getChildValue(null, "defaultValueSequenceNext", String.class);
+        String defaultValueSequenceNextString = parsedNode.getChildValue("defaultValueSequenceNext", String.class, true);
         if (defaultValueSequenceNextString != null) {
             defaultValueSequenceNext = new SequenceNextValueFunction(defaultValueSequenceNextString);
         }
 
-        defaultOnNull = parsedNode.getChildValue(null, "defaultOnNull", Boolean.class);
-        generationType = parsedNode.getChildValue(null, "generationType", String.class);
+        defaultOnNull = parsedNode.getChildValue("defaultOnNull", Boolean.class, true);
+        generationType = parsedNode.getChildValue("generationType", String.class, true);
 
-        loadConstraints(parsedNode.getChild(null, "constraints"));
+        loadConstraints(parsedNode.getChild("constraints", true));
     }
 
-    protected void loadConstraints(ParsedNode constraintsNode) throws ParsedNodeException {
+    protected void loadConstraints(ParsedNode constraintsNode) throws ParseException {
         if (constraintsNode == null) {
             return;
         }
 
         ConstraintsConfig constraints = new ConstraintsConfig();
-        constraints.setNullable(constraintsNode.getChildValue(null, "nullable", Boolean.class));
-        constraints.setNotNullConstraintName(constraintsNode.getChildValue(null, "notNullConstraintName", String.class));
-        constraints.setPrimaryKey(constraintsNode.getChildValue(null, "primaryKey", Boolean.class));
-        constraints.setPrimaryKeyName(constraintsNode.getChildValue(null, "primaryKeyName", String.class));
-        constraints.setPrimaryKeyTablespace(constraintsNode.getChildValue(null, "primaryKeyTablespace", String.class));
-        constraints.setReferences(constraintsNode.getChildValue(null, "references", String.class));
-        constraints.setReferencedTableCatalogName(constraintsNode.getChildValue(null, "referencedTableCatalogName", String.class));
-        constraints.setReferencedTableSchemaName(constraintsNode.getChildValue(null, "referencedTableSchemaName", String.class));
-        constraints.setReferencedTableName(constraintsNode.getChildValue(null, "referencedTableName", String.class));
-        constraints.setReferencedColumnNames(constraintsNode.getChildValue(null, "referencedColumnNames", String.class));
-        constraints.setUnique(constraintsNode.getChildValue(null, "unique", Boolean.class));
-        constraints.setUniqueConstraintName(constraintsNode.getChildValue(null, "uniqueConstraintName", String.class));
-        constraints.setCheckConstraint(constraintsNode.getChildValue(null, "checkConstraint", String.class));
-        constraints.setDeleteCascade(constraintsNode.getChildValue(null, "deleteCascade", Boolean.class));
-        constraints.setForeignKeyName(constraintsNode.getChildValue(null, "foreignKeyName", String.class));
-        constraints.setInitiallyDeferred(constraintsNode.getChildValue(null, "initiallyDeferred", Boolean.class));
-        constraints.setDeferrable(constraintsNode.getChildValue(null, "deferrable", Boolean.class));
-        constraints.setShouldValidateNullable(constraintsNode.getChildValue(null, "validateNullable", Boolean.class));
-        constraints.setShouldValidateUnique(constraintsNode.getChildValue(null, "validateUnique", Boolean.class));
-        constraints.setShouldValidatePrimaryKey(constraintsNode.getChildValue(null, "validatePrimaryKey", Boolean.class));
-        constraints.setShouldValidateForeignKey(constraintsNode.getChildValue(null, "validateForeignKey", Boolean.class));
+        constraints.setNullable(constraintsNode.getChildValue("nullable", Boolean.class, true));
+        constraints.setNotNullConstraintName(constraintsNode.getChildValue("notNullConstraintName", String.class, true));
+        constraints.setPrimaryKey(constraintsNode.getChildValue("primaryKey", Boolean.class, true));
+        constraints.setPrimaryKeyName(constraintsNode.getChildValue("primaryKeyName", String.class, true));
+        constraints.setPrimaryKeyTablespace(constraintsNode.getChildValue("primaryKeyTablespace", String.class, true));
+        constraints.setReferences(constraintsNode.getChildValue("references", String.class, true));
+        constraints.setReferencedTableCatalogName(constraintsNode.getChildValue("referencedTableCatalogName", String.class, true));
+        constraints.setReferencedTableSchemaName(constraintsNode.getChildValue("referencedTableSchemaName", String.class, true));
+        constraints.setReferencedTableName(constraintsNode.getChildValue("referencedTableName", String.class, true));
+        constraints.setReferencedColumnNames(constraintsNode.getChildValue("referencedColumnNames", String.class, true));
+        constraints.setUnique(constraintsNode.getChildValue("unique", Boolean.class, true));
+        constraints.setUniqueConstraintName(constraintsNode.getChildValue("uniqueConstraintName", String.class, true));
+        constraints.setCheckConstraint(constraintsNode.getChildValue("checkConstraint", String.class, true));
+        constraints.setDeleteCascade(constraintsNode.getChildValue("deleteCascade", Boolean.class, true));
+        constraints.setForeignKeyName(constraintsNode.getChildValue("foreignKeyName", String.class, true));
+        constraints.setInitiallyDeferred(constraintsNode.getChildValue("initiallyDeferred", Boolean.class, true));
+        constraints.setDeferrable(constraintsNode.getChildValue("deferrable", Boolean.class, true));
+        constraints.setShouldValidateNullable(constraintsNode.getChildValue("validateNullable", Boolean.class, true));
+        constraints.setShouldValidateUnique(constraintsNode.getChildValue("validateUnique", Boolean.class, true));
+        constraints.setShouldValidatePrimaryKey(constraintsNode.getChildValue("validatePrimaryKey", Boolean.class, true));
+        constraints.setShouldValidateForeignKey(constraintsNode.getChildValue("validateForeignKey", Boolean.class, true));
         setConstraints(constraints);
     }
 
@@ -899,7 +893,7 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
             this.value = value;
         }
 
-        private static ValueNumeric of(Locale locale, String value) throws ParseException {
+        private static ValueNumeric of(Locale locale, String value) throws java.text.ParseException {
             final Number parsedNumber = NumberFormat.getInstance(locale)
                     .parse(value);
             return new ValueNumeric(value, parsedNumber);
@@ -952,7 +946,6 @@ public class ColumnConfig extends AbstractLiquibaseSerializable {
         }
     }
 
-    @Override
     public Object getSerializableFieldValue(String field) {
         Object o = ReflectionSerializer.getInstance().getValue(this, field);
         if (field.equals("valueDate") || field.equals("defaultValueDate")) {

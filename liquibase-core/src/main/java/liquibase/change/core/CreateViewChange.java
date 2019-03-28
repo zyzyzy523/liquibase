@@ -8,11 +8,11 @@ import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.database.core.SQLiteDatabase;
+import liquibase.exception.ParseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
+import liquibase.parser.ParsedNode;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
 
 /**
  * Creates a new view.
@@ -75,7 +77,7 @@ public class CreateViewChange extends AbstractChange {
         this.viewName = viewName;
     }
 
-    @DatabaseChangeProperty(serializationType = SerializationType.DIRECT_VALUE, description = "SQL for generating the view", exampleValue = "select id, name from person where id > 10")
+    @DatabaseChangeProperty(serializationType = LiquibaseSerializable.SerializationType.DIRECT_VALUE, description = "SQL for generating the view", exampleValue = "select id, name from person where id > 10")
     public String getSelectQuery() {
         return selectQuery;
     }
@@ -168,7 +170,7 @@ public class CreateViewChange extends AbstractChange {
             if (ObjectUtil.defaultIfNull(getRelativeToChangelogFile(), false)) {
                 relativeTo = getChangeSet().getFilePath();
             }
-            return getResourceAccessor().openStream(relativeTo, path);
+            return Scope.getCurrentScope().getResourceAccessor().openStream(relativeTo, path);
         } catch (IOException e) {
             throw new IOException("<" + Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this).getName() + " path=" + path + "> -Unable to read file", e);
         }
@@ -320,7 +322,7 @@ public class CreateViewChange extends AbstractChange {
     }
 
     @Override
-    protected void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    protected void customLoadLogic(ParsedNode parsedNode) throws ParseException {
         Object value = parsedNode.getValue();
         if (value instanceof String) {
             this.setSelectQuery((String) value);

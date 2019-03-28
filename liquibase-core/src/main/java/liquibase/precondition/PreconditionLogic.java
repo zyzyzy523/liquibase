@@ -23,22 +23,22 @@ public abstract class PreconditionLogic extends AbstractPrecondition {
         }
     }
 
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        super.load(parsedNode, resourceAccessor);
-
-        for (ParsedNode child : parsedNode.getChildren()) {
-            addNestedPrecondition(toPrecondition(child, resourceAccessor));
-        }
-    }
+//    @Override
+//    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//        super.load(parsedNode, resourceAccessor);
+//
+//        for (ParsedNode child : parsedNode.getChildren()) {
+//            addNestedPrecondition(toPrecondition(child, resourceAccessor));
+//        }
+//    }
 
     protected Precondition toPrecondition(ParsedNode node, ResourceAccessor resourceAccessor) throws ParsedNodeException {
         Precondition precondition = PreconditionFactory.getInstance().create(node.getName());
-        if (precondition == null) {
-            return null;
-        }
-
-        precondition.load(node, resourceAccessor);
+//        if (precondition == null) {
+//            return null;
+//        }
+//
+//        precondition.load(node, resourceAccessor);
         return precondition;
     }
 }

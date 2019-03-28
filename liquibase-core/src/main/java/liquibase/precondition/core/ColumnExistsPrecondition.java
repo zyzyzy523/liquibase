@@ -1,7 +1,7 @@
 package liquibase.precondition.core;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
@@ -27,10 +27,10 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
     private String tableName;
     private String columnName;
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     public String getCatalogName() {
         return catalogName;
@@ -75,7 +75,7 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
 		if (canCheckFast(database)) {
 			checkFast(database, changeLog);
@@ -85,7 +85,7 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
         }
     }
 
-    private void checkUsingSnapshot(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet) throws PreconditionFailedException, PreconditionErrorException {
+    private void checkUsingSnapshot(Database database, ChangeLog changeLog, ChangeSet changeSet) throws PreconditionFailedException, PreconditionErrorException {
         Column example = new Column();
         if (StringUtil.trimToNull(getTableName()) != null) {
             example.setRelation(new Table().setName(database.correctObjectName(getTableName(), Table.class)).setSchema(new Schema(getCatalogName(), getSchemaName())));
@@ -121,7 +121,7 @@ public class ColumnExistsPrecondition extends AbstractPrecondition {
         return true;
     }
 
-    private void checkFast(Database database, DatabaseChangeLog changeLog)
+    private void checkFast(Database database, ChangeLog changeLog)
             throws PreconditionFailedException, PreconditionErrorException {
 
         Statement statement = null;

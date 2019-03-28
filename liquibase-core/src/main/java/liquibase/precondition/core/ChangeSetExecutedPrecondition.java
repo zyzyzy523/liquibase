@@ -1,7 +1,7 @@
 package liquibase.precondition.core;
 
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
@@ -18,10 +18,10 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
     private String id;
     private String author;
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     public String getChangeLogFile() {
         return changeLogFile;
@@ -58,7 +58,7 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
     }
     
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         ObjectQuotingStrategy objectQuotingStrategy = null;
         if (changeSet == null) {
@@ -68,7 +68,7 @@ public class ChangeSetExecutedPrecondition extends AbstractPrecondition {
         }
         String changeLogFile = getChangeLogFile();
         if (changeLogFile == null) {
-            changeLogFile = changeLog.getLogicalFilePath();
+            changeLogFile = changeLog.logicalPath;
         }
         ChangeSet interestedChangeSet = new ChangeSet(getId(), getAuthor(), false, false, changeLogFile, null, null, false, objectQuotingStrategy, changeLog);
         RanChangeSet ranChangeSet;

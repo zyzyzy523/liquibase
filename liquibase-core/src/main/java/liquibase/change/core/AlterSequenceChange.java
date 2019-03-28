@@ -9,6 +9,8 @@ import liquibase.structure.core.Sequence;
 
 import java.math.BigInteger;
 
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
+
 /**
  * Modifies properties of an existing sequence. StartValue is not allowed since we cannot alter the starting sequence number
  */

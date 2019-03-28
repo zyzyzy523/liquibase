@@ -1,8 +1,8 @@
 package liquibase.precondition.core;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.*;
 import liquibase.precondition.AbstractPrecondition;
@@ -51,7 +51,7 @@ public class SequenceExistsPrecondition extends AbstractPrecondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         DatabaseSnapshot snapshot;
         Schema schema = new Schema(getCatalogName(), getSchemaName());
@@ -64,10 +64,10 @@ public class SequenceExistsPrecondition extends AbstractPrecondition {
         }
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     @Override
     public String getName() {

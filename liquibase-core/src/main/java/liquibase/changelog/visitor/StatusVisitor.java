@@ -27,20 +27,20 @@ public class StatusVisitor implements ChangeSetVisitor, SkippedChangeSetVisitor 
     }
 
     @Override
-    public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
-        ChangeSetStatus status = addStatus(changeSet, databaseChangeLog, database);
+    public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+        ChangeSetStatus status = addStatus(changeSet, changeLog, database);
         status.setWillRun(true);
         status.setFilterResults(filterResults);
     }
 
     @Override
-    public void skipped(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
-        ChangeSetStatus status = addStatus(changeSet, databaseChangeLog, database);
+    public void skipped(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+        ChangeSetStatus status = addStatus(changeSet, changeLog, database);
         status.setWillRun(false);
         status.setFilterResults(filterResults);
     }
 
-    protected ChangeSetStatus addStatus(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database) throws LiquibaseException {
+    protected ChangeSetStatus addStatus(ChangeSet changeSet, ChangeLog changeLog, Database database) throws LiquibaseException {
         ChangeSetStatus status = new ChangeSetStatus(changeSet);
 
         RanChangeSet ranChangeSetToRemove = null;

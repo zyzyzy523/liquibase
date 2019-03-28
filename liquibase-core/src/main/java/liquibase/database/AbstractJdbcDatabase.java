@@ -6,7 +6,7 @@ import liquibase.change.Change;
 import liquibase.change.core.DropTableChange;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.StandardChangeLogHistoryService;
 import liquibase.configuration.ConfigurationProperty;
@@ -1249,7 +1249,7 @@ public abstract class AbstractJdbcDatabase implements Database {
     }
 
     @Override
-    public void executeStatements(final Change change, final DatabaseChangeLog changeLog, final List<SqlVisitor> sqlVisitors) throws LiquibaseException {
+    public void executeStatements(final Change change, final ChangeLog changeLog, final List<SqlVisitor> sqlVisitors) throws LiquibaseException {
         SqlStatement[] statements = change.generateStatements(this);
 
         execute(statements, sqlVisitors);

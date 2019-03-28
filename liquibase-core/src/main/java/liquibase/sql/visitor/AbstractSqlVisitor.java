@@ -3,8 +3,8 @@ package liquibase.sql.visitor;
 import liquibase.ContextExpression;
 import liquibase.Labels;
 import liquibase.change.CheckSum;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.ReflectionSerializer;
 import liquibase.serializer.core.string.StringChangeLogSerializer;
@@ -95,13 +95,13 @@ public abstract class AbstractSqlVisitor implements SqlVisitor {
 
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         for (ParsedNode childNode : parsedNode.getChildren()) {
             try {
                if ("dbms".equals(childNode.getName())) {
                     this.setApplicableDbms(new HashSet<>(StringUtil.splitAndTrim((String) childNode.getValue(), ",")));
                 } else if ("applyToRollback".equals(childNode.getName())) {
-                   Boolean value = childNode.getValue(Boolean.class);
+                   Boolean value = childNode.getValue(null, Boolean.class);
                    if (value != null) {
                        setApplyToRollback(value);
                    }
@@ -115,7 +115,7 @@ public abstract class AbstractSqlVisitor implements SqlVisitor {
                    ObjectUtil.setProperty(this, childNode.getName(), (String) value);
                }
             } catch (Exception e) {
-                throw new ParsedNodeException("Error setting property", e);
+                throw new ParseException("Error setting property", e, parsedNode);
             }
         }
 

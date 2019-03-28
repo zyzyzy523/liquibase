@@ -4,13 +4,12 @@ import liquibase.change.core.EmptyChange
 import liquibase.change.core.RawSQLChange
 import liquibase.changelog.ChangeLogParameters
 import liquibase.changelog.ChangeSet
-import liquibase.changelog.DatabaseChangeLog
+import liquibase.changelog.ChangeLog
 import liquibase.configuration.LiquibaseConfiguration
 import liquibase.exception.ChangeLogParseException
 import liquibase.precondition.core.PreconditionContainer
 import liquibase.precondition.core.SqlPrecondition
 import liquibase.resource.ResourceAccessor
-import liquibase.test.JUnitResourceAccessor
 import liquibase.util.StringUtil
 import org.hamcrest.Matchers
 import spock.lang.Specification
@@ -99,13 +98,13 @@ select 1
 
     def supports() throws Exception {
         expect:
-        assert new MockFormattedSqlChangeLogParser(VALID_CHANGELOG).supports("asdf.sql", new JUnitResourceAccessor())
-        assert !new MockFormattedSqlChangeLogParser(INVALID_CHANGELOG).supports("asdf.sql", new JUnitResourceAccessor())
+        assert new MockFormattedSqlChangeLogParser(VALID_CHANGELOG).supports("asdf.sql")
+        assert !new MockFormattedSqlChangeLogParser(INVALID_CHANGELOG).supports("asdf.sql")
     }
 
     def invalidPrecondition() throws Exception {
         when:
-        new MockFormattedSqlChangeLogParser(INVALID_CHANGELOG_INVALID_PRECONDITION).parse("asdf.sql", new ChangeLogParameters(), new JUnitResourceAccessor())
+        new MockFormattedSqlChangeLogParser(INVALID_CHANGELOG_INVALID_PRECONDITION).parse("asdf.sql", new ChangeLogParameters())
         then:
         thrown(ChangeLogParseException)
     }
@@ -114,7 +113,7 @@ select 1
         expect:
         ChangeLogParameters params = new ChangeLogParameters()
         params.set("tablename", "table4")
-        DatabaseChangeLog changeLog = new MockFormattedSqlChangeLogParser(VALID_CHANGELOG).parse("asdf.sql", params, new JUnitResourceAccessor())
+        ChangeLog changeLog = new MockFormattedSqlChangeLogParser(VALID_CHANGELOG).parse("asdf.sql", params)
 
         changeLog.getLogicalFilePath() == "asdf.sql"
 
@@ -240,7 +239,7 @@ select 1
                 "--changeset John Doe:12345\n" +
                 "create table test (id int);\n"
 
-        DatabaseChangeLog changeLog = new MockFormattedSqlChangeLogParser(changeLogWithSpace).parse("asdf.sql", new ChangeLogParameters(), new JUnitResourceAccessor())
+        ChangeLog changeLog = new MockFormattedSqlChangeLogParser(changeLogWithSpace).parse("asdf.sql", new ChangeLogParameters())
 
         then:
         changeLog.getChangeSets().size() == 1
@@ -256,7 +255,7 @@ select 1
                 "--comment: This is a test comment\n" +
                 "create table test (id int);\n"
 
-        DatabaseChangeLog changeLog = new MockFormattedSqlChangeLogParser(changeLogWithComment).parse("asdf.sql", new ChangeLogParameters(), new JUnitResourceAccessor())
+        ChangeLog changeLog = new MockFormattedSqlChangeLogParser(changeLogWithComment).parse("asdf.sql", new ChangeLogParameters())
 
         then:
         changeLog.getChangeSets().size() == 1
@@ -268,7 +267,7 @@ select 1
     @Unroll
     def parse_multipleDbms() throws Exception {
         when:
-        def changeLog = new MockFormattedSqlChangeLogParser(changelog).parse("asdf.sql", new ChangeLogParameters(), new JUnitResourceAccessor())
+        def changeLog = new MockFormattedSqlChangeLogParser(changelog).parse("asdf.sql", new ChangeLogParameters())
         def dbmsSet = changeLog.getChangeSets().get(0).getDbmsSet()
 
         then:
@@ -290,7 +289,7 @@ select 1
     @Unroll("#featureName: #example")
     def "example file"() {
         when:
-        def changeLog = new MockFormattedSqlChangeLogParser(example).parse("asdf.sql", new ChangeLogParameters(), new JUnitResourceAccessor())
+        def changeLog = new MockFormattedSqlChangeLogParser(example).parse("asdf.sql", new ChangeLogParameters())
 
         then:
         ((RawSQLChange) changeLog.changeSets[0].changes[0]).sql.replace("\r\n", "\n") == expected
@@ -308,7 +307,7 @@ select 1
         }
 
         @Override
-        protected InputStream openChangeLogFile(String physicalChangeLogLocation, ResourceAccessor resourceAccessor) throws IOException {
+        protected InputStream openChangeLogFile(String physicalChangeLogLocation) throws IOException {
             return new ByteArrayInputStream(changeLog.getBytes())
         }
     }

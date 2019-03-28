@@ -110,12 +110,12 @@ public class ChangeLogParameters {
     }
 
     public void set(String key, String value, String contexts, String labels, String databases, boolean globalParam,
-                    DatabaseChangeLog changeLog) {
+                    ChangeLog changeLog) {
         set(key, value, new ContextExpression(contexts), new Labels(labels), databases, globalParam, changeLog);
     }
 
     public void set(String key, String value, ContextExpression contexts, Labels labels, String databases,
-                    boolean globalParam, DatabaseChangeLog changeLog) {
+                    boolean globalParam, ChangeLog changeLog) {
         /**
          * TODO: this was a bug. Muliple created parameters have been created, but the corresponding method in
          * #findParameter() is only catching the first one. So here we should eliminate duplicate entries
@@ -140,14 +140,14 @@ public class ChangeLogParameters {
      *
      * @param key Name of the parameter
      * @return The parameter value or null if not found. (Note that null can also be return if it is the parameter
-     * value. For strict parameter existence use {@link #hasValue(String, DatabaseChangeLog)}
+     * value. For strict parameter existence use {@link #hasValue(String, ChangeLog)}
      */
-    public Object getValue(String key, DatabaseChangeLog changeLog) {
+    public Object getValue(String key, ChangeLog changeLog) {
         ChangeLogParameter parameter = findParameter(key, changeLog);
         return (parameter != null) ? parameter.getValue() : null;
     }
 
-    private ChangeLogParameter findParameter(String key, DatabaseChangeLog changeLog) {
+    private ChangeLogParameter findParameter(String key, ChangeLog changeLog) {
         ChangeLogParameter result = null;
 
         List<ChangeLogParameter> found = new ArrayList<>();
@@ -172,11 +172,11 @@ public class ChangeLogParameters {
         return result;
     }
 
-    public boolean hasValue(String key, DatabaseChangeLog changeLog) {
+    public boolean hasValue(String key, ChangeLog changeLog) {
         return findParameter(key, changeLog) != null;
     }
 
-    public String expandExpressions(String string, DatabaseChangeLog changeLog) {
+    public String expandExpressions(String string, ChangeLog changeLog) {
         return expressionExpander.expandExpressions(string, changeLog);
     }
 
@@ -199,7 +199,7 @@ public class ChangeLogParameters {
                 .getConfiguration(ChangeLogParserCofiguration.class).getSupportPropertyEscaping();
         }
 
-        public String expandExpressions(String text, DatabaseChangeLog changeLog) {
+        public String expandExpressions(String text, ChangeLog changeLog) {
             if (text == null) {
                 return null;
             }
@@ -234,7 +234,7 @@ public class ChangeLogParameters {
         private List<String> validDatabases;
         /** is this parameter a global parameter, means globally over all changesets. */
         private boolean global = true;
-        private DatabaseChangeLog changeLog;
+        private ChangeLog changeLog;
 
         public ChangeLogParameter(String key, Object value) {
             this.key = key;
@@ -242,19 +242,19 @@ public class ChangeLogParameters {
         }
 
         public ChangeLogParameter(String key, Object value, String validContexts, String labels, String validDatabases,
-                                  boolean globalParam, DatabaseChangeLog changeLog) {
+                                  boolean globalParam, ChangeLog changeLog) {
             this(key, value, new ContextExpression(validContexts), new Labels(labels),
                 StringUtil.splitAndTrim(validDatabases, ","), globalParam, changeLog);
         }
 
         private ChangeLogParameter(String key, Object value, ContextExpression validContexts, Labels labels,
-                                   String validDatabases, boolean globalParam, DatabaseChangeLog changeLog) {
+                                   String validDatabases, boolean globalParam, ChangeLog changeLog) {
             this(key, value, validContexts, labels, StringUtil.splitAndTrim(validDatabases, ","),
                 globalParam, changeLog);
         }
 
         public ChangeLogParameter(String key, Object value, ContextExpression validContexts, Labels labels,
-                                  List<String> validDatabases, boolean globalParam, DatabaseChangeLog changeLog) {
+                                  List<String> validDatabases, boolean globalParam, ChangeLog changeLog) {
             this.key = key;
             this.value = value;
             this.validContexts = validContexts;
@@ -309,7 +309,7 @@ public class ChangeLogParameters {
             return global;
         }
 
-        public DatabaseChangeLog getChangeLog() {
+        public ChangeLog getChangeLog() {
             return changeLog;
         }
     }

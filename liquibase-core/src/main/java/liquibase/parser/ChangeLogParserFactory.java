@@ -47,7 +47,7 @@ public class ChangeLogParserFactory {
 
     public ChangeLogParser getParser(String fileNameOrExtension, ResourceAccessor resourceAccessor) throws LiquibaseException {
         for (ChangeLogParser parser : parsers) {
-            if (parser.supports(fileNameOrExtension, resourceAccessor)) {
+            if (parser.supports(fileNameOrExtension)) {
                 return parser;
             }
         }

@@ -1,6 +1,6 @@
 package liquibase.exception;
 
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.precondition.ErrorPrecondition;
 import liquibase.precondition.Precondition;
 
@@ -21,7 +21,7 @@ public class PreconditionErrorException extends Exception {
         this.erroredPreconditions = erroredPreconditions;
     }
 
-    public PreconditionErrorException(Exception cause, DatabaseChangeLog changeLog, Precondition precondition) {
+    public PreconditionErrorException(Exception cause, ChangeLog changeLog, Precondition precondition) {
         this(new ErrorPrecondition(cause, changeLog, precondition));
     }
 

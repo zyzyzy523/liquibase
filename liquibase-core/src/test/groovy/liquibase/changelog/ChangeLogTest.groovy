@@ -15,7 +15,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class DatabaseChangeLogTest extends Specification {
+class ChangeLogTest extends Specification {
 
     @Shared
             resourceSupplier = new ResourceSupplier()
@@ -54,7 +54,7 @@ create view sql_view as select * from sql_table;'''
         def path = "com/example/path.xml"
         def path2 = "com/example/path2.xml"
         when:
-        def changeLog = new DatabaseChangeLog(path)
+        def changeLog = new ChangeLog(path)
         changeLog.addChangeSet(new ChangeSet("1", "auth", false, false, path, null, null, changeLog))
         changeLog.addChangeSet(new ChangeSet("2", "auth", false, false, path, null, null, changeLog))
         changeLog.addChangeSet(new ChangeSet("1", "other-auth", false, false, path, null, null, changeLog))
@@ -102,8 +102,8 @@ create view sql_view as select * from sql_table;'''
         }
         def nodeWithValue = new ParsedNode(null, "databaseChangeLog").addChildren([logicalFilePath: "com/example/logical.xml"]).setValue(children)
 
-        def changeLogFromChildren = new DatabaseChangeLog()
-        def changeLogFromValue = new DatabaseChangeLog()
+        def changeLogFromChildren = new ChangeLog()
+        def changeLogFromValue = new ChangeLog()
 
         changeLogFromValue.load(nodeWithChildren, resourceSupplier.simpleResourceAccessor)
         changeLogFromChildren.load(nodeWithValue, resourceSupplier.simpleResourceAccessor)
@@ -132,7 +132,7 @@ create view sql_view as select * from sql_table;'''
         when:
         def resourceAccessor = new MockResourceAccessor(["com/example/test1.xml": test1Xml, "com/example/test2.xml": test1Xml.replace("\${loginUser}", "otherUser").replace("person", "person2")])
 
-        def rootChangeLog = new DatabaseChangeLog("com/example/root.xml")
+        def rootChangeLog = new ChangeLog("com/example/root.xml")
         rootChangeLog.setChangeLogParameters(new ChangeLogParameters())
         rootChangeLog.getChangeLogParameters().set("loginUser", "testUser")
 
@@ -170,7 +170,7 @@ create view sql_view as select * from sql_table;'''
                 "com/example/test.sql" : testSql
         ])
 
-        def rootChangeLog = new DatabaseChangeLog("com/example/root.xml")
+        def rootChangeLog = new ChangeLog("com/example/root.xml")
         rootChangeLog.setChangeLogParameters(new ChangeLogParameters())
         rootChangeLog.getChangeLogParameters().set("loginUser", "testUser")
         rootChangeLog.load(new ParsedNode(null, "databaseChangeLog")
@@ -208,7 +208,7 @@ create view sql_view as select * from sql_table;'''
         when:
         def resourceAccessor = new MockResourceAccessor(["com/example/test1.xml": test1Xml, "com/example/test2.xml": test1Xml.replace("testUser", "otherUser").replace("person", "person2")])
 
-        def rootChangeLog = new DatabaseChangeLog("com/example/root.xml")
+        def rootChangeLog = new ChangeLog("com/example/root.xml")
         rootChangeLog.load(new ParsedNode(null, "databaseChangeLog")
                 .addChild(new ParsedNode(null, "preConditions").addChildren([runningAs: [username: "user1"]]))
                 .addChildren([changeSet: [id: "1", author: "nvoxland", createTable: [tableName: "test_table", schemaName: "test_schema"]]])
@@ -241,7 +241,7 @@ create view sql_view as select * from sql_table;'''
                 "com/example/test2.xml": test1Xml.replace("testUser", "otherUser").replace("person", "person2")
         ])
 
-        def rootChangeLog = new DatabaseChangeLog("com/example/root.xml")
+        def rootChangeLog = new ChangeLog("com/example/root.xml")
         rootChangeLog.include("com/example/test1.xml", false, resourceAccessor, new ContextExpression("context1"), new LabelExpression("label1"), false)
         rootChangeLog.include("com/example/test2.xml", false, resourceAccessor, new ContextExpression("context2"), new LabelExpression("label2"), true)
 
@@ -270,7 +270,7 @@ create view sql_view as select * from sql_table;'''
                 "com/example/children/file1.sql": "file 1",
                 "com/example/not/fileX.sql"     : "file X",
         ])
-        def changeLogFile = new DatabaseChangeLog("com/example/root.xml")
+        def changeLogFile = new ChangeLog("com/example/root.xml")
         changeLogFile.includeAll("com/example/children", false, null, true, changeLogFile.getStandardChangeLogComparator(), resourceAccessor, new ContextExpression(), new LabelExpression(), false)
 
         then:
@@ -282,7 +282,7 @@ create view sql_view as select * from sql_table;'''
     @Unroll("#featureName: #changeSets")
     def "addChangeSet works with first/last combinations"() {
         when:
-        def changeLog = new DatabaseChangeLog()
+        def changeLog = new ChangeLog()
         for (def changeSetDef : changeSets) {
             def changeSet = new ChangeSet(changeSetDef["id"], "test", false, false, "path.txt", null, null, true, changeLog)
             changeSet.runOrder = changeSetDef["runOrder"]
@@ -317,7 +317,7 @@ create view sql_view as select * from sql_table;'''
                 "com/example/children/file1.sql": "file 1",
                 "com/example/not/fileX.sql": "file X",
         ])
-        def changeLogFile = new DatabaseChangeLog("com/example/root.xml")
+        def changeLogFile = new ChangeLog("com/example/root.xml")
         changeLogFile.includeAll("com/example/missing", false, null, true, changeLogFile.getStandardChangeLogComparator(), resourceAccessor, new ContextExpression(), new LabelExpression(), false)
 
         then:
@@ -334,7 +334,7 @@ create view sql_view as select * from sql_table;'''
                 "com/example/children/file1.sql": "file 1",
                 "com/example/not/fileX.sql": "file X",
         ])
-        def changeLogFile = new DatabaseChangeLog("com/example/root.xml")
+        def changeLogFile = new ChangeLog("com/example/root.xml")
         changeLogFile.includeAll("com/example/missing", false, null, false, changeLogFile.getStandardChangeLogComparator(), resourceAccessor, new ContextExpression(), new LabelExpression(), false)
         then:
         changeLogFile.changeSets.collect {it.filePath } == []

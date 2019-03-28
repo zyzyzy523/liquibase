@@ -3,7 +3,7 @@ package liquibase.changelog.visitor;
 import liquibase.change.ColumnConfig;
 import liquibase.change.core.CreateTableChange;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.database.core.MSSQLDatabase;
 import liquibase.database.core.OracleDatabase;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ValidatingVisitorPreConditionsTest {
 
-    private DatabaseChangeLog changeLog;
+    private ChangeLog changeLog;
     private ChangeSet changeSet1;
 
     /**
@@ -36,7 +36,7 @@ public class ValidatingVisitorPreConditionsTest {
      */
     @Before
     public void setUp() {
-        changeLog = new DatabaseChangeLog();
+        changeLog = new ChangeLog();
 
         changeSet1 = new ChangeSet("1", "testAuthor", false, false, "path/changelog", null, null, null);
         changeLog.addChangeSet(changeSet1);

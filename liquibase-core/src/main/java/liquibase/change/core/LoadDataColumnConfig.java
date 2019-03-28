@@ -1,8 +1,8 @@
 package liquibase.change.core;
 
 import liquibase.change.ColumnConfig;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 
 public class LoadDataColumnConfig extends ColumnConfig {
@@ -27,9 +27,9 @@ public class LoadDataColumnConfig extends ColumnConfig {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        super.load(parsedNode, resourceAccessor);
-        this.index = parsedNode.getChildValue(null, "index", Integer.class);
-        this.header = parsedNode.getChildValue(null, "header", String.class);
+    public void load(ParsedNode parsedNode) throws ParseException {
+        super.load(parsedNode);
+        this.index = parsedNode.getChildValue("index", Integer.class, true);
+        this.header = parsedNode.getChildValue("header", String.class, true);
     }
 }

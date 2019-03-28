@@ -136,8 +136,4 @@ public class DropAllForeignKeyConstraintsChange extends AbstractChange {
         return true;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

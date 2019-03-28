@@ -1,14 +1,14 @@
 package liquibase.precondition;
 
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 
 public class FailedPrecondition {
     private String message;
     private Precondition precondition;
-    private DatabaseChangeLog changeLog;
+    private ChangeLog changeLog;
 
 
-    public FailedPrecondition(String message, DatabaseChangeLog changeLog, Precondition precondition) {
+    public FailedPrecondition(String message, ChangeLog changeLog, Precondition precondition) {
         this.message = message;
         this.changeLog = changeLog;
         this.precondition = precondition;

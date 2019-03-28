@@ -83,11 +83,6 @@ public class OutputChange extends AbstractChange {
     }
 
     @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
-
-    @Override
     public Object getSerializableFieldValue(String field) {
         Object value = super.getSerializableFieldValue(field);
         if ("target".equals(field) && "".equals(value)) {

@@ -2,8 +2,8 @@ package liquibase.structure.core;
 
 import liquibase.change.ColumnConfig;
 import liquibase.change.ConstraintsConfig;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.AbstractLiquibaseSerializable;
 import liquibase.structure.AbstractDatabaseObject;
@@ -365,18 +365,18 @@ public class Column extends AbstractDatabaseObject {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        super.load(parsedNode, resourceAccessor);
-        ParsedNode typeNode = parsedNode.getChild(null, "type");
+    public void load(ParsedNode parsedNode) throws ParseException {
+        super.load(parsedNode);
+        ParsedNode typeNode = parsedNode.getChild("type", false);
         if (typeNode != null) {
             DataType type = new DataType();
-            type.load(typeNode, resourceAccessor);
+            type.load(typeNode);
             setType(type);
         }
-        ParsedNode autoIncrementInformation = parsedNode.getChild(null, "autoIncrementInformation");
+        ParsedNode autoIncrementInformation = parsedNode.getChild("autoIncrementInformation", false);
         if (autoIncrementInformation != null) {
             AutoIncrementInformation info = new AutoIncrementInformation();
-            info.load(autoIncrementInformation, resourceAccessor);
+            info.load(autoIncrementInformation);
             setAutoIncrementInformation(info);
         }
     }
@@ -437,11 +437,11 @@ public class Column extends AbstractDatabaseObject {
         }
 
         @Override
-        public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-            this.startWith = (BigInteger) convertEscaped(parsedNode.getChildValue(null, "startWith"));
-            this.incrementBy = (BigInteger) convertEscaped(parsedNode.getChildValue(null, "incrementBy"));
-            this.defaultOnNull = parsedNode.getChildValue(null, "defaultOnNull", Boolean.class);
-            this.generationType = parsedNode.getChildValue(null, "generationType", String.class);
+        public void load(ParsedNode parsedNode) throws ParseException {
+            this.startWith = (BigInteger) convertEscaped(parsedNode.getChildValue("startWith", BigInteger.class, true));
+            this.incrementBy = (BigInteger) convertEscaped(parsedNode.getChildValue("incrementBy", BigInteger.class, true));
+            this.defaultOnNull = parsedNode.getChildValue("defaultOnNull", Boolean.class, true);
+            this.generationType = parsedNode.getChildValue("generationType", String.class, true);
         }
     }
 }

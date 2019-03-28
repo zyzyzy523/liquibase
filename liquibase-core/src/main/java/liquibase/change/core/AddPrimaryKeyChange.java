@@ -199,8 +199,4 @@ public class AddPrimaryKeyChange extends AbstractChange {
         return "Primary key added to " + getTableName() + " (" + getColumnNames() + ")";
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

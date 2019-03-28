@@ -4,8 +4,7 @@ import liquibase.Scope;
 import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
 import liquibase.exception.*;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.parser.ParsedNode;
 import liquibase.plugin.AbstractPlugin;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.LiquibaseSerializable;
@@ -23,6 +22,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
+
 /**
  * Standard superclass to simplify {@link Change } implementations. You can implement Change directly, this class is
  * purely for convenience but recommended.
@@ -34,7 +35,6 @@ import java.util.*;
 public abstract class AbstractChange extends AbstractPlugin implements Change {
 
     protected static final String NODENAME_COLUMN = "column";
-    private ResourceAccessor resourceAccessor;
 
     private ChangeSet changeSet;
 
@@ -141,7 +141,7 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
             String description = createDescriptionMetaData(parameterName, changePropertyAnnotation);
             Map<String, Object> examples = createExampleValueMetaData(parameterName, changePropertyAnnotation);
             String since = createSinceMetaData(parameterName, changePropertyAnnotation);
-            SerializationType serializationType = createSerializationTypeMetaData(
+            LiquibaseSerializable.SerializationType serializationType = createSerializationTypeMetaData(
                 parameterName, changePropertyAnnotation
             );
             String[] requiredForDatabase = createRequiredDatabasesMetaData(parameterName, changePropertyAnnotation);
@@ -188,7 +188,7 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
         String parameterName, DatabaseChangeProperty changePropertyAnnotation
     ) {
         if (changePropertyAnnotation == null) {
-            return SerializationType.NAMED_FIELD;
+            return LiquibaseSerializable.SerializationType.NAMED_FIELD;
         }
         return changePropertyAnnotation.serializationType();
     }
@@ -457,7 +457,7 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
      */
     @Override
     public CheckSum generateCheckSum() {
-        return CheckSum.compute(new StringChangeLogSerializer().serialize(this, false));
+        return CheckSum.compute("TODO"); //new StringChangeLogSerializer().serialize(this, false));
     }
 
     /*
@@ -506,22 +506,6 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
     }
 
     /**
-     * @inheritDoc
-     */
-    @DatabaseChangeProperty(isChangeProperty = false)
-    public ResourceAccessor getResourceAccessor() {
-        return resourceAccessor;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setResourceAccessor(ResourceAccessor resourceAccessor) {
-        this.resourceAccessor = resourceAccessor;
-    }
-
-    /**
      * Implementation delegates logic to the
      * {@link liquibase.sqlgenerator.SqlGeneratorFactory#getAffectedDatabaseObjects(liquibase.statement.SqlStatement,
      * liquibase.database.Database)} method on the {@link SqlStatement} objects returned by {@link #generateStatements }
@@ -548,12 +532,10 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
     /**
      * Returns the fields on this change that are serializable.
      */
-    @Override
     public Set<String> getSerializableFields() {
         return Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this).getParameters().keySet();
     }
 
-    @Override
     public Object getSerializableFieldValue(String field) {
         ChangeParameterMetaData fieldMetaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this)
             .getParameters().get(field);
@@ -563,22 +545,18 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
         return fieldMetaData.getCurrentValue(this);
     }
 
-    @Override
     public String getSerializedObjectName() {
         return Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this).getName();
     }
 
-    @Override
-    public SerializationType getSerializableFieldType(String field) {
+    public LiquibaseSerializable.SerializationType getSerializableFieldType(String field) {
         return Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this).getParameters().get(field).getSerializationType();
     }
 
-    @Override
     public String getSerializedObjectNamespace() {
-        return GENERIC_CHANGELOG_EXTENSION_NAMESPACE;
+        return STANDARD_CHANGELOG_NAMESPACE;
     }
 
-    @Override
     public String getSerializableFieldNamespace(String field) {
         return getSerializedObjectNamespace();
     }
@@ -589,9 +567,8 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         ChangeMetaData metaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this);
-        this.setResourceAccessor(resourceAccessor);
         try {
             Collection<ChangeParameterMetaData> changeParameters = metaData.getParameters().values();
 
@@ -601,9 +578,9 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
                         Class collectionType = (Class) param.getDataTypeClassParameters()[0];
                         if (ColumnConfig.class.isAssignableFrom(collectionType)) {
                             List<ParsedNode> columnNodes = new ArrayList<>(
-                                parsedNode.getChildren(null, param.getParameterName())
+                                parsedNode.getChildren(param.getParameterName(), false)
                             );
-                            columnNodes.addAll(parsedNode.getChildren(null, NODENAME_COLUMN));
+                            columnNodes.addAll(parsedNode.getChildren(NODENAME_COLUMN, false));
 
                             Object nodeValue = parsedNode.getValue();
                             if (nodeValue instanceof ParsedNode) {
@@ -618,16 +595,16 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
 
                             for (ParsedNode child : columnNodes) {
                                 if (NODENAME_COLUMN.equals(child.getName()) || "columns".equals(child.getName())) {
-                                    List<ParsedNode> columnChildren = child.getChildren(null, NODENAME_COLUMN);
+                                    List<ParsedNode> columnChildren = child.getChildren(NODENAME_COLUMN, false);
                                     if ((columnChildren != null) && !columnChildren.isEmpty()) {
                                         for (ParsedNode columnChild : columnChildren) {
                                             ColumnConfig columnConfig = createEmptyColumnConfig(collectionType);
-                                            columnConfig.load(columnChild, resourceAccessor);
+                                            columnConfig.load(columnChild);
                                             ((ChangeWithColumns) this).addColumn(columnConfig);
                                         }
                                     } else {
                                         ColumnConfig columnConfig = createEmptyColumnConfig(collectionType);
-                                        columnConfig.load(child, resourceAccessor);
+                                        columnConfig.load(child);
                                         ((ChangeWithColumns) this).addColumn(columnConfig);
                                     }
                                 }
@@ -640,10 +617,10 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
                             String elementName = ((LiquibaseSerializable) collectionType.getConstructor().newInstance())
                                 .getSerializedObjectName();
                             List<ParsedNode> nodes = new ArrayList<>(
-                                 parsedNode.getChildren(null, param.getParameterName())
+                                 parsedNode.getChildren(param.getParameterName(), false)
                             );
                             if (!elementName.equals(param.getParameterName())) {
-                                nodes.addAll(parsedNode.getChildren(null, elementName));
+                                nodes.addAll(parsedNode.getChildren(elementName, false));
                             }
 
                             Object nodeValue = parsedNode.getValue();
@@ -660,18 +637,18 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
                             for (ParsedNode node : nodes) {
                                 if (node.getName().equals(elementName)
                                    || node.getName().equals(param.getParameterName())) {
-                                    List<ParsedNode> childNodes = node.getChildren(null, elementName);
+                                    List<ParsedNode> childNodes = node.getChildren(elementName, false);
                                     if ((childNodes != null) && !childNodes.isEmpty()) {
                                         for (ParsedNode childNode : childNodes) {
                                             LiquibaseSerializable childObject =
                                                 (LiquibaseSerializable)collectionType.getConstructor().newInstance();
-                                            childObject.load(childNode, resourceAccessor);
+                                            childObject.load(childNode);
                                             ((Collection) param.getCurrentValue(this)).add(childObject);
                                         }
                                     } else {
                                         LiquibaseSerializable childObject =
                                             (LiquibaseSerializable) collectionType.getConstructor().newInstance();
-                                        childObject.load(node, resourceAccessor);
+                                        childObject.load(node);
                                         ((Collection) param.getCurrentValue(this)).add(childObject);
                                     }
                                }
@@ -683,11 +660,11 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
                             && !Modifier.isAbstract(param.getDataTypeClass().getModifiers())) {
 
                         try {
-                            ParsedNode child = parsedNode.getChild(null, param.getParameterName());
+                            ParsedNode child = parsedNode.getChild(param.getParameterName(), false);
                             if (child != null) {
                                 LiquibaseSerializable serializableChild =
                                     (LiquibaseSerializable) param.getDataTypeClass().getConstructor().newInstance();
-                                serializableChild.load(child, resourceAccessor);
+                                serializableChild.load(child);
                                 param.setValue(this, serializableChild);
                             }
                         } catch (ReflectiveOperationException e) {
@@ -695,10 +672,8 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
                         }
                     }
                 } else {
-                    Object childValue = parsedNode.getChildValue(
-                        null, param.getParameterName(), param.getDataTypeClass()
-                    );
-                    if ((childValue == null) && (param.getSerializationType() == SerializationType.DIRECT_VALUE)) {
+                    Object childValue = parsedNode.getChildValue(param.getParameterName(), param.getDataTypeClass(), false);
+                    if ((childValue == null) && (param.getSerializationType() == LiquibaseSerializable.SerializationType.DIRECT_VALUE)) {
                         childValue = parsedNode.getValue();
                     }
                     param.setValue(this, childValue);
@@ -707,11 +682,11 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
         } catch (ReflectiveOperationException e) {
             throw new UnexpectedLiquibaseException(e);
         }
-        customLoadLogic(parsedNode, resourceAccessor);
+        customLoadLogic(parsedNode);
         try {
             this.finishInitialization();
         } catch (SetupException e) {
-            throw new ParsedNodeException(e);
+            throw new ParseException(e, parsedNode);
         }
     }
 
@@ -720,46 +695,47 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
         return (ColumnConfig) collectionType.getConstructor().newInstance();
     }
 
-    protected void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor)
-        throws ParsedNodeException {
+    protected void customLoadLogic(ParsedNode parsedNode)
+        throws ParseException {
 
     }
 
     @Override
-    public ParsedNode serialize() throws ParsedNodeException {
-        ParsedNode node = new ParsedNode(null, getSerializedObjectName());
-        ChangeMetaData metaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this);
-        for (ChangeParameterMetaData param : metaData.getSetParameters(this).values()) {
-            Object currentValue = param.getCurrentValue(this);
-            currentValue = serializeValue(currentValue);
-            if (currentValue != null) {
-                node.addChild(null, param.getParameterName(), currentValue);
-            }
-        }
-
-        return node;
+    public ParsedNode serialize() throws ParseException {
+//        ParsedNode node = new ParsedNode(null, getSerializedObjectName());
+//        ChangeMetaData metaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this);
+//        for (ChangeParameterMetaData param : metaData.getSetParameters(this).values()) {
+//            Object currentValue = param.getCurrentValue(this);
+//            currentValue = serializeValue(currentValue);
+//            if (currentValue != null) {
+//                node.addChild(null, param.getParameterName(), currentValue);
+//            }
+//        }
+//
+//        return node;
+        return null;
     }
 
-    protected Object serializeValue(Object value) throws ParsedNodeException {
-        if (value instanceof Collection) {
-            List returnList = new ArrayList();
-            for (Object obj : (Collection) value) {
-                Object objValue = serializeValue(obj);
-                if (objValue != null) {
-                    returnList.add(objValue);
-                }
-            }
-            if (((Collection) value).isEmpty()) {
-                return null;
-            } else {
-                return returnList;
-            }
-        } else if (value instanceof LiquibaseSerializable) {
-            return ((LiquibaseSerializable) value).serialize();
-        } else {
-            return value;
-        }
-    }
+//    protected Object serializeValue(Object value) throws ParsedNodeException {
+//        if (value instanceof Collection) {
+//            List returnList = new ArrayList();
+//            for (Object obj : (Collection) value) {
+//                Object objValue = serializeValue(obj);
+//                if (objValue != null) {
+//                    returnList.add(objValue);
+//                }
+//            }
+//            if (((Collection) value).isEmpty()) {
+//                return null;
+//            } else {
+//                return returnList;
+//            }
+//        } else if (value instanceof LiquibaseSerializable) {
+//            return ((LiquibaseSerializable) value).serialize();
+//        } else {
+//            return value;
+//        }
+//    }
 
     @Override
     public String getDescription() {

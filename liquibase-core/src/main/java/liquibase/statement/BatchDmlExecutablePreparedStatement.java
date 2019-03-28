@@ -30,10 +30,9 @@ public class BatchDmlExecutablePreparedStatement extends ExecutablePreparedState
 
     public BatchDmlExecutablePreparedStatement(
             Database database, String catalogName, String schemaName, String tableName,
-            List<LoadDataColumnConfig> columns, ChangeSet changeSet, ResourceAccessor resourceAccessor,
+            List<LoadDataColumnConfig> columns, ChangeSet changeSet,
             List<ExecutablePreparedStatementBase> statements) {
-        super(database, catalogName, schemaName, tableName, new ArrayList<ColumnConfig>(columns), changeSet,
-            resourceAccessor);
+        super(database, catalogName, schemaName, tableName, new ArrayList<ColumnConfig>(columns), changeSet);
         this.collectedStatements = new ArrayList<>(statements);
     }
 

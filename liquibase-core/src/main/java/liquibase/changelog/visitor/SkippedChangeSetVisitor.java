@@ -1,7 +1,7 @@
 package liquibase.changelog.visitor;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ChangeSetFilterResult;
 import liquibase.database.Database;
 import liquibase.exception.LiquibaseException;
@@ -14,6 +14,6 @@ import java.util.Set;
  */
 public interface SkippedChangeSetVisitor {
 
-    void skipped(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException;
+    void skipped(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException;
 
 }

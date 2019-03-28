@@ -1,10 +1,10 @@
 package liquibase.changelog.visitor;
 
 import liquibase.Scope;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.ChangeSet.ExecType;
 import liquibase.changelog.ChangeSet.RunStatus;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ChangeSetFilterResult;
 import liquibase.database.Database;
 import liquibase.database.ObjectQuotingStrategy;
@@ -39,23 +39,23 @@ public class UpdateVisitor implements ChangeSetVisitor {
     }
 
     @Override
-    public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database,
+    public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database,
                       Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
         ChangeSet.RunStatus runStatus = this.database.getRunStatus(changeSet);
         Scope.getCurrentScope().getLog(getClass()).fine(LogType.LOG, "Running Changeset:" + changeSet);
-        fireWillRun(changeSet, databaseChangeLog, database, runStatus);
+        fireWillRun(changeSet, changeLog, database, runStatus);
         ExecType execType = null;
         ObjectQuotingStrategy previousStr = this.database.getObjectQuotingStrategy();
         try {
-            execType = changeSet.execute(databaseChangeLog, execListener, this.database);
+            execType = changeSet.execute(changeLog, execListener, this.database);
         } catch (MigrationFailedException e) {
-            fireRunFailed(changeSet, databaseChangeLog, database, e);
+            fireRunFailed(changeSet, changeLog, database, e);
             throw e;
         }
         if (!runStatus.equals(ChangeSet.RunStatus.NOT_RAN)) {
             execType = ChangeSet.ExecType.RERAN;
         }
-        fireRan(changeSet, databaseChangeLog, database, execType);
+        fireRan(changeSet, changeLog, database, execType);
         // reset object quoting strategy after running changeset
         this.database.setObjectQuotingStrategy(previousStr);
         this.database.markChangeSetExecStatus(changeSet, execType);
@@ -63,21 +63,21 @@ public class UpdateVisitor implements ChangeSetVisitor {
         this.database.commit();
     }
 
-    protected void fireRunFailed(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, MigrationFailedException e) {
+    protected void fireRunFailed(ChangeSet changeSet, ChangeLog changeLog, Database database, MigrationFailedException e) {
         if (execListener != null) {
-            execListener.runFailed(changeSet, databaseChangeLog, database, e);
+            execListener.runFailed(changeSet, changeLog, database, e);
         }
     }
 
-    protected void fireWillRun(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database2, RunStatus runStatus) {
+    protected void fireWillRun(ChangeSet changeSet, ChangeLog changeLog, Database database2, RunStatus runStatus) {
       if (execListener != null) {
-        execListener.willRun(changeSet, databaseChangeLog, database, runStatus);
+        execListener.willRun(changeSet, changeLog, database, runStatus);
       }      
     }
 
-    protected void fireRan(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database2, ExecType execType) {
+    protected void fireRan(ChangeSet changeSet, ChangeLog changeLog, Database database2, ExecType execType) {
       if (execListener != null) {
-        execListener.ran(changeSet, databaseChangeLog, database, execType);
+        execListener.ran(changeSet, changeLog, database, execType);
       }
     }
 }

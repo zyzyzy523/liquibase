@@ -187,7 +187,7 @@ rootNode
 //
 //        then:
 //        changeLog.logicalFilePath == path
-//        changeLog.physicalFilePath == path
+//        changeLog.physicalPath == path
 //
 //        changeLog.preconditions.nestedPreconditions.size() == 0
 //        changeLog.changeSets.size() == 1

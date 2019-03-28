@@ -1,7 +1,7 @@
 package liquibase.serializer.core.formattedsql;
 
 import liquibase.change.Change;
-import liquibase.changelog.ChangeLogChild;
+import liquibase.changelog.ChangeLogEntry;
 import liquibase.changelog.ChangeSet;
 import liquibase.configuration.GlobalConfiguration;
 import liquibase.configuration.LiquibaseConfiguration;
@@ -79,17 +79,17 @@ public class FormattedSqlChangeLogSerializer  implements ChangeLogSerializer {
     }
 
     @Override
-    public <T extends ChangeLogChild> void write(List<T> children, OutputStream out) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("--liquibase formatted sql\n\n");
-
-        for (T child : children) {
-            builder.append(serialize(child, true));
-            builder.append("\n");
-        }
-
-        out.write(builder.toString().getBytes(LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()));
-
+    public <T extends ChangeLogEntry> void write(List<T> children, OutputStream out) throws IOException {
+//        StringBuilder builder = new StringBuilder();
+//        builder.append("--liquibase formatted sql\n\n");
+//
+//        for (T child : children) {
+//            builder.append(serialize(child, true));
+//            builder.append("\n");
+//        }
+//
+//        out.write(builder.toString().getBytes(LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()));
+//
     }
 
     @Override

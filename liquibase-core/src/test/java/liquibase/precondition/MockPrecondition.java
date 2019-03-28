@@ -2,7 +2,7 @@ package liquibase.precondition;
 
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
@@ -31,48 +31,50 @@ public class MockPrecondition implements Precondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
         
     }
 
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-
-    }
-
-    @Override
-    public String getSerializedObjectName() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getSerializableFields() {
-        return null;
-    }
-
-    @Override
-    public Object getSerializableFieldValue(String field) {
-        return null;
-    }
-
-    @Override
-    public SerializationType getSerializableFieldType(String field) {
-        return null;
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return null;
-    }
-
-    @Override
-    public String getSerializableFieldNamespace(String field) {
-        return getSerializedObjectNamespace();
-    }
 
 
-    @Override
-    public ParsedNode serialize() {
-        return null;
-    }
+//    @Override
+//    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//
+//    }
+//
+//    @Override
+//    public String getSerializedObjectName() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Set<String> getSerializableFields() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Object getSerializableFieldValue(String field) {
+//        return null;
+//    }
+//
+//    @Override
+//    public SerializationType getSerializableFieldType(String field) {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getSerializableFieldNamespace(String field) {
+//        return getSerializedObjectNamespace();
+//    }
+//
+//
+//    @Override
+//    public ParsedNode serialize() {
+//        return null;
+//    }
 }

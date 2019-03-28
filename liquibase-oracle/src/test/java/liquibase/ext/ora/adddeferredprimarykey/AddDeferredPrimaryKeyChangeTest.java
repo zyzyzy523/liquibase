@@ -1,11 +1,9 @@
 package liquibase.ext.ora.adddeferredprimarykey;
 
 import liquibase.change.Change;
-import liquibase.change.ChangeFactory;
-import liquibase.change.ChangeMetaData;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.ext.ora.testing.BaseTestCase;
@@ -88,7 +86,7 @@ public class AddDeferredPrimaryKeyChangeTest extends BaseTestCase {
 
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
 
-        DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor).parse(changeLogFile, changeLogParameters, resourceAccessor);
+        ChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor).parse(changeLogFile, changeLogParameters);
 
         changeLog.validate(database);
 

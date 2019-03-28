@@ -177,8 +177,4 @@ public class CreateSequenceChange extends AbstractChange {
         return "Sequence " + getSequenceName() + " created";
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

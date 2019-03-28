@@ -3,8 +3,7 @@ package liquibase.parser.core.xml
 import liquibase.change.core.RawSQLChange
 import liquibase.changelog.ChangeLogParameters
 import liquibase.exception.ChangeLogParseException
-import liquibase.parser.core.ParsedNode
-import liquibase.resource.ResourceAccessor
+import liquibase.parser.ParsedNode
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
 import spock.lang.Specification
@@ -15,18 +14,18 @@ class AbstractChangeLogParserTest extends Specification {
 
     def "null node creates null changelog object"() {
         when:
-        def changeLog = createParser(null).parse("com/example/changelog.xml", new ChangeLogParameters(), resourceSupplier.simpleResourceAccessor)
+        def changeLog = createParser(null).parse("com/example/changelog.xml", new ChangeLogParameters())
         then:
         changeLog == null
     }
 
     def "empty node creates empty changelog object"() {
         when:
-        def changeLogNode = new ParsedNode(null, "databaseChangeLog")
-        def changeLog = createParser(changeLogNode).parse("com/example/changelog.xml", new ChangeLogParameters(), resourceSupplier.simpleResourceAccessor)
+        def changeLogNode = ParsedNode.createRootNode("databaseChangeLog")
+        def changeLog = createParser(changeLogNode).parse("com/example/changelog.xml", new ChangeLogParameters())
 
         then:
-        changeLog.physicalFilePath == "com/example/changelog.xml"
+        changeLog.physicalPath == "com/example/changelog.xml"
         changeLog.changeSets.size() == 0
         changeLog.preconditions.nestedPreconditions.size() == 0
     }
@@ -38,7 +37,7 @@ class AbstractChangeLogParserTest extends Specification {
         changeLogNode.addChildren([changeSet: [id: "2", author: "nvoxland"]]).children[1].value = [sql: "select * from y"]
         changeLogNode.addChildren([changeSet: [id: "3", author: "nvoxland"]]).children[2].value = [sql: "select * from z"]
 
-        def changeLog = createParser(changeLogNode).parse("com/example/changelog.xml", new ChangeLogParameters(), resourceSupplier.simpleResourceAccessor)
+        def changeLog = createParser(changeLogNode).parse("com/example/changelog.xml", new ChangeLogParameters())
 
         then:
         changeLog.preconditions.nestedPreconditions.size() == 0
@@ -61,12 +60,12 @@ class AbstractChangeLogParserTest extends Specification {
     protected AbstractChangeLogParser createParser(changeLogNode) {
          return new AbstractChangeLogParser() {
             @Override
-            protected ParsedNode parseToNode(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters, ResourceAccessor resourceAccessor) throws ChangeLogParseException {
+            protected ParsedNode parseToNode(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException {
                 return changeLogNode
             }
 
             @Override
-            boolean supports(String changeLogFile, ResourceAccessor resourceAccessor) {
+            boolean supports(String changeLogFile) {
                 return false
             }
 

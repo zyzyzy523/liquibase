@@ -1,7 +1,7 @@
 package liquibase.precondition.core;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.database.DatabaseList;
@@ -22,10 +22,10 @@ public class DBMSPrecondition extends AbstractPrecondition {
     public DBMSPrecondition() {
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     public String getType() {
         return type;
@@ -51,7 +51,7 @@ public class DBMSPrecondition extends AbstractPrecondition {
     }
     
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         try {
             String dbType = database.getShortName();

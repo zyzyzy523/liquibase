@@ -19,11 +19,11 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class ChangeLogIteratorTest {
-    private DatabaseChangeLog changeLog;
+    private ChangeLog changeLog;
 
     @Before
     public void setUp() {
-        changeLog = new DatabaseChangeLog();
+        changeLog = new ChangeLog();
         changeLog.addChangeSet(new ChangeSet("1", "nvoxland", false, false, "/path/to/changelog", "test1", "mysql", null));
         changeLog.addChangeSet(new ChangeSet("2", "nvoxland", false, false, "/path/to/changelog",  "test1", "oracle", null));
         changeLog.addChangeSet(new ChangeSet("3", "nvoxland", false, false, "/path/to/changelog",  "test2", "mysql", null));
@@ -86,7 +86,7 @@ public class ChangeLogIteratorTest {
         }
 
         @Override
-        public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+        public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
             visitedChangeSets.add(changeSet);
         }
     }

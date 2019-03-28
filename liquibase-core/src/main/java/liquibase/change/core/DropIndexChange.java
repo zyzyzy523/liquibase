@@ -86,8 +86,4 @@ public class DropIndexChange extends AbstractChange {
         this.catalogName = catalogName;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

@@ -1,24 +1,18 @@
 package liquibase.changelog.visitor;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.changelog.filter.ChangeSetFilterResult;
-import liquibase.database.Database;
-import liquibase.exception.LiquibaseException;
 import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Collections;
 
 
 public class ChangeLogSyncVisitorTest {
     private ChangeSet changeSet;
-    private DatabaseChangeLog databaseChangeLog;
+    private ChangeLog changeLog;
 
     @Before
     public void setUp() {
         changeSet = new ChangeSet("1", "testAuthor", false, false, "path/changelog", null, null, null);
-        databaseChangeLog = new DatabaseChangeLog();
+        changeLog = new ChangeLog();
     }
 
 //    @Test

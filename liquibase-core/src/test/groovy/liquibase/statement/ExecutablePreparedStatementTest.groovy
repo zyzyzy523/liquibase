@@ -2,7 +2,7 @@ package liquibase.statement
 
 import liquibase.change.ColumnConfig
 import liquibase.changelog.ChangeSet
-import liquibase.changelog.DatabaseChangeLog
+import liquibase.changelog.ChangeLog
 import liquibase.exception.DatabaseException
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.resource.CompositeResourceAccessor
@@ -27,7 +27,7 @@ class ExecutablePreparedStatementTest extends Specification {
         List<ColumnConfig> columns = Arrays.asList(columnConfig)
 
         ChangeSet changeSet = createMock(ChangeSet.class)
-        DatabaseChangeLog changeLog = createMock(DatabaseChangeLog.class)
+        ChangeLog changeLog = createMock(ChangeLog.class)
         expect(changeLog.getPhysicalFilePath()).andReturn("liquibase/util/foo/")
         replay(changeLog)
         expect(changeSet.getChangeLog()).andReturn(changeLog)
@@ -47,7 +47,7 @@ class ExecutablePreparedStatementTest extends Specification {
         List<ColumnConfig> columns = Arrays.asList(columnConfig)
 
         ChangeSet changeSet = createMock(ChangeSet.class)
-        DatabaseChangeLog changeLog = createMock(DatabaseChangeLog.class)
+        ChangeLog changeLog = createMock(ChangeLog.class)
         expect(changeLog.getPhysicalFilePath()).andReturn("src/test/resources/liquibase/util/")
         replay(changeLog)
         expect(changeSet.getChangeLog()).andReturn(changeLog)
@@ -68,7 +68,7 @@ class ExecutablePreparedStatementTest extends Specification {
         List<ColumnConfig> columns = Arrays.asList(columnConfig)
 
         ChangeSet changeSet = createMock(ChangeSet.class)
-        DatabaseChangeLog changeLog = createMock(DatabaseChangeLog.class)
+        ChangeLog changeLog = createMock(ChangeLog.class)
         expect(changeLog.getPhysicalFilePath()).andReturn("liquibase/util/")
         replay(changeLog)
         expect(changeSet.getChangeLog()).andReturn(changeLog)
@@ -89,7 +89,7 @@ class ExecutablePreparedStatementTest extends Specification {
         List<ColumnConfig> columns = Arrays.asList(columnConfig)
 
         ChangeSet changeSet = createMock(ChangeSet.class)
-        DatabaseChangeLog changeLog = createMock(DatabaseChangeLog.class)
+        ChangeLog changeLog = createMock(ChangeLog.class)
         expect(changeLog.getPhysicalFilePath()).andReturn("src/test/resources/liquibase/util/")
         replay(changeLog)
         expect(changeSet.getChangeLog()).andReturn(changeLog)

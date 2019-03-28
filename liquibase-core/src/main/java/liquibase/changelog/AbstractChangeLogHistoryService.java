@@ -61,11 +61,11 @@ public abstract class AbstractChangeLogHistoryService implements ChangeLogHistor
         }
     }
 
-    public void upgradeChecksums(final DatabaseChangeLog databaseChangeLog, final Contexts contexts,
+    public void upgradeChecksums(final ChangeLog changeLog, final Contexts contexts,
                                  LabelExpression labels) throws DatabaseException {
         for (RanChangeSet ranChangeSet : this.getRanChangeSets()) {
             if (ranChangeSet.getLastCheckSum() == null) {
-                ChangeSet changeSet = databaseChangeLog.getChangeSet(ranChangeSet);
+                ChangeSet changeSet = changeLog.getChangeSet(ranChangeSet);
                 if ((changeSet != null) && new ContextChangeSetFilter(contexts).accepts(changeSet).isAccepted() &&
                     new DbmsChangeSetFilter(getDatabase()).accepts(changeSet).isAccepted()
                     ) {

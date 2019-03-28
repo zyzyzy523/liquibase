@@ -3,7 +3,7 @@ package liquibase.precondition;
 import liquibase.Scope;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.*;
 import liquibase.parser.core.ParsedNode;
@@ -55,7 +55,7 @@ public class CustomPreconditionWrapper extends AbstractPrecondition {
     }
     
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         CustomPrecondition customPrecondition;
         try {
@@ -86,44 +86,44 @@ public class CustomPreconditionWrapper extends AbstractPrecondition {
         }
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     @Override
     public String getName() {
         return "customPrecondition";
     }
 
-    @Override
-    protected boolean shouldAutoLoad(ParsedNode node) {
-        if ("params".equals(node.getName())) {
-            return false;
-        }
-        return super.shouldAutoLoad(node);
-    }
+//    @Override
+//    protected boolean shouldAutoLoad(ParsedNode node) {
+//        if ("params".equals(node.getName())) {
+//            return false;
+//        }
+//        return super.shouldAutoLoad(node);
+//    }
 
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        setClassName(parsedNode.getChildValue(null, "className", String.class));
-
-        ParsedNode paramsNode = parsedNode.getChild(null, "params");
-        if (paramsNode == null) {
-            paramsNode = parsedNode;
-        }
-
-        for (ParsedNode child : paramsNode.getChildren(null, "param")) {
-            Object value = child.getValue();
-            if (value == null) {
-                value = child.getChildValue(null, "value");
-            }
-            if (value != null) {
-                value = value.toString();
-            }
-            this.setParam(child.getChildValue(null, "name", String.class), (String) value);
-        }
-        super.load(parsedNode, resourceAccessor);
-
-    }
+//    @Override
+//    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//        setClassName(parsedNode.getChildValue(null, "className", String.class));
+//
+//        ParsedNode paramsNode = parsedNode.getChild(null, "params");
+//        if (paramsNode == null) {
+//            paramsNode = parsedNode;
+//        }
+//
+//        for (ParsedNode child : paramsNode.getChildren(null, "param")) {
+//            Object value = child.getValue();
+//            if (value == null) {
+//                value = child.getChildValue(null, "value");
+//            }
+//            if (value != null) {
+//                value = value.toString();
+//            }
+//            this.setParam(child.getChildValue(null, "name", String.class), (String) value);
+//        }
+//        super.load(parsedNode, resourceAccessor);
+//
+//    }
 }

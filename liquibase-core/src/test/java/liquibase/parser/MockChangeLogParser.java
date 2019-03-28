@@ -1,9 +1,8 @@
 package liquibase.parser;
 
 import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.exception.ChangeLogParseException;
-import liquibase.resource.ResourceAccessor;
 import liquibase.servicelocator.LiquibaseService;
 
 @LiquibaseService(skip = true)
@@ -21,7 +20,7 @@ public class MockChangeLogParser implements ChangeLogParser {
     }
 
     @Override
-    public boolean supports(String changeLogFile, ResourceAccessor resourceAccessor) {
+    public boolean supports(String changeLogFile) {
         for (String ext : validExtensions) {
             if (changeLogFile.endsWith(ext)) {
                 return true;
@@ -31,8 +30,7 @@ public class MockChangeLogParser implements ChangeLogParser {
     }
 
     @Override
-    public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters,
-                                   ResourceAccessor resourceAccessor) throws ChangeLogParseException {
+    public ChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException {
         return null;
     }
 }

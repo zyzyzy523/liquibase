@@ -2,10 +2,9 @@ package liquibase.snapshot;
 
 import liquibase.database.Database;
 import liquibase.diff.output.ObjectChangeFilter;
+import liquibase.exception.ParseException;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
+import liquibase.parser.ParsedNode;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.core.DatabaseObjectFactory;
@@ -160,7 +159,7 @@ public class SnapshotControl implements LiquibaseSerializable {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         throw new RuntimeException("TODO");
     }
 

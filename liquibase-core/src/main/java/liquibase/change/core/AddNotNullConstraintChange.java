@@ -173,10 +173,6 @@ public class AddNotNullConstraintChange extends AbstractChange {
             "has been added to " + getTableName() + "." + getColumnName();
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 
     /**
      * In certain SQL dialects, the VALIDATE keyword defines whether a NOT NULL constraint on a column in a table

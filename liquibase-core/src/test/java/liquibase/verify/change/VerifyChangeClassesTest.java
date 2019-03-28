@@ -59,8 +59,6 @@ public class VerifyChangeClassesTest extends AbstractVerifyTest {
                 }
                 ChangeMetaData changeMetaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(change);
 
-                change.setResourceAccessor(new JUnitResourceAccessor());
-
                 // Prepare a list of required parameters, plus a few extra for complicated cases (e.g. where at least
                 // one of two parameters in a group is required.
                 TreeSet<String> requiredParams = new TreeSet<String>(changeMetaData.getRequiredParameters(database).keySet());
@@ -152,8 +150,6 @@ public class VerifyChangeClassesTest extends AbstractVerifyTest {
                 }
                 ChangeMetaData changeMetaData = Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(change);
 
-                change.setResourceAccessor(new JUnitResourceAccessor());
-
                 ArrayList<String> requiredParams = new ArrayList<String>(changeMetaData.getRequiredParameters(database).keySet());
                 for (String paramName : requiredParams) {
                     ChangeParameterMetaData param = changeMetaData.getParameters().get(paramName);
@@ -219,7 +215,6 @@ public class VerifyChangeClassesTest extends AbstractVerifyTest {
                 });
                 for (List<String> permutation : paramLists) {
                     Change change = changeFactory.create(changeName);
-                    change.setResourceAccessor(new JUnitResourceAccessor());
 //
                     for (String paramName : new TreeSet<String>(changeMetaData.getRequiredParameters(database).keySet())) {
                         ChangeParameterMetaData param = changeMetaData.getParameters().get(paramName);

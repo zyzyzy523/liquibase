@@ -64,9 +64,4 @@ public class DropSequenceChange extends AbstractChange {
     public String getConfirmationMessage() {
         return "Sequence " + getSequenceName() + " dropped";
     }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

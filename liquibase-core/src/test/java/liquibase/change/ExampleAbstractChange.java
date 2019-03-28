@@ -1,6 +1,7 @@
 package liquibase.change;
 
 import liquibase.database.Database;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.statement.SqlStatement;
 
 @DatabaseChange(name = "exampleAbstractChange", description = "Used for the AbstractChangeTest unit test", priority = 1)
@@ -30,7 +31,7 @@ class ExampleAbstractChange extends AbstractChange {
         this.paramOne = paramOne;
     }
 
-    @DatabaseChangeProperty(requiredForDatabase = {"mysql", "mssql"}, mustEqualExisting = "table", serializationType = SerializationType.NESTED_OBJECT)
+    @DatabaseChangeProperty(requiredForDatabase = {"mysql", "mssql"}, mustEqualExisting = "table", serializationType = LiquibaseSerializable.SerializationType.NESTED_OBJECT)
     public Integer getParamTwo() {
         return paramTwo;
     }
@@ -58,11 +59,6 @@ class ExampleAbstractChange extends AbstractChange {
 
     public String getNotWriteMethod() {
         return null;
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
     }
 
 }

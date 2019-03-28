@@ -19,8 +19,4 @@ public class EmptyChange extends AbstractChange {
         return "Empty change did nothing";
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

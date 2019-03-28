@@ -113,9 +113,9 @@ public class OfflineChangeLogHistoryServiceTest {
      * Create ChangeLog and ChangeSet
      */
     private ChangeSet createChangeSet() {
-        DatabaseChangeLog databaseChangeLog = new DatabaseChangeLog("/patch/changeLog.xml");
-        ChangeSet changeSet = new ChangeSet("id", "author", false, false, "/path/changeSet.xml", "", "", databaseChangeLog);
-        databaseChangeLog.addChangeSet(changeSet);
+        ChangeLog changeLog = new ChangeLog("/patch/changeLog.xml");
+        ChangeSet changeSet = new ChangeSet("id", "author", false, false, "/path/changeSet.xml", "", "", changeLog);
+        changeLog.addChangeSet(changeSet);
         return changeSet;
     }
 }

@@ -1,5 +1,6 @@
 package liquibase.changelog;
 
+import liquibase.AbstractExtensibleObject;
 import liquibase.ContextExpression;
 import liquibase.serializer.AbstractLiquibaseSerializable;
 
@@ -7,25 +8,30 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ChangeLogInclude extends AbstractLiquibaseSerializable implements ChangeLogChild {
+public class ChangeLogInclude extends AbstractExtensibleObject implements ChangeLogEntry {
     private String file;
     private Boolean relativeToChangelogFile;
     private ContextExpression context;
 
-    @Override
-    public Set<String> getSerializableFields() {
-        return new LinkedHashSet<>(Arrays.asList("file", "relativeToChangelogFile", "context"));
-    }
+//    @Override
+//    public Set<String> getSerializableFields() {
+//        return new LinkedHashSet<>(Arrays.asList("file", "relativeToChangelogFile", "context"));
+//    }
 
     @Override
-    public String getSerializedObjectName() {
-        return "include";
+    public ChangeLog getContainerChangeLog() {
+        return null;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectName() {
+//        return "include";
+//    }
+//
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     public String getFile() {
         return file;

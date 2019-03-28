@@ -7,6 +7,8 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.DropTableStatement;
 import liquibase.structure.core.Table;
 
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
+
 /**
  * Drops an existing table.
  */
@@ -80,8 +82,4 @@ public class DropTableChange extends AbstractChange {
         return "Table " + getTableName() + " dropped";
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

@@ -1,12 +1,8 @@
 package liquibase.precondition;
 
-import liquibase.serializer.AbstractLiquibaseSerializable;
+import liquibase.AbstractExtensibleObject;
 
-public abstract class AbstractPrecondition extends AbstractLiquibaseSerializable implements Precondition {
+public abstract class AbstractPrecondition extends AbstractExtensibleObject implements Precondition {
 
-    @Override
-    public String getSerializedObjectName() {
-        return getName();
-    }
 
 }

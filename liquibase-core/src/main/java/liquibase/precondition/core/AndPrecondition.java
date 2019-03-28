@@ -1,8 +1,8 @@
 package liquibase.precondition.core;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.visitor.ChangeExecListener;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class AndPrecondition extends PreconditionLogic {
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     @Override
     public Warnings warn(Database database) {
@@ -36,7 +36,7 @@ public class AndPrecondition extends PreconditionLogic {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         boolean allPassed = true;
         List<FailedPrecondition> failures = new ArrayList<>();

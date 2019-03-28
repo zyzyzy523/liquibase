@@ -24,11 +24,6 @@ public class CreateTableExampleChange extends AbstractChange {
     private BigDecimal decimalValue;
 
     @Override
-    public String getSerializedObjectNamespace() {
-        return GENERIC_CHANGELOG_EXTENSION_NAMESPACE;
-    }
-
-    @Override
     public SqlStatement[] generateStatements(Database database) {
         return null;
     }

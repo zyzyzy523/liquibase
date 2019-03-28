@@ -4,15 +4,14 @@ import liquibase.Labels;
 import liquibase.Scope;
 import liquibase.change.core.EmptyChange;
 import liquibase.change.core.RawSQLChange;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.exception.ChangeLogParseException;
 import liquibase.logging.LogType;
 import liquibase.parser.ChangeLogParser;
 import liquibase.precondition.core.PreconditionContainer;
 import liquibase.precondition.core.SqlPrecondition;
-import liquibase.resource.ResourceAccessor;
 import liquibase.util.StreamUtil;
 import liquibase.util.StringUtil;
 
@@ -26,11 +25,11 @@ import java.util.regex.Pattern;
 public class FormattedSqlChangeLogParser implements ChangeLogParser {
 
     @Override
-    public boolean supports(String changeLogFile, ResourceAccessor resourceAccessor) {
+    public boolean supports(String changeLogFile) {
         BufferedReader reader = null;
         try {
             if (changeLogFile.endsWith(".sql")) {
-                InputStream fileStream = openChangeLogFile(changeLogFile, resourceAccessor);
+                InputStream fileStream = openChangeLogFile(changeLogFile);
                 if (fileStream == null) {
                     return false;
                 }
@@ -61,17 +60,17 @@ public class FormattedSqlChangeLogParser implements ChangeLogParser {
     }
 
     @Override
-    public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters, ResourceAccessor resourceAccessor) throws ChangeLogParseException {
+    public ChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException {
 
-        DatabaseChangeLog changeLog = new DatabaseChangeLog();
+        ChangeLog changeLog = new ChangeLog();
         changeLog.setChangeLogParameters(changeLogParameters);
 
-        changeLog.setPhysicalFilePath(physicalChangeLogLocation);
+        changeLog.physicalPath = physicalChangeLogLocation;
 
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(StreamUtil.readStreamWithReader(openChangeLogFile(physicalChangeLogLocation, resourceAccessor), null));
+            reader = new BufferedReader(StreamUtil.readStreamWithReader(openChangeLogFile(physicalChangeLogLocation), null));
             StringBuffer currentSql = new StringBuffer();
             StringBuffer currentRollbackSql = new StringBuffer();
 
@@ -111,7 +110,7 @@ public class FormattedSqlChangeLogParser implements ChangeLogParser {
                 Matcher changeLogPatterMatcher = changeLogPattern.matcher (line);
                 if (changeLogPatterMatcher.matches ()) {
                    Matcher logicalFilePathMatcher = logicalFilePathPattern.matcher (line);
-                   changeLog.setLogicalFilePath (parseString(logicalFilePathMatcher));
+                   changeLog.logicalPath = parseString(logicalFilePathMatcher);
                 }
 
                 Matcher changeSetPatternMatcher = changeSetPattern.matcher(line);
@@ -167,19 +166,18 @@ public class FormattedSqlChangeLogParser implements ChangeLogParser {
                     String labels = parseString(labelsPatternMatcher);
                     String logicalFilePath = parseString(logicalFilePathMatcher);
                     if ((logicalFilePath == null) || "".equals(logicalFilePath)) {
-                       logicalFilePath = changeLog.getLogicalFilePath ();
+                       logicalFilePath = changeLog.logicalPath;
                     }
                     String dbms = parseString(dbmsPatternMatcher);
 
 
-                    changeSet = new ChangeSet(changeSetPatternMatcher.group(2), changeSetPatternMatcher.group(1), runAlways, runOnChange, logicalFilePath, context, dbms, runInTransaction, changeLog.getObjectQuotingStrategy(), changeLog);
+                    changeSet = new ChangeSet(changeSetPatternMatcher.group(2), changeSetPatternMatcher.group(1), runAlways, runOnChange, logicalFilePath, context, dbms, runInTransaction, changeLog);
                     changeSet.setLabels(new Labels(labels));
                     changeSet.setFailOnError(failOnError);
                     changeLog.addChangeSet(changeSet);
 
                     change = new RawSQLChange();
                     change.setSql(finalCurrentSql);
-                    change.setResourceAccessor(resourceAccessor);
                     change.setSplitStatements(splitStatements);
                     change.setStripComments(stripComments);
                     change.setEndDelimiter(endDelimiter);
@@ -320,8 +318,8 @@ public class FormattedSqlChangeLogParser implements ChangeLogParser {
         return stripComments;
     }
 
-    protected InputStream openChangeLogFile(String physicalChangeLogLocation, ResourceAccessor resourceAccessor) throws IOException {
-        InputStream resourceAsStream = resourceAccessor.openStream(null, physicalChangeLogLocation);
+    protected InputStream openChangeLogFile(String physicalChangeLogLocation) throws IOException {
+        InputStream resourceAsStream = Scope.getCurrentScope().getResourceAccessor().openStream(null, physicalChangeLogLocation);
         if (resourceAsStream == null) {
             final File physicalChangeLogFile = new File(physicalChangeLogLocation);
             throw new IOException("File does not exist: " + physicalChangeLogFile.getAbsolutePath());

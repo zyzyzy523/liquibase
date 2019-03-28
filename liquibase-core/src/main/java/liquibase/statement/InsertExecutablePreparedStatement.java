@@ -15,8 +15,8 @@ public class InsertExecutablePreparedStatement extends ExecutablePreparedStateme
 
     public InsertExecutablePreparedStatement(
             Database database, String catalogName, String schemaName, String tableName, List<ColumnConfig> columns,
-            ChangeSet changeSet, ResourceAccessor resourceAccessor) {
-        super(database, catalogName, schemaName, tableName, columns, changeSet, resourceAccessor);
+            ChangeSet changeSet) {
+        super(database, catalogName, schemaName, tableName, columns, changeSet);
     }
 
     @Override

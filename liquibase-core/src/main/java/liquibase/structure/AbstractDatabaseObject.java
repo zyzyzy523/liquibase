@@ -1,9 +1,9 @@
 package liquibase.structure;
 
 import liquibase.configuration.LiquibaseConfiguration;
+import liquibase.exception.ParseException;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.core.Column;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * {@link liquibase.structure.core.PrimaryKey} and {@link liquibase.structure.core.Column}.
  * <p/>
  * Core features of this class include the functionality for the attributes collection ( {@link #getAttributes()} }
- * and the ability to load an object from a serialised form {@link #load(ParsedNode, ResourceAccessor)} .
+ * and the ability to load an object from a serialised form {@link #load(ParsedNode)} .
  */
 public abstract class AbstractDatabaseObject implements DatabaseObject {
 
@@ -182,11 +182,11 @@ public abstract class AbstractDatabaseObject implements DatabaseObject {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         for (ParsedNode child : parsedNode.getChildren()) {
             String name = child.getName();
             if ("snapshotId".equals(name)) {
-                this.snapshotId = child.getValue(String.class);
+                this.snapshotId = child.getValue(null, String.class);
                 continue;
             }
 

@@ -66,8 +66,4 @@ public class DropViewChange extends AbstractChange {
         return "View "+getViewName()+" dropped";
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

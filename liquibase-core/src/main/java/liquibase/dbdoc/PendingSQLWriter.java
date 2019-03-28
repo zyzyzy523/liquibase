@@ -4,7 +4,7 @@ import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.DatabaseHistoryException;
@@ -20,11 +20,11 @@ import java.util.List;
 
 public class PendingSQLWriter extends HTMLWriter {
 
-    private DatabaseChangeLog databaseChangeLog;
+    private ChangeLog changeLog;
 
-    public PendingSQLWriter(File rootOutputDir, Database database, DatabaseChangeLog databaseChangeLog) {
+    public PendingSQLWriter(File rootOutputDir, Database database, ChangeLog changeLog) {
         super(new File(rootOutputDir, "pending"), database);
-        this.databaseChangeLog = databaseChangeLog;
+        this.changeLog = changeLog;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PendingSQLWriter extends HTMLWriter {
                 String anchor = thisChangeSet.toString(false).replaceAll("\\W","_");
                 fileWriter.append("<a name='").append(anchor).append("'/>");
                 try {
-                    thisChangeSet.execute(databaseChangeLog, null, this.database);
+                    thisChangeSet.execute(changeLog, null, this.database);
                 } catch (MigrationFailedException e) {
                     fileWriter.append("EXECUTION ERROR: ").append(Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(change).getDescription()).append(": ").append(e.getMessage()).append("\n\n");
                 }

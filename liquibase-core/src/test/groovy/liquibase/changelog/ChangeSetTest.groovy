@@ -108,7 +108,7 @@ public class ChangeSetTest extends Specification {
 
     def "load empty node"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet").addChildren([id: "1", author: "nvoxland"])
         try {
             changeSet.load(node, resourceSupplier.simpleResourceAccessor)
@@ -123,9 +123,9 @@ public class ChangeSetTest extends Specification {
 
     def "load node with changeSet properties"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
-        def fields = new ChangeSet(new DatabaseChangeLog()).getSerializableFields()
+        def fields = new ChangeSet(new ChangeLog()).getSerializableFields()
         def testValue = new HashMap()
         for (param in fields) {
             if (param in ["runAlways", "runOnChange", "failOnError"]) {
@@ -162,7 +162,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with changes as direct children"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChildren([id: "1", author: "nvoxland"])
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
@@ -183,7 +183,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing sql as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
                 .setValue(new ParsedNode(null, "rollback").setValue("rollback logic here"))
@@ -201,7 +201,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing change node as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
                 .setValue(new ParsedNode(null, "rollback").setValue(new ParsedNode(null, "renameTable").addChild(null, "newTableName", "rename_to_x")))
@@ -219,7 +219,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing collection of change nodes as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
                 .setValue([
@@ -241,7 +241,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing rollback nodes as children"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
                 .addChild(new ParsedNode(null, "rollback").setValue(new ParsedNode(null, "renameTable").addChild(null, "newTableName", "rename_to_a")))
@@ -264,7 +264,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing multiple sql statements in value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"))
                 .addChild(new ParsedNode(null, "rollback").setValue("\n--a comment here\nrollback sql 1;\nrollback sql 2\n--final comment"))
@@ -284,7 +284,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with valid checksums as children"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChild(null, "validCheckSum", "c2b7b29ce3a75940893cd022501852e2")
                 .addChild(null, "validCheckSum", "8:d54da29ce3a75940858cd093501158b8")
@@ -302,7 +302,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with valid checksums in value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet").setValue([
                 new ParsedNode(null, "validCheckSum").setValue("c2b7b29ce3a75940893cd022501852e2"),
                 new ParsedNode(null, "validCheckSum").setValue("8:d54da29ce3a75940858cd093501158b8")
@@ -321,7 +321,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with preconditions as child"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").addChildren([preConditions: [
                     [runningAs: [username: "my_user"]],
@@ -339,7 +339,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with preconditions as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").setValue(new ParsedNode(null, "preConditions").setValue([
                     [runningAs: [username: "my_user"]],
@@ -357,7 +357,7 @@ public class ChangeSetTest extends Specification {
 
     def "load with modifySql as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").setValue([
                     new ParsedNode(null, "modifySql").addChildren([applyToRollback: "true", replace: [replace: "a", with: "b"]]),
@@ -391,7 +391,7 @@ public class ChangeSetTest extends Specification {
 
     def "load with empty rollback creates an EmptyChange"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").addChild(new ParsedNode(null, "rollback")), resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -406,7 +406,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing only a comment creates an EmptyChange"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             def commentNode = new ParsedNode(null, "comment").setValue("comment here")
             def rollbackNode = new ParsedNode(null, "rollback").addChild(commentNode)
@@ -423,7 +423,7 @@ public class ChangeSetTest extends Specification {
 
     def "load node with rollback containing change node and a comment as value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def createTableNode = new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1")
         def renameTableNode = new ParsedNode(null, "renameTable").addChild(null, "newTableName", "rename_to_x")
         def commentNode = new ParsedNode(null, "comment").setValue("comment here")
@@ -445,7 +445,7 @@ public class ChangeSetTest extends Specification {
     def "load with rollback referencing earlier changeSet"() {
         def path = "com/example/test.xml"
         when:
-        def changeLog = new DatabaseChangeLog(path)
+        def changeLog = new ChangeLog(path)
         changeLog.load(new ParsedNode(null, "databaseChangeLog")
                 .addChildren([changeSet: [id: "1", author: "nvoxland", createTable: [tableName: "table1"]]])
                 .addChildren([changeSet: [id: "2", author: "nvoxland", createTable: [tableName: "table2"]]])
@@ -464,7 +464,7 @@ public class ChangeSetTest extends Specification {
 
     def "load with changes in 'changes' node is parsed correctly"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         def node = new ParsedNode(null, "changeSet")
                 .addChildren([id: "1", author: "nvoxland", changes: [
                 new ParsedNode(null, "createTable").addChild(null, "tableName", "table_1"),
@@ -486,7 +486,7 @@ public class ChangeSetTest extends Specification {
     @Unroll("#featureName: #param=#value")
     def "load handles alwaysRun or runAlways"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").addChild(null, param, value), resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {
@@ -507,7 +507,7 @@ public class ChangeSetTest extends Specification {
     @Unroll
     def "load handles validCheckSum(s) as a collection or a single value"() {
         when:
-        def changeSet = new ChangeSet(new DatabaseChangeLog("com/example/test.xml"))
+        def changeSet = new ChangeSet(new ChangeLog("com/example/test.xml"))
         try {
             changeSet.load(new ParsedNode(null, "changeSet").addChild(null, param, value), resourceSupplier.simpleResourceAccessor)
         } catch (ParsedNodeException e) {

@@ -1,8 +1,7 @@
 package liquibase.structure.core;
 
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.structure.AbstractDatabaseObject;
 import liquibase.structure.DatabaseObject;
 import liquibase.util.StringUtil;
@@ -238,8 +237,8 @@ public class UniqueConstraint extends AbstractDatabaseObject {
 	}
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        super.load(parsedNode, resourceAccessor);
+    public void load(ParsedNode parsedNode) throws ParseException {
+        super.load(parsedNode);
     }
 
     @Override

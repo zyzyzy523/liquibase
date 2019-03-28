@@ -1,6 +1,6 @@
 package liquibase.exception;
 
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.precondition.FailedPrecondition;
 import liquibase.precondition.Precondition;
 
@@ -16,7 +16,7 @@ public class PreconditionFailedException extends Exception {
     private static final long serialVersionUID = 1L;
     private List<FailedPrecondition> failedPreconditions;
 
-    public PreconditionFailedException(String message, DatabaseChangeLog changeLog, Precondition precondition) {
+    public PreconditionFailedException(String message, ChangeLog changeLog, Precondition precondition) {
         this(new FailedPrecondition(message, changeLog, precondition));
     }
 

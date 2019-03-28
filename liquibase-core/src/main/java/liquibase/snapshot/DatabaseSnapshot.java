@@ -10,11 +10,11 @@ import liquibase.database.OfflineConnection;
 import liquibase.diff.compare.CompareControl;
 import liquibase.diff.compare.DatabaseObjectComparatorFactory;
 import liquibase.exception.DatabaseException;
+import liquibase.exception.ParseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.logging.LogType;
 import liquibase.logging.Logger;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.DatabaseObject;
@@ -571,22 +571,22 @@ public abstract class DatabaseSnapshot implements LiquibaseSerializable {
     }
 
     @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+    public void load(ParsedNode parsedNode) throws ParseException {
         try {
             Map<String, DatabaseObject> referencedObjects = new HashMap<>();
             Map<String, DatabaseObject> objects = new HashMap<>();
             Map<String, DatabaseObject> allObjects = new HashMap<>();
-            ParsedNode databaseNode = parsedNode.getChild(null, "database");
+            ParsedNode databaseNode = parsedNode.getChild("database", false);
             DatabaseConnection connection = getDatabase().getConnection();
             if ((databaseNode != null) && (connection instanceof OfflineConnection)) {
-                ((OfflineConnection) connection).setDatabaseMajorVersion(databaseNode.getChildValue(null, "majorVersion", Integer.class));
-                ((OfflineConnection) connection).setDatabaseMinorVersion(databaseNode.getChildValue(null, "minorVersion", Integer.class));
-                ((OfflineConnection) connection).setProductVersion(databaseNode.getChildValue(null, "productVersion", String.class));
-                ((OfflineConnection) connection).setConnectionUserName(databaseNode.getChildValue(null, "user", String.class));
+                ((OfflineConnection) connection).setDatabaseMajorVersion(databaseNode.getChildValue("majorVersion", Integer.class, true));
+                ((OfflineConnection) connection).setDatabaseMinorVersion(databaseNode.getChildValue("minorVersion", Integer.class, true));
+                ((OfflineConnection) connection).setProductVersion(databaseNode.getChildValue("productVersion", String.class, true));
+                ((OfflineConnection) connection).setConnectionUserName(databaseNode.getChildValue("user", String.class, true));
             }
 
-            loadObjects(referencedObjects, allObjects, parsedNode.getChild(null, "referencedObjects"), resourceAccessor);
-            loadObjects(objects, allObjects, parsedNode.getChild(null, "objects"), resourceAccessor);
+            loadObjects(referencedObjects, allObjects, parsedNode.getChild("referencedObjects", false));
+            loadObjects(objects, allObjects, parsedNode.getChild("objects", false));
 
             for (DatabaseObject object : allObjects.values()) {
                 for (String attr : new ArrayList<>(object.getAttributes())) {
@@ -628,11 +628,11 @@ public abstract class DatabaseSnapshot implements LiquibaseSerializable {
                 this.referencedObjects.add(object);
             }
         } catch (Exception e) {
-            throw new ParsedNodeException(e);
+            throw new ParseException(e, parsedNode);
         }
     }
 
-    protected void loadObjects(Map<String, DatabaseObject> objectMap, Map<String, DatabaseObject> allObjects, ParsedNode node, ResourceAccessor resourceAccessor) throws ReflectiveOperationException, ParsedNodeException {
+    protected void loadObjects(Map<String, DatabaseObject> objectMap, Map<String, DatabaseObject> allObjects, ParsedNode node) throws ReflectiveOperationException, ParseException {
         if (node == null) {
             return;
         }
@@ -640,7 +640,7 @@ public abstract class DatabaseSnapshot implements LiquibaseSerializable {
             Class<? extends DatabaseObject> objectType = (Class<? extends DatabaseObject>) Class.forName(typeNode.getName());
             for (ParsedNode objectNode : typeNode.getChildren()) {
                 DatabaseObject databaseObject = objectType.getConstructor().newInstance();
-                databaseObject.load(objectNode, resourceAccessor);
+                databaseObject.load(objectNode);
                 String key = objectType.getName() + "#" + databaseObject.getSnapshotId();
                 objectMap.put(key, databaseObject);
                 allObjects.put(key, databaseObject);

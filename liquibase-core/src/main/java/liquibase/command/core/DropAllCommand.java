@@ -6,7 +6,7 @@ import liquibase.LabelExpression;
 import liquibase.Scope;
 import liquibase.changelog.ChangeLogHistoryService;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.command.AbstractCommand;
 import liquibase.command.CommandResult;
 import liquibase.command.CommandValidationErrors;
@@ -16,7 +16,6 @@ import liquibase.exception.LiquibaseException;
 import liquibase.executor.ExecutorService;
 import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
-import liquibase.logging.LogService;
 import liquibase.logging.LogType;
 import liquibase.logging.Logger;
 import liquibase.util.StringUtil;
@@ -100,11 +99,11 @@ public class DropAllCommand extends AbstractCommand<CommandResult> {
         return new CommandResult("All objects dropped from " + database.getConnection().getConnectionUserName() + "@" + database.getConnection().getURL());
     }
 
-    protected void checkLiquibaseTables(boolean updateExistingNullChecksums, DatabaseChangeLog databaseChangeLog, Contexts contexts, LabelExpression labelExpression) throws LiquibaseException {
+    protected void checkLiquibaseTables(boolean updateExistingNullChecksums, ChangeLog changeLog, Contexts contexts, LabelExpression labelExpression) throws LiquibaseException {
         ChangeLogHistoryService changeLogHistoryService = ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database);
         changeLogHistoryService.init();
         if (updateExistingNullChecksums) {
-            changeLogHistoryService.upgradeChecksums(databaseChangeLog, contexts, labelExpression);
+            changeLogHistoryService.upgradeChecksums(changeLog, contexts, labelExpression);
         }
         LockServiceFactory.getInstance().getLockService(database).init();
     }

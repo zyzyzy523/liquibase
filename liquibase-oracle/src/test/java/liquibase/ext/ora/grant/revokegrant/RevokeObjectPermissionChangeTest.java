@@ -4,9 +4,9 @@ import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.Database;
 import liquibase.ext.ora.grant.PermissionHelper;
 import liquibase.ext.ora.testing.BaseTestCase;
@@ -89,9 +89,9 @@ public class RevokeObjectPermissionChangeTest extends BaseTestCase {
 
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
 
-        DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
+        ChangeLog changeLog = ChangeLogParserFactory.getInstance()
                 .getParser(changeLogFile, resourceAccessor)
-                .parse(changeLogFile, changeLogParameters, resourceAccessor);
+                .parse(changeLogFile, changeLogParameters);
 
         changeLog.validate(database);
 

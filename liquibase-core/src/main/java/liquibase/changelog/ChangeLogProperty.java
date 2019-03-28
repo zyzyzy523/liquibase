@@ -1,12 +1,13 @@
 package liquibase.changelog;
 
+import liquibase.AbstractExtensibleObject;
 import liquibase.serializer.AbstractLiquibaseSerializable;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ChangeLogProperty extends AbstractLiquibaseSerializable implements ChangeLogChild {
+public class ChangeLogProperty extends AbstractExtensibleObject implements ChangeLogEntry {
     private String file;
     private String name;
     private String value;
@@ -15,19 +16,25 @@ public class ChangeLogProperty extends AbstractLiquibaseSerializable implements 
     private String dbms;
     private Boolean global;
 
-    @Override
-    public Set<String> getSerializableFields() {
-        return new LinkedHashSet<>(Arrays.asList("file", "name", "value", "context", "labels", "dbms", "global"));
-    }
+//    @Override
+//    public Set<String> getSerializableFields() {
+//        return new LinkedHashSet<>(Arrays.asList("file", "name", "value", "context", "labels", "dbms", "global"));
+//    }
+//
+//    @Override
+//    public String getSerializedObjectName() {
+//        return "property";
+//    }
+//
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
+
 
     @Override
-    public String getSerializedObjectName() {
-        return "property";
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
+    public ChangeLog getContainerChangeLog() {
+        return null;
     }
 
     public String getFile() {

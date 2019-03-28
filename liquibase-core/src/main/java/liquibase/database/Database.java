@@ -2,8 +2,8 @@ package liquibase.database;
 
 import liquibase.CatalogAndSchema;
 import liquibase.change.Change;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.exception.*;
 import liquibase.servicelocator.PrioritizedService;
@@ -302,7 +302,7 @@ public interface Database extends PrioritizedService {
 
     boolean isSafeToRunUpdate() throws DatabaseException;
 
-    void executeStatements(Change change, DatabaseChangeLog changeLog, List<SqlVisitor> sqlVisitors) throws LiquibaseException;
+    void executeStatements(Change change, ChangeLog changeLog, List<SqlVisitor> sqlVisitors) throws LiquibaseException;
 
     /*
      * Executes the statements passed as argument to a target {@link Database}
@@ -453,5 +453,21 @@ public interface Database extends PrioritizedService {
     String unescapeDataTypeString(String dataTypeString);
 
     ValidationErrors validate();
+
+    /**
+     * Strategy regards quoting object names e.g. table, column, index names etc.
+     */
+    enum QuotingStrategy {
+        /**
+         * Every object gets quoted. E.g. person becomes "person"
+         */
+        QUOTE_ALL_OBJECTS,
+
+        /**
+         * Only quote objects that need to be quoted, such as reserved words and names with special characters.
+         */
+        QUOTE_ONLY_REQUIRED
+
+    }
 }
 

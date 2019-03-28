@@ -113,8 +113,4 @@ public class RenameTableChange extends AbstractChange {
         return "Table " + oldTableName + " renamed to " + newTableName;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

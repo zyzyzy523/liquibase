@@ -1,5 +1,6 @@
 package liquibase.changelog;
 
+import liquibase.AbstractExtensibleObject;
 import liquibase.ContextExpression;
 import liquibase.serializer.AbstractLiquibaseSerializable;
 
@@ -7,26 +8,32 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class ChangeLogIncludeAll extends AbstractLiquibaseSerializable implements ChangeLogChild {
+public class ChangeLogIncludeAll extends AbstractExtensibleObject implements ChangeLogEntry {
     private String path;
     private Boolean errorIfMissingOrEmpty;
     private Boolean relativeToChangelogFile;
     private String resourceFilter;
     private ContextExpression context;
+//
+//    @Override
+//    public Set<String> getSerializableFields() {
+//        return new LinkedHashSet<>(Arrays.asList("path", "errorIfMissingOrEmpty", "relativeToChangelogFile", "resourceFilter", "context"));
+//    }
+//
+//    @Override
+//    public String getSerializedObjectName() {
+//        return "includeAll";
+//    }
+//
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
+
 
     @Override
-    public Set<String> getSerializableFields() {
-        return new LinkedHashSet<>(Arrays.asList("path", "errorIfMissingOrEmpty", "relativeToChangelogFile", "resourceFilter", "context"));
-    }
-
-    @Override
-    public String getSerializedObjectName() {
-        return "includeAll";
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
+    public ChangeLog getContainerChangeLog() {
+        return null;
     }
 
     public String getPath() {

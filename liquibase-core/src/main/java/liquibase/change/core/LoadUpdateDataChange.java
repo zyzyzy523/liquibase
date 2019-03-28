@@ -74,7 +74,7 @@ public class LoadUpdateDataChange extends LoadDataChange {
     @Override
     protected ExecutablePreparedStatementBase createPreparedStatement(
             Database database, String catalogName, String schemaName, String tableName,
-            List<ColumnConfig> columns, ChangeSet changeSet, ResourceAccessor resourceAccessor) {
+            List<ColumnConfig> columns, ChangeSet changeSet) {
         // TODO: Not supported yet. When this is implemented, we can remove hasPreparedStatementsImplemented().
         throw new UnsupportedOperationException("Executable Prepared Statements are not supported for " +
                 "LoadUpdateDataChange yet . Very sorry.");
@@ -131,11 +131,6 @@ public class LoadUpdateDataChange extends LoadDataChange {
 
         where.delete(where.lastIndexOf(" AND "), where.lastIndexOf(" AND ") + " AND ".length());
         return where.toString();
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
     }
 
     @Override

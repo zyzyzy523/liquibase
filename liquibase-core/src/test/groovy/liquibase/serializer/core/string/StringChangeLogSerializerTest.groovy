@@ -210,7 +210,7 @@ public class StringChangeLogSerializerTest extends Specification {
 //                "    dbmsList=\"mysql,oracle\"\n" +
 //                "    filePath=\"com/example/test.xml\"\n" +
 //                "    id=\"1\"\n" +
-//                "    physicalFilePath=\"c:/com/example/test.xml\"\n" +
+//                "    physicalPath=\"c:/com/example/test.xml\"\n" +
 //                "    runOnChange=\"false\"\n" +
 //                "    changes: [\n" +
 //                "        addColumn:[\n" +

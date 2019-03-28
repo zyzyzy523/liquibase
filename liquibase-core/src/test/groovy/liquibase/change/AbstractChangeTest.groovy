@@ -1,7 +1,7 @@
 package liquibase.change
 
 import liquibase.changelog.ChangeSet
-import liquibase.changelog.DatabaseChangeLog
+import liquibase.changelog.ChangeLog
 import liquibase.database.Database
 import liquibase.database.core.MSSQLDatabase
 import liquibase.exception.RollbackImpossibleException
@@ -112,7 +112,7 @@ class AbstractChangeTest extends Specification {
     def getChangeSet() {
         when:
         ExampleAbstractChange change = new ExampleAbstractChange()
-        ChangeSet changeSet = new ChangeSet(new DatabaseChangeLog())
+        ChangeSet changeSet = new ChangeSet(new ChangeLog())
         change.setChangeSet(changeSet)
 
         then:

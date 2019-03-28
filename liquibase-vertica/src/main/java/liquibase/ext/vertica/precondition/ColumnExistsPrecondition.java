@@ -2,8 +2,8 @@ package liquibase.ext.vertica.precondition;
 
 
 import liquibase.Scope;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
@@ -12,12 +12,10 @@ import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
-import liquibase.logging.LogFactory;
 import liquibase.parser.core.ParsedNode;
 import liquibase.parser.core.ParsedNodeException;
 import liquibase.precondition.Precondition;
 import liquibase.resource.ResourceAccessor;
-import liquibase.serializer.LiquibaseSerializable;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.Schema;
 import liquibase.structure.core.Table;
@@ -86,7 +84,7 @@ public class ColumnExistsPrecondition implements Precondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
         Column example = new Column();
         if (StringUtil.trimToNull(getTableName()) != null) {
             example.setRelation(new Table().setName(getTableName()).setSchema(new Schema(getCatalogName(), getSchemaName())));
@@ -119,45 +117,45 @@ public class ColumnExistsPrecondition implements Precondition {
         }*/
     }
 
-    @Override
-    public String getSerializedObjectName() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getSerializableFields() {
-        return null;
-    }
-
-    @Override
-    public Object getSerializableFieldValue(String field) {
-        return null;
-    }
-
-    @Override
-    public SerializationType getSerializableFieldType(String field) {
-        return null;
-    }
-
-    @Override
-    public String getSerializableFieldNamespace(String field) {
-        return null;
-    }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return null;
-    }
-
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-
-    }
-
-    @Override
-    public ParsedNode serialize() throws ParsedNodeException {
-        return null;
-    }
+//    @Override
+//    public String getSerializedObjectName() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Set<String> getSerializableFields() {
+//        return null;
+//    }
+//
+//    @Override
+//    public Object getSerializableFieldValue(String field) {
+//        return null;
+//    }
+//
+//    @Override
+//    public SerializationType getSerializableFieldType(String field) {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getSerializableFieldNamespace(String field) {
+//        return null;
+//    }
+//
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return null;
+//    }
+//
+//    @Override
+//    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//
+//    }
+//
+//    @Override
+//    public ParsedNode serialize() throws ParsedNodeException {
+//        return null;
+//    }
 
     private void createExistingColumnsMap(JdbcConnection dbConn, Map tableColumnsExists) {
         Statement stmt = null;

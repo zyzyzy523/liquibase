@@ -13,6 +13,7 @@ import liquibase.database.core.MSSQLDatabase;
 import liquibase.database.core.OracleDatabase;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.CreateProcedureStatement;
 import liquibase.util.StreamUtil;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
 
 @DatabaseChange(
     name = "createProcedure",
@@ -118,7 +121,7 @@ public class CreateProcedureChange extends AbstractChange implements DbmsTargete
                 "    BEGIN\n" +
                 "      DBMS_OUTPUT.PUT_LINE('Hello From The Database!');\n" +
                 "    END;",
-        serializationType = SerializationType.DIRECT_VALUE)
+        serializationType = LiquibaseSerializable.SerializationType.DIRECT_VALUE)
     /**
      * @deprecated Use getProcedureText() instead
      */
@@ -213,7 +216,7 @@ public class CreateProcedureChange extends AbstractChange implements DbmsTargete
             if (isRelativeToChangelogFile()) {
                 relativeTo = getChangeSet().getFilePath();
             }
-            return getResourceAccessor().openStream(relativeTo, path);
+            return Scope.getCurrentScope().getResourceAccessor().openStream(relativeTo, path);
         } catch (IOException e) {
             throw new IOException(
                 "<" + Scope.getCurrentScope().getSingleton(ChangeFactory.class).getChangeMetaData(this).getName() + " path=" +

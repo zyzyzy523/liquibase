@@ -283,9 +283,4 @@ public class AddLookupTableChange extends AbstractChange {
     public String getConfirmationMessage() {
         return "Lookup table added for "+getExistingTableName()+"."+getExistingColumnName();
     }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

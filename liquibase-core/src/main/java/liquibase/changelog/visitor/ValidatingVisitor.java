@@ -2,8 +2,8 @@ package liquibase.changelog.visitor;
 
 import liquibase.Scope;
 import liquibase.change.Change;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.filter.ChangeSetFilterResult;
 import liquibase.database.Database;
@@ -39,7 +39,7 @@ public class ValidatingVisitor implements ChangeSetVisitor {
         }
     }
 
-    public void validate(Database database, DatabaseChangeLog changeLog) {
+    public void validate(Database database, ChangeLog changeLog) {
         this.database = database;
         PreconditionContainer preconditions = changeLog.getPreconditions();
         try {
@@ -93,7 +93,7 @@ public class ValidatingVisitor implements ChangeSetVisitor {
     }
 
         @Override
-    public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+    public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
         RanChangeSet ranChangeSet = findChangeSet(changeSet);
         boolean ran = ranChangeSet != null;
         boolean shouldValidate = !ran || changeSet.shouldRunOnChange() || changeSet.shouldAlwaysRun();

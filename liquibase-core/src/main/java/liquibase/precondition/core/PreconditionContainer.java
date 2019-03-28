@@ -1,29 +1,25 @@
 package liquibase.precondition.core;
 
 import liquibase.Scope;
-import liquibase.changelog.ChangeLogChild;
+import liquibase.changelog.ChangeLog;
+import liquibase.changelog.ChangeLogEntry;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
-import liquibase.logging.LogService;
 import liquibase.logging.LogType;
-import liquibase.changelog.visitor.ChangeExecListener;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
 import liquibase.precondition.ErrorPrecondition;
 import liquibase.precondition.FailedPrecondition;
-import liquibase.resource.ResourceAccessor;
 import liquibase.util.StreamUtil;
 import liquibase.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreconditionContainer extends AndPrecondition implements ChangeLogChild {
+public class PreconditionContainer extends AndPrecondition implements ChangeLogEntry {
 
     public enum FailOption {
         HALT("HALT"),
@@ -84,6 +80,11 @@ public class PreconditionContainer extends AndPrecondition implements ChangeLogC
     private OnSqlOutputOption onSqlOutput = OnSqlOutputOption.IGNORE;
     private String onFailMessage;
     private String onErrorMessage;
+
+    @Override
+    public ChangeLog getContainerChangeLog() {
+        return null;
+    }
 
     public FailOption getOnFail() {
         return onFail;
@@ -185,7 +186,7 @@ public class PreconditionContainer extends AndPrecondition implements ChangeLogC
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         String ranOn = String.valueOf(changeLog);
         if (changeSet != null) {
@@ -263,20 +264,20 @@ public class PreconditionContainer extends AndPrecondition implements ChangeLogC
         }
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
-    @Override
-    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        this.setOnError(parsedNode.getChildValue(null, "onError", String.class));
-        this.setOnErrorMessage(parsedNode.getChildValue(null, "onErrorMessage", String.class));
-        this.setOnFail(parsedNode.getChildValue(null, "onFail", String.class));
-        this.setOnFailMessage(parsedNode.getChildValue(null, "onFailMessage", String.class));
-
-        super.load(parsedNode, resourceAccessor);
-    }
+//    @Override
+//    public void load(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
+//        this.setOnError(parsedNode.getChildValue(null, "onError", String.class));
+//        this.setOnErrorMessage(parsedNode.getChildValue(null, "onErrorMessage", String.class));
+//        this.setOnFail(parsedNode.getChildValue(null, "onFail", String.class));
+//        this.setOnFailMessage(parsedNode.getChildValue(null, "onFailMessage", String.class));
+//
+//        super.load(parsedNode, resourceAccessor);
+//    }
 
     @Override
     public String getName() {

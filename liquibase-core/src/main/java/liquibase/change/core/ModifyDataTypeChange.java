@@ -90,8 +90,4 @@ public class ModifyDataTypeChange extends AbstractChange {
         this.newDataType = newDataType;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

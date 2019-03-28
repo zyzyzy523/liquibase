@@ -1,7 +1,7 @@
 package liquibase.precondition.core;
 
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.database.ObjectQuotingStrategy;
@@ -14,10 +14,10 @@ import liquibase.precondition.AbstractPrecondition;
 public class ObjectQuotingStrategyPrecondition extends AbstractPrecondition {
     private ObjectQuotingStrategy strategy;
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     @Override
     public String getName() {
@@ -35,18 +35,18 @@ public class ObjectQuotingStrategyPrecondition extends AbstractPrecondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
-        try {
-            if (changeLog.getObjectQuotingStrategy() != strategy) {
-                throw new PreconditionFailedException("Quoting strategy Precondition failed: expected "
-                        + strategy +", got "+changeSet.getObjectQuotingStrategy(), changeLog, this);
-            }
-        } catch (PreconditionFailedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PreconditionErrorException(e, changeLog, this);
-        }
+//        try {
+//            if (changeLog.objectQuotingStrategy != strategy) {
+//                throw new PreconditionFailedException("Quoting strategy Precondition failed: expected "
+//                        + strategy +", got "+changeSet.getObjectQuotingStrategy(), changeLog, this);
+//            }
+//        } catch (PreconditionFailedException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new PreconditionErrorException(e, changeLog, this);
+//        }
     }
 
     public void setStrategy(String strategy) {

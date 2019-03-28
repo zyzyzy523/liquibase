@@ -3,10 +3,8 @@ package liquibase.change;
 import liquibase.ExtensibleObject;
 import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
-import liquibase.exception.RollbackImpossibleException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.exception.Warnings;
+import liquibase.exception.*;
+import liquibase.parser.ParsedNode;
 import liquibase.plugin.Plugin;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.LiquibaseSerializable;
@@ -42,12 +40,6 @@ public interface Change extends LiquibaseSerializable, Plugin, ExtensibleObject 
      * Sets the changeSet this Change is a part of. Called automatically by Liquibase during the changelog parsing process.
      */
     public void setChangeSet(ChangeSet changeSet);
-
-    /**
-    * Sets the {@link ResourceAccessor} that should be used for any file and/or resource loading needed by this Change.
-    * Called automatically by Liquibase during the changelog parsing process.
-    */
-    public void setResourceAccessor(ResourceAccessor resourceAccessor);
 
     /**
      * Return true if this Change object supports the passed database. Used by the ChangeLog parsing process.
@@ -133,4 +125,13 @@ public interface Change extends LiquibaseSerializable, Plugin, ExtensibleObject 
      * Short, scannable description for the DATABASECHANGELOG.DESCRIPTION column
      */
     String getDescription();
+
+    Set<String> getSerializableFields();
+
+    Object getSerializableFieldValue(String field);
+
+    String getSerializedObjectName();
+
+    void load(ParsedNode parsedNode) throws ParseException;
+
 }

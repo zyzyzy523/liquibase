@@ -1,7 +1,7 @@
 package liquibase.precondition.core;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
@@ -43,7 +43,7 @@ public class SqlPrecondition extends AbstractPrecondition {
     }
 
     @Override
-    public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
+    public void check(Database database, ChangeLog changeLog, ChangeSet changeSet, ChangeExecListener changeExecListener)
             throws PreconditionFailedException, PreconditionErrorException {
         DatabaseConnection connection = database.getConnection();
         try {
@@ -63,21 +63,21 @@ public class SqlPrecondition extends AbstractPrecondition {
         }
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
+//    @Override
+//    public String getSerializedObjectNamespace() {
+//        return STANDARD_CHANGELOG_NAMESPACE;
+//    }
 
     @Override
     public String getName() {
         return "sqlCheck";
     }
 
-    @Override
-    public SerializationType getSerializableFieldType(String field) {
-        if ("sql".equals(field)) {
-            return SerializationType.DIRECT_VALUE;
-        }
-        return super.getSerializableFieldType(field);
-    }
+//    @Override
+//    public SerializationType getSerializableFieldType(String field) {
+//        if ("sql".equals(field)) {
+//            return SerializationType.DIRECT_VALUE;
+//        }
+//        return super.getSerializableFieldType(field);
+//    }
 }

@@ -11,17 +11,12 @@ import liquibase.database.core.MySQLDatabase;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.datatype.DataTypeFactory;
 import liquibase.datatype.LiquibaseDataType;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.DateParseException;
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.exception.Warnings;
+import liquibase.exception.*;
 import liquibase.executor.ExecutorService;
 import liquibase.executor.LoggingExecutor;
 import liquibase.io.EmptyLineAndCommentSkippingInputStream;
 import liquibase.logging.LogType;
 import liquibase.logging.Logger;
-import liquibase.resource.ResourceAccessor;
 import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.SnapshotGeneratorFactory;
 import liquibase.statement.BatchDmlExecutablePreparedStatement;
@@ -466,7 +461,7 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
                     ExecutablePreparedStatementBase stmt =
                         this.createPreparedStatement(
                             database, getCatalogName(), getSchemaName(), getTableName(), columnsFromCsv,
-                            getChangeSet(), getResourceAccessor()
+                            getChangeSet()
                         );
                     batchedStatements.add(stmt);
                 } else {
@@ -498,7 +493,7 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
                             new BatchDmlExecutablePreparedStatement(
                                     database, getCatalogName(), getSchemaName(),
                                     getTableName(), columns,
-                                    getChangeSet(), getResourceAccessor(),
+                                    getChangeSet(),
                                     batchedStatements)
                     };
                 } else {
@@ -705,12 +700,8 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
     }
 
     public CSVReader getCSVReader() throws IOException, LiquibaseException {
-        ResourceAccessor resourceAccessor = getResourceAccessor();
-        if (resourceAccessor == null) {
-            throw new UnexpectedLiquibaseException("No file resourceAccessor specified for " + getFile());
-        }
         String relativeTo = getRelativeTo();
-        InputStream stream = resourceAccessor.openStream(relativeTo, file);
+        InputStream stream = Scope.getCurrentScope().getResourceAccessor().openStream(relativeTo, file);
         if (stream == null) {
             return null;
         }
@@ -741,9 +732,9 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
 
     protected ExecutablePreparedStatementBase createPreparedStatement(
             Database database, String catalogName, String schemaName, String tableName,
-            List<ColumnConfig> columns, ChangeSet changeSet, ResourceAccessor resourceAccessor) {
+            List<ColumnConfig> columns, ChangeSet changeSet) {
         return new InsertExecutablePreparedStatement(database, catalogName, schemaName, tableName, columns,
-                changeSet, resourceAccessor);
+                changeSet);
     }
 
     protected InsertStatement createStatement(String catalogName, String schemaName, String tableName) {
@@ -784,7 +775,7 @@ public class LoadDataChange extends AbstractChange implements ChangeWithColumns<
     public CheckSum generateCheckSum() {
         InputStream stream = null;
         try {
-            stream = getResourceAccessor().openStream(getRelativeTo(), file);
+            stream = Scope.getCurrentScope().getResourceAccessor().openStream(getRelativeTo(), file);
             if (stream == null) {
                 throw new UnexpectedLiquibaseException(getFile() + " could not be found");
             }

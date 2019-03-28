@@ -15,17 +15,17 @@ import liquibase.util.StringUtil;
 import java.util.*;
 
 public class ChangeLogIterator {
-    private DatabaseChangeLog databaseChangeLog;
+    private ChangeLog changeLog;
     private List<ChangeSetFilter> changeSetFilters;
 
     private Set<String> seenChangeSets = new HashSet<>();
 
-    public ChangeLogIterator(DatabaseChangeLog databaseChangeLog, ChangeSetFilter... changeSetFilters) {
-        this.databaseChangeLog = databaseChangeLog;
+    public ChangeLogIterator(ChangeLog changeLog, ChangeSetFilter... changeSetFilters) {
+        this.changeLog = changeLog;
         this.changeSetFilters = Arrays.asList(changeSetFilters);
     }
 
-    public ChangeLogIterator(List<RanChangeSet> changeSetList, DatabaseChangeLog changeLog, ChangeSetFilter... changeSetFilters) {
+    public ChangeLogIterator(List<RanChangeSet> changeSetList, ChangeLog changeLog, ChangeSetFilter... changeSetFilters) {
         final List<ChangeSet> changeSets = new ArrayList<>();
         for (RanChangeSet ranChangeSet : changeSetList) {
             ChangeSet changeSet = changeLog.getChangeSet(ranChangeSet);
@@ -36,7 +36,7 @@ public class ChangeLogIterator {
                 changeSets.add(changeSet);
             }
         }
-        this.databaseChangeLog = (new DatabaseChangeLog() {
+        this.changeLog = (new ChangeLog() {
             @Override
             public List<ChangeSet> getChangeSets() {
                 return changeSets;
@@ -53,13 +53,13 @@ public class ChangeLogIterator {
 
     public void run(ChangeSetVisitor visitor, RuntimeEnvironment env) throws LiquibaseException {
         Logger log = Scope.getCurrentScope().getLog(getClass());
-        databaseChangeLog.setRuntimeEnvironment(env);
+        changeLog.setRuntimeEnvironment(env);
         try {
-            Scope.child(Scope.Attr.databaseChangeLog, databaseChangeLog, new Scope.ScopedRunner() {
+            Scope.child(Scope.Attr.databaseChangeLog, changeLog, new Scope.ScopedRunner() {
                 @Override
                 public void run() throws Exception {
 
-                    List<ChangeSet> changeSetList = new ArrayList<>(databaseChangeLog.getChangeSets());
+                    List<ChangeSet> changeSetList = new ArrayList<>(changeLog.getChangeSets());
                     if (visitor.getDirection().equals(ChangeSetVisitor.Direction.REVERSE)) {
                         Collections.reverse(changeSetList);
                     }
@@ -86,11 +86,11 @@ public class ChangeLogIterator {
                             @Override
                             public void run() throws Exception {
                                 if (finalShouldVisit && !alreadySaw(changeSet)) {
-                                    visitor.visit(changeSet, databaseChangeLog, env.getTargetDatabase(), reasonsAccepted);
+                                    visitor.visit(changeSet, changeLog, env.getTargetDatabase(), reasonsAccepted);
                                     markSeen(changeSet);
                                 } else {
                                     if (visitor instanceof SkippedChangeSetVisitor) {
-                                        ((SkippedChangeSetVisitor) visitor).skipped(changeSet, databaseChangeLog, env.getTargetDatabase(), reasonsDenied);
+                                        ((SkippedChangeSetVisitor) visitor).skipped(changeSet, changeLog, env.getTargetDatabase(), reasonsDenied);
                                     }
                                 }
                             }
@@ -101,7 +101,7 @@ public class ChangeLogIterator {
         } catch (Exception e) {
             throw new LiquibaseException(e);
         } finally {
-            databaseChangeLog.setRuntimeEnvironment(null);
+            changeLog.setRuntimeEnvironment(null);
         }
     }
 

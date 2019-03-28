@@ -1,6 +1,6 @@
 package liquibase.serializer;
 
-import liquibase.changelog.ChangeLogChild;
+import liquibase.changelog.ChangeLogEntry;
 import liquibase.changelog.ChangeSet;
 
 import java.io.File;
@@ -23,7 +23,7 @@ public class MockChangeLogSerializer implements ChangeLogSerializer {
     }
 
     @Override
-    public <T extends ChangeLogChild> void write(List<T> children, OutputStream out) throws IOException {
+    public <T extends ChangeLogEntry> void write(List<T> children, OutputStream out) throws IOException {
     }
 
     @Override

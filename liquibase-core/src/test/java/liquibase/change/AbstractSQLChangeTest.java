@@ -266,10 +266,5 @@ public class AbstractSQLChangeTest {
             return "Example SQL Change Message";
         }
 
-        @Override
-        public String getSerializedObjectNamespace() {
-            return STANDARD_CHANGELOG_NAMESPACE;
-        }
-
     }
 }

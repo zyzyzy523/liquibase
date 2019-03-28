@@ -1,8 +1,8 @@
 package liquibase.sqlgenerator.core;
 
 import liquibase.ContextExpression;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.database.core.MockDatabase;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.AbstractSqlGeneratorTest;
@@ -33,12 +33,12 @@ public class MarkChangeSetRanGeneratorTest extends AbstractSqlGeneratorTest<Mark
     @Test
     public void generateSqlWithComplexContext() {
         String changeSetContextExpression = "changeSetContext1 AND changeSetContext2";
-        DatabaseChangeLog rootChangeLog = new DatabaseChangeLog();
+        ChangeLog rootChangeLog = new ChangeLog();
         rootChangeLog.setContexts(new ContextExpression("rootContext1 OR (rootContext2) AND (rootContext3)"));
-        DatabaseChangeLog childChangeLog = new DatabaseChangeLog();
+        ChangeLog childChangeLog = new ChangeLog();
         childChangeLog.setContexts(new ContextExpression("childChangeLogContext1, childChangeLogContext2 AND childChangeLogContext3"));
         childChangeLog.setIncludeContexts(new ContextExpression("includeContext1, includeContext2 AND includeContext3"));
-        childChangeLog.setParentChangeLog(rootChangeLog);
+        childChangeLog.containerChangeLog = rootChangeLog;
         ChangeSet changeSet = new ChangeSet("1", "a", false, false, "c", changeSetContextExpression, null, childChangeLog);
 
         Sql[] sqls = new MarkChangeSetRanGenerator().generateSql(new MarkChangeSetRanStatement(changeSet, ChangeSet.ExecType.EXECUTED), new MockDatabase(), new MockSqlGeneratorChain());

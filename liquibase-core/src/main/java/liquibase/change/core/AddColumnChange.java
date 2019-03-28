@@ -253,9 +253,4 @@ public class AddColumnChange extends AbstractChange implements ChangeWithColumns
         return "Columns " + StringUtil.join(names, ",") + " added to " + tableName;
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
-
 }

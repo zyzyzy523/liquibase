@@ -3,7 +3,6 @@ package liquibase.statement;
 import liquibase.change.ColumnConfig;
 import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
-import liquibase.resource.ResourceAccessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +17,8 @@ public class UpdateExecutablePreparedStatement extends ExecutablePreparedStateme
     private List<String> whereColumnNames = new ArrayList<>();
     private List<Object> whereParameters = new ArrayList<>();
 
-	public UpdateExecutablePreparedStatement(Database database, String catalogName, String schemaName, String tableName, List<ColumnConfig> columns, ChangeSet changeSet, ResourceAccessor resourceAccessor) {
-		super(database, catalogName, schemaName, tableName, columns, changeSet, resourceAccessor);
+	public UpdateExecutablePreparedStatement(Database database, String catalogName, String schemaName, String tableName, List<ColumnConfig> columns, ChangeSet changeSet) {
+		super(database, catalogName, schemaName, tableName, columns, changeSet);
 	}
 
     @Override

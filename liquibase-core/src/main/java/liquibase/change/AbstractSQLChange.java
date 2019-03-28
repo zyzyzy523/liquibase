@@ -11,6 +11,7 @@ import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.logging.LogType;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.util.StringUtil;
@@ -130,7 +131,7 @@ public abstract class AbstractSQLChange extends AbstractChange implements DbmsTa
     /**
      * Return the raw SQL managed by this Change
      */
-    @DatabaseChangeProperty(serializationType = SerializationType.DIRECT_VALUE)
+    @DatabaseChangeProperty(serializationType = LiquibaseSerializable.SerializationType.DIRECT_VALUE)
     public String getSql() {
         return sql;
     }

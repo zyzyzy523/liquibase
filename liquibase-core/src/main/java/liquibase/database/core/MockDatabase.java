@@ -4,7 +4,7 @@ import liquibase.CatalogAndSchema;
 import liquibase.Liquibase;
 import liquibase.change.Change;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.RanChangeSet;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
@@ -536,7 +536,7 @@ public class MockDatabase implements Database, InternalDatabase {
     }
 
     @Override
-    public void executeStatements(final Change change, final DatabaseChangeLog changeLog,
+    public void executeStatements(final Change change, final ChangeLog changeLog,
                                   final List<SqlVisitor> sqlVisitors) {
     }
 

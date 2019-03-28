@@ -1,8 +1,8 @@
 package liquibase.changelog.visitor;
 
 import liquibase.change.Change;
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ChangeSetFilterResult;
 import liquibase.database.Database;
 import liquibase.dbdoc.*;
@@ -34,7 +34,7 @@ public class DBDocVisitor implements ChangeSetVisitor {
     private List<Change> changesToRun;
     private List<Change> recentChanges;
     private String rootChangeLogName;
-    private DatabaseChangeLog rootChangeLog;
+    private ChangeLog rootChangeLog;
 
     public DBDocVisitor(Database database) {
         this.database = database;
@@ -55,14 +55,14 @@ public class DBDocVisitor implements ChangeSetVisitor {
     }
 
     @Override
-    public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+    public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
         ChangeSet.RunStatus runStatus = this.database.getRunStatus(changeSet);
         if (rootChangeLogName == null) {
             rootChangeLogName = changeSet.getFilePath();
         }
 
         if (rootChangeLog == null) {
-            this.rootChangeLog = databaseChangeLog;
+            this.rootChangeLog = changeLog;
         }
 
         if (!changesByAuthor.containsKey(changeSet.getAuthor())) {
@@ -84,7 +84,7 @@ public class DBDocVisitor implements ChangeSetVisitor {
         }
 
 
-        ChangeLogInfo changeLogInfo = new ChangeLogInfo(changeSet.getChangeLog().getLogicalFilePath(), changeSet.getChangeLog().getPhysicalFilePath());
+        ChangeLogInfo changeLogInfo = new ChangeLogInfo(changeSet.getChangeLog().logicalPath, changeSet.getChangeLog().physicalPath);
         if (!changeLogs.contains(changeLogInfo)) {
             changeLogs.add(changeLogInfo);
         }

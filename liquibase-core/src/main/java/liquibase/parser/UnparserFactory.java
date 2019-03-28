@@ -89,7 +89,7 @@ public class UnparserFactory extends AbstractPluginFactory<Unparser> {
                 if (problemNode != null && problemNode.lineNumber != null) {
                     parseErrorMessage += " line " + problemNode.lineNumber;
                     if (problemNode.columnNumber != null) {
-                        parseErrorMessage = parseErrorMessage + ", column" + problemNode.columnNumber;
+                        parseErrorMessage = parseErrorMessage + ", column " + problemNode.columnNumber;
                     }
                 }
 

@@ -8,7 +8,7 @@ import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
 import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.ext.ora.testing.BaseTestCase;
@@ -79,9 +79,9 @@ public class RefreshMaterializedViewTest extends BaseTestCase {
         Database database = liquiBase.getDatabase();
         ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
 
-        DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
+        ChangeLog changeLog = ChangeLogParserFactory.getInstance()
                 .getParser(changeLogFile, resourceAccessor)
-                .parse(changeLogFile, new ChangeLogParameters(), resourceAccessor);
+                .parse(changeLogFile, new ChangeLogParameters());
 
         liquiBase.checkLiquibaseTables(false, changeLog, new Contexts(), new LabelExpression());
 

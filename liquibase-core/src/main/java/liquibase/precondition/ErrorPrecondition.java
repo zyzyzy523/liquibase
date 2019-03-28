@@ -1,14 +1,14 @@
 package liquibase.precondition;
 
-import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.ChangeLog;
 
 public class ErrorPrecondition {
     private Throwable cause;
     private Precondition precondition;
-    private DatabaseChangeLog changeLog;
+    private ChangeLog changeLog;
 
 
-    public ErrorPrecondition(Throwable exception, DatabaseChangeLog changeLog, Precondition precondition) {
+    public ErrorPrecondition(Throwable exception, ChangeLog changeLog, Precondition precondition) {
         this.cause = exception;
         this.changeLog = changeLog;
         this.precondition = precondition;

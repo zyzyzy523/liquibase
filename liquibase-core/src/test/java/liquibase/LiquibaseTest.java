@@ -1,22 +1,15 @@
 package liquibase;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogIterator;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.changelog.filter.ContextChangeSetFilter;
-import liquibase.changelog.filter.DbmsChangeSetFilter;
-import liquibase.changelog.filter.IgnoreChangeSetFilter;
-import liquibase.changelog.filter.LabelChangeSetFilter;
-import liquibase.changelog.filter.ShouldRunChangeSetFilter;
 import liquibase.database.Database;
 import liquibase.exception.LiquibaseException;
 import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
-import liquibase.logging.Logger;
 import liquibase.parser.ChangeLogParser;
 import liquibase.parser.ChangeLogParserFactory;
 import liquibase.database.core.MockDatabase;
 import liquibase.sdk.resource.MockResourceAccessor;
-import liquibase.test.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +17,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static liquibase.test.Assert.assertListsEqual;
 import static org.junit.Assert.*;
 
 public class LiquibaseTest {
@@ -35,7 +27,7 @@ public class LiquibaseTest {
 
     private ChangeLogParserFactory mockChangeLogParserFactory;
     private ChangeLogParser mockChangeLogParser;
-    private DatabaseChangeLog mockChangeLog;
+    private ChangeLog mockChangeLog;
     private ChangeLogIterator mockChangeLogIterator;
 
     @Before

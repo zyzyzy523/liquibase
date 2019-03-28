@@ -1,6 +1,5 @@
 package liquibase.parser.mapping;
 
-import liquibase.Scope;
 import liquibase.exception.ParseException;
 import liquibase.parser.ParsedNode;
 import liquibase.parser.mapping.core.DefaultExtensibleObjectParsedNodeMapping;

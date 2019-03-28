@@ -82,9 +82,4 @@ public class RenameSequenceChange extends AbstractChange {
     public String getConfirmationMessage() {
         return "Sequence " + oldSequenceName + " renamed to " + newSequenceName;
     }
-
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

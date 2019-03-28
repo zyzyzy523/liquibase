@@ -90,15 +90,15 @@ public class ChangeLogParametersTest {
      *  in a and b we define same prop with key 'aKey'. Expected when b is processed then bValue is taken no matter of Object instances
      */
     public void getParameterValue_SamePropertyNonGlobalIn2InnerFiles() {
-        DatabaseChangeLog inner1 = new DatabaseChangeLog();
-        inner1.setPhysicalFilePath("a");
-        DatabaseChangeLog inner2 = new DatabaseChangeLog();
-        inner2.setPhysicalFilePath("b");
+        ChangeLog inner1 = new ChangeLog();
+        inner1.physicalPath = "a";
+        ChangeLog inner2 = new ChangeLog();
+        inner2.physicalPath = "b";
         ChangeLogParameters changeLogParameters = new ChangeLogParameters(new H2Database());
         changeLogParameters.set("aKey", "aValue", "junit", "junitLabel", "baddb, h2", false, inner1);
         changeLogParameters.set("aKey", "bValue", "junit", "junitLabel", "baddb, h2", false, inner2);
-        DatabaseChangeLog inner2SamePath = new DatabaseChangeLog();
-        inner2SamePath.setPhysicalFilePath("b");
+        ChangeLog inner2SamePath = new ChangeLog();
+        inner2SamePath.physicalPath = "b";
         Object aKey = changeLogParameters.getValue("aKey", inner2SamePath);
         assertEquals("bValue", aKey);
     }

@@ -364,8 +364,4 @@ public class AddForeignKeyConstraintChange extends AbstractChange {
     public void setReferencesUniqueColumn(Boolean referencesUniqueColumn) {
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

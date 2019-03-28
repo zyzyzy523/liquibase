@@ -1,7 +1,7 @@
 package liquibase.changelog.visitor;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ChangeSetFilterResult;
 import liquibase.database.Database;
 import liquibase.exception.LiquibaseException;
@@ -28,10 +28,10 @@ public class ChangeLogSyncVisitor implements ChangeSetVisitor {
     }
 
     @Override
-    public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
+    public void visit(ChangeSet changeSet, ChangeLog changeLog, Database database, Set<ChangeSetFilterResult> filterResults) throws LiquibaseException {
         this.database.markChangeSetExecStatus(changeSet, ChangeSet.ExecType.EXECUTED);
         if(listener != null) {
-            listener.markedRan(changeSet, databaseChangeLog, database);
+            listener.markedRan(changeSet, changeLog, database);
         }
     }
 }

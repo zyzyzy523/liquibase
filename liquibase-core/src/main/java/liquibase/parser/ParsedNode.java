@@ -419,25 +419,44 @@ public class ParsedNode extends AbstractExtensibleObject {
     }
 
     /**
-     * Removes direct children that match the given filter.
+     * Removes direct children only
      */
     public void removeChildren(ParsedNodeFilter filter) throws ParseException {
-        Iterator<ParsedNode> childIterator = children.iterator();
-        while (childIterator.hasNext()) {
-            ParsedNode child = childIterator.next();
-            if (filter.matches(child)) {
-                Scope.getCurrentScope().getLog(getClass()).fine("Removing '" + child.name + "' from '" + this.name + "'");
-                childIterator.remove();
-                child.parent = null;
+        removeChildren(filter, false);
+    }
+
+    public void removeChildren(ParsedNodeFilter filter, boolean recursive) throws ParseException {
+        if (recursive) {
+            for (ParsedNode childNode : this.getChildren(filter, recursive)) {
+                childNode.remove();
+            }
+        } else {
+            Iterator<ParsedNode> childIterator = children.iterator();
+            while (childIterator.hasNext()) {
+                ParsedNode child = childIterator.next();
+                if (filter.matches(child)) {
+                    Scope.getCurrentScope().getLog(getClass()).fine("Removing '" + child.name + "' from '" + this.name + "'");
+                    childIterator.remove();
+                    child.parent = null;
+                }
             }
         }
+
+
     }
 
     /**
-     * Convenience method for {@link #removeChildren(ParsedNodeFilter)} to remove nodes by name.
+     * Removes direct children only
      */
     public void removeChildren(String childName) throws ParseException {
-        removeChildren(new ParsedNodeNameFilter(childName));
+        removeChildren(childName, false);
+    }
+
+    /**
+     * Convenience method for {@link #removeChildren(ParsedNodeFilter, boolean)} to remove nodes by name.
+     */
+    public void removeChildren(String childName, boolean recursive) throws ParseException {
+        removeChildren(new ParsedNodeNameFilter(childName), recursive);
     }
 
     /**

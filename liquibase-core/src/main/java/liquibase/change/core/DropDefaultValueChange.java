@@ -90,8 +90,4 @@ public class DropDefaultValueChange extends AbstractChange {
         return "Default value dropped from "+getTableName()+"."+getColumnName();
     }
 
-    @Override
-    public String getSerializedObjectNamespace() {
-        return STANDARD_CHANGELOG_NAMESPACE;
-    }
 }

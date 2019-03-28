@@ -16,7 +16,6 @@ import liquibase.exception.LiquibaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
-import liquibase.logging.LogService;
 import liquibase.logging.LogType;
 import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.SnapshotControl;
@@ -289,9 +288,9 @@ public class StandardChangeLogHistoryService extends AbstractChangeLogHistorySer
     }
 
     @Override
-    public void upgradeChecksums(final DatabaseChangeLog databaseChangeLog, final Contexts contexts, LabelExpression
+    public void upgradeChecksums(final ChangeLog changeLog, final Contexts contexts, LabelExpression
         labels) throws DatabaseException {
-        super.upgradeChecksums(databaseChangeLog, contexts, labels);
+        super.upgradeChecksums(changeLog, contexts, labels);
         getDatabase().commit();
     }
 

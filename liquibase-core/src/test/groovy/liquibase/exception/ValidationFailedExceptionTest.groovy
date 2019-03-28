@@ -3,7 +3,7 @@ package liquibase.exception
 import liquibase.change.ColumnConfig
 import liquibase.change.core.CreateTableChange
 import liquibase.changelog.ChangeSet
-import liquibase.changelog.DatabaseChangeLog
+import liquibase.changelog.ChangeLog
 import liquibase.changelog.RanChangeSet
 import liquibase.changelog.visitor.ValidatingVisitor
 import liquibase.database.Database
@@ -60,8 +60,8 @@ class ValidationFailedExceptionTest extends Specification {
 
         handler = new ValidatingVisitor(new ArrayList<RanChangeSet>());
         // Duplicate
-        handler.visit(duplicateChangeSet, new DatabaseChangeLog(), new MockDatabase(), null);
-        handler.visit(duplicateChangeSet, new DatabaseChangeLog(), new MockDatabase(), null);
+        handler.visit(duplicateChangeSet, new ChangeLog(), new MockDatabase(), null);
+        handler.visit(duplicateChangeSet, new ChangeLog(), new MockDatabase(), null);
         // Invalid MD5 sum
         handler.invalidMD5Sums.add("invalidMd5SumChangeSet");
         // Setup exception
@@ -71,7 +71,7 @@ class ValidationFailedExceptionTest extends Specification {
                 throw new SetupException("setupExceptionChangeSet message");
             }
         });
-        handler.visit(setupExceptionChangeSet, new DatabaseChangeLog(), null, null);
+        handler.visit(setupExceptionChangeSet, new ChangeLog(), null, null);
         // Validation failed
         validationErrorsChangeSet.addChange(new CreateTableChange() {
             @Override
@@ -85,7 +85,7 @@ class ValidationFailedExceptionTest extends Specification {
         precondErrorChangeSet.addChange(change1)
         precondErrorChangeSet.setPreconditions((new PreconditionContainer().addNestedPrecondition(new NotPrecondition()) ))
         // PreConditions - failed
-        handler.visit(validationErrorsChangeSet, new DatabaseChangeLog(), null, null);
+        handler.visit(validationErrorsChangeSet, new ChangeLog(), null, null);
 
         exception = new ValidationFailedException(handler)
     }

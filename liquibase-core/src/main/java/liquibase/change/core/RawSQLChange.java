@@ -4,10 +4,13 @@ import liquibase.change.AbstractSQLChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.change.DatabaseChangeProperty;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
+import liquibase.exception.ParseException;
+import liquibase.parser.ParsedNode;
 import liquibase.resource.ResourceAccessor;
+import liquibase.serializer.LiquibaseSerializable;
 import liquibase.util.StringUtil;
+
+import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
 
 /**
  * Allows execution of arbitrary SQL.  This change can be used when existing changes are either don't exist,
@@ -48,12 +51,12 @@ public class RawSQLChange extends AbstractSQLChange {
     }
 
     @Override
-    @DatabaseChangeProperty(serializationType = SerializationType.DIRECT_VALUE, exampleValue = "insert into person (name) values ('Bob')", requiredForDatabase = "all")
+    @DatabaseChangeProperty(serializationType = LiquibaseSerializable.SerializationType.DIRECT_VALUE, exampleValue = "insert into person (name) values ('Bob')", requiredForDatabase = "all")
     public String getSql() {
         return super.getSql();
     }
 
-    @DatabaseChangeProperty(serializationType = SerializationType.NESTED_OBJECT, exampleValue = "What about Bob?")
+    @DatabaseChangeProperty(serializationType = LiquibaseSerializable.SerializationType.NESTED_OBJECT, exampleValue = "What about Bob?")
     public String getComment() {
         return comment;
     }
@@ -73,8 +76,8 @@ public class RawSQLChange extends AbstractSQLChange {
     }
 
     @Override
-    public void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor) throws ParsedNodeException {
-        String nestedSql = StringUtil.trimToNull(parsedNode.getValue(String.class));
+    public void customLoadLogic(ParsedNode parsedNode) throws ParseException {
+        String nestedSql = StringUtil.trimToNull(parsedNode.getValue(null, String.class));
         if (nestedSql != null) {
             setSql(nestedSql);
         }

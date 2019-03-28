@@ -152,13 +152,11 @@ public abstract class DependencyUtil {
         }
 
         private List<GraphNode<T>> getOrphanNodes() {
-            List<GraphNode<T>> orphanNodes = null;
+            List<GraphNode<T>> orphanNodes = new ArrayList<>();
             Set<T> keys = nodes.keySet();
             for (T key : keys) {
                 GraphNode<T> node = nodes.get(key);
                 if (node.getComingInNodes() == null) {
-                    if (orphanNodes == null)
-                        orphanNodes = new ArrayList<>();
                     orphanNodes.add(node);
                 }
             }

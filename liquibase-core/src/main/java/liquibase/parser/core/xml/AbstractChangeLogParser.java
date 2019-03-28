@@ -1,26 +1,24 @@
 package liquibase.parser.core.xml;
 
+import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.DatabaseChangeLog;
 import liquibase.exception.ChangeLogParseException;
 import liquibase.parser.ChangeLogParser;
-import liquibase.parser.core.ParsedNode;
-import liquibase.resource.ResourceAccessor;
+import liquibase.parser.ParsedNode;
 
 public abstract class AbstractChangeLogParser implements ChangeLogParser {
 
     @Override
-    public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters,
-                                   ResourceAccessor resourceAccessor) throws ChangeLogParseException {
-        ParsedNode parsedNode = parseToNode(physicalChangeLogLocation, changeLogParameters, resourceAccessor);
+    public ChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException {
+        ParsedNode parsedNode = parseToNode(physicalChangeLogLocation, changeLogParameters);
         if (parsedNode == null) {
             return null;
         }
 
-        DatabaseChangeLog changeLog = new DatabaseChangeLog(physicalChangeLogLocation);
+        ChangeLog changeLog = new ChangeLog(physicalChangeLogLocation);
         changeLog.setChangeLogParameters(changeLogParameters);
         try {
-            changeLog.load(parsedNode, resourceAccessor);
+            changeLog.load(parsedNode);
         } catch (Exception e) {
             throw new ChangeLogParseException(e);
         }
@@ -28,6 +26,5 @@ public abstract class AbstractChangeLogParser implements ChangeLogParser {
         return changeLog;
     }
 
-    protected abstract ParsedNode parseToNode(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters,
-                                              ResourceAccessor resourceAccessor) throws ChangeLogParseException;
+    protected abstract ParsedNode parseToNode(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters) throws ChangeLogParseException;
 }
