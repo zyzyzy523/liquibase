@@ -1,7 +1,8 @@
 package liquibase.change.core
 
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNodeException
+
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
 import spock.lang.Specification
@@ -14,8 +15,8 @@ class StopChangeTest extends Specification {
         when:
         def change = new StopChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "stop").setValue("stopping..."), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            change.load(new liquibase.parser.ParsedNode(null, "stop").setValue("stopping..."), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()

@@ -1,23 +1,8 @@
 package liquibase.sdk.convert;
 
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeLog;
 import liquibase.command.AbstractCommand;
 import liquibase.command.CommandResult;
 import liquibase.command.CommandValidationErrors;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.ChangeLogParserFactory;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.CompositeResourceAccessor;
-import liquibase.resource.FileSystemResourceAccessor;
-import liquibase.resource.ResourceAccessor;
-import liquibase.serializer.ChangeLogSerializer;
-import liquibase.serializer.ChangeLogSerializerFactory;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConvertCommand extends AbstractCommand {
 
@@ -56,27 +41,27 @@ public class ConvertCommand extends AbstractCommand {
 
     @Override
     protected CommandResult run() throws Exception {
-        List<ResourceAccessor> openers = new ArrayList<>();
-        openers.add(new FileSystemResourceAccessor());
-        openers.add(new ClassLoaderResourceAccessor());
-        if (classpath != null) {
-            openers.add(new FileSystemResourceAccessor(new File(classpath)));
-        }
-        ResourceAccessor resourceAccessor = new CompositeResourceAccessor(openers);
-
-        ChangeLogParser sourceParser = ChangeLogParserFactory.getInstance().getParser(src, resourceAccessor);
-        ChangeLogSerializer outSerializer = ChangeLogSerializerFactory.getInstance().getSerializer(out);
-
-        ChangeLog changeLog = sourceParser.parse(src, new ChangeLogParameters());
-
-        File outFile = new File(out);
-        if (!outFile.exists()) {
-            outFile.getParentFile().mkdirs();
-        }
-        
-        try (FileOutputStream outputStream = new FileOutputStream(outFile)) {
-            outSerializer.write(changeLog.getChangeSets(), outputStream);
-        }
+//        List<ResourceAccessor> openers = new ArrayList<>();
+//        openers.add(new FileSystemResourceAccessor());
+//        openers.add(new ClassLoaderResourceAccessor());
+//        if (classpath != null) {
+//            openers.add(new FileSystemResourceAccessor(new File(classpath)));
+//        }
+//        ResourceAccessor resourceAccessor = new CompositeResourceAccessor(openers);
+//
+//        ChangeLogParser sourceParser = ChangeLogParserFactory.getInstance().getParser(src, resourceAccessor);
+//        ChangeLogSerializer outSerializer = ChangeLogSerializerFactory.getInstance().getSerializer(out);
+//
+//        ChangeLog changeLog = sourceParser.parse(src, new ChangeLogParameters());
+//
+//        File outFile = new File(out);
+//        if (!outFile.exists()) {
+//            outFile.getParentFile().mkdirs();
+//        }
+//
+//        try (FileOutputStream outputStream = new FileOutputStream(outFile)) {
+//            outSerializer.write(changeLog.getChangeSets(), outputStream);
+//        }
 
         return new CommandResult("Converted successfully");
     }

@@ -30,8 +30,7 @@ import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
 import liquibase.logging.LogType;
 import liquibase.logging.Logger;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.ChangeLogParserFactory;
+import liquibase.parser.ParserFactory;
 import liquibase.resource.InputStreamList;
 import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.ChangeLogSerializer;
@@ -213,8 +212,7 @@ public class Liquibase {
 
     public ChangeLog getChangeLog() throws LiquibaseException {
         if (changeLog == null) {
-            ChangeLogParser parser = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor);
-            changeLog = parser.parse(changeLogFile, changeLogParameters);
+            this.changeLog = Scope.getCurrentScope().getSingleton(ParserFactory.class).parse(null, changeLogFile, ChangeLog.class);
         }
 
         return changeLog;
@@ -1493,11 +1491,7 @@ public class Liquibase {
         throws LiquibaseException {
         LOG.info(LogType.LOG, String.format("Calculating checksum for changeset %s::%s::%s", filename, id, author));
         final ChangeLogParameters clParameters = this.getChangeLogParameters();
-        final ResourceAccessor resourceAccessor = this.getResourceAccessor();
-        final ChangeLog changeLog =
-            ChangeLogParserFactory.getInstance().getParser(
-                this.changeLogFile, resourceAccessor
-            ).parse(this.changeLogFile, clParameters);
+        final ChangeLog changeLog = Scope.getCurrentScope().getSingleton(ParserFactory.class).parse(null, this.changeLogFile, ChangeLog.class);
 
         // TODO: validate?
 

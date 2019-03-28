@@ -5,9 +5,10 @@ import liquibase.change.Change
 import liquibase.change.ChangeStatus
 import liquibase.change.StandardChangeTest
 import liquibase.database.core.MockDatabase
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.parser.ParsedNode
+
 import liquibase.snapshot.MockSnapshotGeneratorFactory
 import liquibase.snapshot.SnapshotGeneratorFactory
 import liquibase.structure.core.Column
@@ -116,7 +117,7 @@ public class AddColumnChangeTest extends StandardChangeTest {
         def change = new AddColumnChange()
         try {
             change.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()

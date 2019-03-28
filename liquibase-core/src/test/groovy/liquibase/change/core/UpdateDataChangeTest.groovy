@@ -3,8 +3,9 @@ package liquibase.change.core
 import liquibase.change.ChangeStatus
 import liquibase.change.StandardChangeTest
 import liquibase.database.core.MockDatabase
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.exception.ParseException
+import liquibase.parser.ParsedNode
+
 
 public class UpdateDataChangeTest extends StandardChangeTest {
 
@@ -40,8 +41,8 @@ public class UpdateDataChangeTest extends StandardChangeTest {
                 .addChild(new ParsedNode(null, "param").addChild(null, "valueNumeric", "134"))
                 .addChild(new ParsedNode(null, "param").addChildren([name: "other_val", value: "asdf"]))
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "updateData").addChild(null, "tableName", "updateTest").addChild(whereParams), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            change.load(new liquibase.parser.ParsedNode(null, "updateData").addChild(null, "tableName", "updateTest").addChild(whereParams), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

@@ -3,8 +3,9 @@ package liquibase.change.core
 import liquibase.change.ChangeStatus;
 import liquibase.change.StandardChangeTest
 import liquibase.database.core.MockDatabase
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNodeException
+
 import liquibase.snapshot.MockSnapshotGeneratorFactory
 import liquibase.snapshot.SnapshotGeneratorFactory
 
@@ -45,8 +46,8 @@ public class RawSQLChangeTest extends StandardChangeTest {
         when:
         def changeFromValue = new RawSQLChange()
         try {
-            changeFromValue.load(new liquibase.parser.core.ParsedNode(null, "sql").setValue("select * from x"), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e1) {
+            changeFromValue.load(new liquibase.parser.ParsedNode(null, "sql").setValue("select * from x"), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e1) {
             e1.printStackTrace()
         } catch (SetupException e1) {
             e1.printStackTrace()
@@ -54,8 +55,8 @@ public class RawSQLChangeTest extends StandardChangeTest {
 
         def changeFromChild = new RawSQLChange()
         try {
-            changeFromChild.load(new liquibase.parser.core.ParsedNode(null, "sql").addChild(null, "sql", "select * from y"), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            changeFromChild.load(new liquibase.parser.ParsedNode(null, "sql").addChild(null, "sql", "select * from y"), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()

@@ -5,7 +5,7 @@ import liquibase.LabelExpression;
 import liquibase.change.core.CreateTableChange
 import liquibase.change.core.RawSQLChange
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNode
+import liquibase.parser.ParsedNode
 import liquibase.precondition.core.OrPrecondition
 import liquibase.precondition.Preconditions
 import liquibase.precondition.core.RunningAsPrecondition

@@ -5,8 +5,9 @@ import liquibase.change.ColumnConfig
 import liquibase.change.ConstraintsConfig
 import liquibase.change.StandardChangeTest
 import liquibase.database.core.MockDatabase
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.exception.ParseException
+import liquibase.parser.ParsedNode
+
 import liquibase.snapshot.MockSnapshotGeneratorFactory
 import liquibase.snapshot.SnapshotGeneratorFactory
 import liquibase.statement.DatabaseFunction
@@ -233,7 +234,7 @@ public class CreateTableChangeTest extends StandardChangeTest {
         def change = new CreateTableChange()
         try {
             change.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -254,7 +255,7 @@ public class CreateTableChangeTest extends StandardChangeTest {
         def change = new CreateTableChange()
         try {
             change.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

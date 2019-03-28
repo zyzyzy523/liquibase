@@ -3,7 +3,7 @@ package liquibase.parser;
 import liquibase.configuration.AbstractConfigurationContainer;
 
 /**
- * Configuration container for properties applicable to most {@link liquibase.parser.ChangeLogParser} implementations
+ * Configuration container for properties applicable to most {@link liquibase.parser.Parser} implementations
  */
 public class ChangeLogParserCofiguration extends AbstractConfigurationContainer {
 

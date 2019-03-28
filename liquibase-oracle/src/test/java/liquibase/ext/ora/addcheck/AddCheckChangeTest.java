@@ -5,12 +5,11 @@ import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
 import liquibase.changelog.ChangeLog;
-import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.ext.ora.testing.BaseTestCase;
-import liquibase.parser.ChangeLogParserFactory;
+import liquibase.parser.ParserFactory;
 import liquibase.resource.FileSystemResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
@@ -101,11 +100,7 @@ public class AddCheckChangeTest extends BaseTestCase {
         Database database = liquiBase.getDatabase();
         ResourceAccessor resourceAccessor = new FileSystemResourceAccessor(new File("src/test/java"));
 
-        ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-
-
-        ChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor).parse(changeLogFile,
-                changeLogParameters);
+        ChangeLog changeLog = Scope.getCurrentScope().getSingleton(ParserFactory.class).parse(null, changeLogFile, ChangeLog.class);
 
         changeLog.validate(database);
 

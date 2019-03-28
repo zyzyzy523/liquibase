@@ -1,7 +1,8 @@
 package liquibase.precondition
 
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.exception.ParseException
+import liquibase.parser.ParsedNode
+
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
 import spock.lang.Specification
@@ -22,7 +23,7 @@ class CustomPreconditionWrapperTest extends Specification {
         def precondition = new CustomPreconditionWrapper()
         try {
             precondition.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -48,7 +49,7 @@ class CustomPreconditionWrapperTest extends Specification {
         def precondition = new CustomPreconditionWrapper()
         try {
             precondition.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

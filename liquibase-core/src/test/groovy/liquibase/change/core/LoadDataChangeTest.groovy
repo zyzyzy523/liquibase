@@ -5,7 +5,7 @@ import liquibase.change.StandardChangeTest
 import liquibase.changelog.ChangeSet
 import liquibase.database.DatabaseFactory
 import liquibase.database.core.MSSQLDatabase
-import liquibase.parser.core.ParsedNodeException
+import liquibase.exception.ParseException
 import liquibase.resource.ClassLoaderResourceAccessor
 import liquibase.resource.ResourceAccessor
 import liquibase.database.core.MockDatabase
@@ -334,11 +334,11 @@ public class LoadDataChangeTest extends StandardChangeTest {
         when:
         def change = new LoadDataChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "loadData").setValue([
+            change.load(new liquibase.parser.ParsedNode(null, "loadData").setValue([
                     [column: [name: "id"]],
                     [column: [name: "new_col", header: "new_col_header"]],
             ]), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

@@ -6,8 +6,6 @@ import liquibase.database.Database;
 import liquibase.exception.LiquibaseException;
 import liquibase.lockservice.LockService;
 import liquibase.lockservice.LockServiceFactory;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.ChangeLogParserFactory;
 import liquibase.database.core.MockDatabase;
 import liquibase.sdk.resource.MockResourceAccessor;
 import org.junit.After;
@@ -25,8 +23,6 @@ public class LiquibaseTest {
     private LockServiceFactory mockLockServiceFactory;
     private LockService mockLockService;
 
-    private ChangeLogParserFactory mockChangeLogParserFactory;
-    private ChangeLogParser mockChangeLogParser;
     private ChangeLog mockChangeLog;
     private ChangeLogIterator mockChangeLogIterator;
 
@@ -47,7 +43,7 @@ public class LiquibaseTest {
         LockServiceFactory.setInstance(mockLockServiceFactory);
 //        when(mockLockServiceFactory.getLockService(any(Database.class))).thenReturn(mockLockService);
 
-        ChangeLogParserFactory.setInstance(mockChangeLogParserFactory);
+//        ChangeLogParserFactory.setInstance(mockChangeLogParserFactory);
 //        when(mockChangeLogParserFactory.getParser(anyString(), Mockito.isA(ResourceAccessor.class))).thenReturn(mockChangeLogParser);
 //        when(mockChangeLogParser.parse(anyString(), any(ChangeLogParameters.class), Mockito.isA(ResourceAccessor.class))).thenReturn(mockChangeLog);
 
@@ -74,7 +70,7 @@ public class LiquibaseTest {
 //        verifyNoMoreInteractions(mockLockService, mockChangeLogParser, mockChangeLog, mockChangeLogIterator); //for no other interactions of normal use objects. Not automatically checking mockDatabase and the *Factory mocks
 //        Mockito.reset(mockDatabase, mockLockServiceFactory, mockLockService, mockChangeLogParserFactory, mockChangeLogParser, mockChangeLog, mockChangeLogIterator);
         LockServiceFactory.reset();
-        ChangeLogParserFactory.reset();
+//        ChangeLogParserFactory.reset();
     }
 
     @Test

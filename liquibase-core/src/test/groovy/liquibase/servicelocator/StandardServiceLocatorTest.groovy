@@ -9,9 +9,9 @@ import liquibase.diff.DiffGenerator
 import liquibase.diff.output.changelog.ChangeGenerator
 import liquibase.executor.Executor
 import liquibase.lockservice.LockService
-import liquibase.parser.ChangeLogParser
+
 import liquibase.diff.compare.DatabaseObjectComparator
-import liquibase.parser.NamespaceDetails
+
 import liquibase.parser.SnapshotParser
 import liquibase.precondition.Precondition
 import liquibase.serializer.ChangeLogSerializer
@@ -22,8 +22,6 @@ import liquibase.structure.DatabaseObject
 import liquibase.util.TestUtil
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import java.lang.reflect.Modifier
 
 class StandardServiceLocatorTest extends Specification {
 
@@ -39,14 +37,12 @@ class StandardServiceLocatorTest extends Specification {
                 Change.class,
                 ChangeLogHistoryService.class,
                 Database.class,
-                ChangeLogParser.class,
                 LiquibaseCommand.class,
                 LiquibaseDataType.class,
                 DiffGenerator.class,
                 DatabaseObjectComparator.class,
                 ChangeGenerator.class,
                 LockService.class,
-                NamespaceDetails.class,
                 SnapshotParser.class,
                 Precondition.class,
                 ChangeLogSerializer.class,

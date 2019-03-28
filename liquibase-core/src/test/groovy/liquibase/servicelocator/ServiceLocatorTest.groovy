@@ -2,13 +2,10 @@ package liquibase.servicelocator;
 
 import liquibase.Scope;
 import liquibase.database.Database;
-import liquibase.parser.ChangeLogParser;
+
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.CompositeResourceAccessor;
-import liquibase.test.TestContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test
+import liquibase.test.TestContext
 import spock.lang.Specification;
 
 import java.lang.reflect.Modifier;
@@ -28,7 +25,7 @@ class ServiceLocatorTest extends Specification {
         expect:
 
         Scope.child(Scope.Attr.resourceAccessor, resourceAccessor, {
-            Class[] classes = Scope.getCurrentScope().getServiceLocator().findClasses(ChangeLogParser.class);
+            Class[] classes = Scope.getCurrentScope().getServiceLocator().findClasses(Parser.class);
             assertTrue(classes.length > 0);
         });
     }

@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Interface all changes (refactorings) implement.
  *
- * Instances of these objects are normally created via the {@link ChangeFactory } by {@link liquibase.parser.ChangeLogParser} implementations.
+ * Instances of these objects are normally created via the {@link ChangeFactory } by {@link liquibase.parser.Parser} implementations.
  *
  * @see ChangeFactory
  * @see Database

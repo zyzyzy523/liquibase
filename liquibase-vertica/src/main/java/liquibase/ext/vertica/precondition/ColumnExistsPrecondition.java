@@ -12,11 +12,7 @@ import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
 import liquibase.precondition.AbstractPrecondition;
-import liquibase.precondition.Precondition;
-import liquibase.resource.ResourceAccessor;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.Schema;
 import liquibase.structure.core.Table;
@@ -27,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Taken from OPSA implementation - adjusted to liquibase 3.4.1

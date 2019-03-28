@@ -1,10 +1,5 @@
 package liquibase.precondition;
 
-import liquibase.Scope;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
-
 import java.util.ArrayList;
 import java.util.List;
 

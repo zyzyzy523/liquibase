@@ -4,13 +4,12 @@ import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
 import liquibase.change.ChangeMetaData;
-import liquibase.changelog.ChangeLogParameters;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.ext.ora.testing.BaseTestCase;
-import liquibase.parser.ChangeLogParserFactory;
+import liquibase.parser.ParserFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
@@ -79,11 +78,7 @@ public class EnableTriggerTest extends BaseTestCase {
         Database database = liquiBase.getDatabase();
         ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
 
-        ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-
-
-        ChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor).parse(changeLogFile,
-                changeLogParameters);
+        ChangeLog changeLog = Scope.getCurrentScope().getSingleton(ParserFactory.class).parse(null, changeLogFile, ChangeLog.class);
 
         changeLog.validate(database);
 

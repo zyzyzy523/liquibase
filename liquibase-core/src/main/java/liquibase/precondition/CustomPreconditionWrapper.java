@@ -6,9 +6,6 @@ import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.changelog.ChangeLog;
 import liquibase.database.Database;
 import liquibase.exception.*;
-import liquibase.parser.core.ParsedNode;
-import liquibase.parser.core.ParsedNodeException;
-import liquibase.resource.ResourceAccessor;
 import liquibase.util.ObjectUtil;
 
 import java.util.HashMap;

@@ -1,5 +1,6 @@
 package liquibase.parser.core
 
+import liquibase.parser.ParsedNode
 import liquibase.util.ISODateFormat
 import spock.lang.Specification
 import spock.lang.Unroll

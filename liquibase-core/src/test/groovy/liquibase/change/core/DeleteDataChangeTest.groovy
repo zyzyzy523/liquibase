@@ -1,7 +1,8 @@
 package liquibase.change.core
 
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.exception.ParseException
+import liquibase.parser.ParsedNode
+
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
 import spock.lang.Specification
@@ -17,8 +18,8 @@ class DeleteDataChangeTest extends Specification {
                 .addChild(new ParsedNode(null, "param").addChild(null, "valueNumeric", "134"))
                 .addChild(new ParsedNode(null, "param").addChildren([name: "other_val", value: "asdf"]))
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "delete").addChild(null, "tableName", "deleteTest").addChild(whereParams), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            change.load(new liquibase.parser.ParsedNode(null, "delete").addChild(null, "tableName", "deleteTest").addChild(whereParams), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

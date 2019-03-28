@@ -1,7 +1,7 @@
 package liquibase.change
 
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.parser.ParsedNode
+
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import liquibase.serializer.LiquibaseSerializable
 import liquibase.statement.DatabaseFunction
@@ -434,7 +434,7 @@ public class ColumnConfigTest extends Specification {
         node.addChild(null, field, testValue)
         try {
             column.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -462,7 +462,7 @@ public class ColumnConfigTest extends Specification {
         constraintNode.addChild(null, field, testValue)
         try {
             column.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -478,8 +478,8 @@ public class ColumnConfigTest extends Specification {
         when:
         def column = new ColumnConfig()
         try {
-            column.load(new liquibase.parser.core.ParsedNode(null, "column").addChild(null, param, value), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            column.load(new liquibase.parser.ParsedNode(null, "column").addChild(null, param, value), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

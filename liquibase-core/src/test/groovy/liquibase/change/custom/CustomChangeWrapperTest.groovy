@@ -2,11 +2,12 @@ package liquibase.change.custom
 
 import liquibase.database.Database
 import liquibase.exception.CustomChangeException
+import liquibase.exception.ParseException
 import liquibase.exception.RollbackImpossibleException
 import liquibase.exception.UnexpectedLiquibaseException
 import liquibase.exception.ValidationErrors
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.parser.ParsedNode
+
 import liquibase.database.core.MockDatabase
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import liquibase.statement.SqlStatement
@@ -244,7 +245,7 @@ class CustomChangeWrapperTest extends Specification {
         def change = new CustomChangeWrapper()
         try {
             change.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -269,7 +270,7 @@ class CustomChangeWrapperTest extends Specification {
         def change = new CustomChangeWrapper()
         try {
             change.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -286,9 +287,9 @@ class CustomChangeWrapperTest extends Specification {
         when:
         def change = new CustomChangeWrapper()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "customChange")
+            change.load(new liquibase.parser.ParsedNode(null, "customChange")
                     .addChildren([class: "liquibase.change.custom.ExampleCustomSqlChange", tableName: "my_table", columnName: "my_col", unusedParam: "unused value"]), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 

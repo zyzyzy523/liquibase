@@ -10,7 +10,7 @@ import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
 import liquibase.database.core.OracleDatabase;
 import liquibase.ext.ora.testing.BaseTestCase;
-import liquibase.parser.ChangeLogParserFactory;
+import liquibase.parser.ParserFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 import liquibase.sql.Sql;
@@ -99,8 +99,7 @@ public class CreateMaterializedViewTest extends BaseTestCase {
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
 
 
-        ChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(changeLogFile, resourceAccessor).parse(changeLogFile,
-                changeLogParameters);
+        ChangeLog changeLog = Scope.getCurrentScope().getSingleton(ParserFactory.class).parse(null, changeLogFile, ChangeLog.class);
 
         changeLog.validate(database);
 

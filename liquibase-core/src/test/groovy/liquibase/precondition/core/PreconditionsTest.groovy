@@ -1,8 +1,9 @@
 package liquibase.precondition.core
 
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNode
-import liquibase.parser.core.ParsedNodeException
+import liquibase.parser.ParsedNode
+
 import liquibase.precondition.Preconditions
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import spock.lang.Shared
@@ -18,7 +19,7 @@ class PreconditionsTest extends Specification {
         def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()
@@ -38,7 +39,7 @@ class PreconditionsTest extends Specification {
         def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()
@@ -60,7 +61,7 @@ class PreconditionsTest extends Specification {
         def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()
@@ -83,7 +84,7 @@ class PreconditionsTest extends Specification {
         def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()
@@ -110,7 +111,7 @@ class PreconditionsTest extends Specification {
         def container = new Preconditions()
         try {
             container.load(node, resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()

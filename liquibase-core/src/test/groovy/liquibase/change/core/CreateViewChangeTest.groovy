@@ -3,8 +3,9 @@ package liquibase.change.core
 import liquibase.change.ChangeStatus
 import liquibase.change.StandardChangeTest
 import liquibase.database.core.MockDatabase
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNodeException
+
 import liquibase.snapshot.MockSnapshotGeneratorFactory
 import liquibase.snapshot.SnapshotGeneratorFactory
 import liquibase.structure.core.View
@@ -45,8 +46,8 @@ public class CreateViewChangeTest extends StandardChangeTest {
         when:
         def change = new CreateViewChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "createView").addChild(null, "viewName", "my_view").setValue("select * from test"), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+            change.load(new liquibase.parser.ParsedNode(null, "createView").addChild(null, "viewName", "my_view").setValue("select * from test"), resourceSupplier.simpleResourceAccessor)
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()

@@ -1,7 +1,8 @@
 package liquibase.change.core
 
+import liquibase.exception.ParseException
 import liquibase.exception.SetupException
-import liquibase.parser.core.ParsedNodeException
+
 import liquibase.sdk.supplier.resource.ResourceSupplier
 import org.hamcrest.Matchers
 import spock.lang.Shared
@@ -17,12 +18,12 @@ class ExecuteShellCommandChangeTest extends Specification {
         when:
         def change = new ExecuteShellCommandChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "executeCommand")
+            change.load(new liquibase.parser.ParsedNode(null, "executeCommand")
                     .addChildren([executable: "/usr/bin/test", os: "linux,mac"])
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-out"))
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-test"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-out"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-test"))
                     , resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         } catch (SetupException e) {
             e.printStackTrace()
@@ -38,13 +39,13 @@ class ExecuteShellCommandChangeTest extends Specification {
         when:
         def change = new ExecuteShellCommandChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "executeCommand")
+            change.load(new liquibase.parser.ParsedNode(null, "executeCommand")
                     .addChildren([executable: "/usr/bin/test", os: "linux,mac"])
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "args")
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-out"))
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-test"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "args")
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-out"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-test"))
             ), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
@@ -58,13 +59,13 @@ class ExecuteShellCommandChangeTest extends Specification {
         when:
         def change = new ExecuteShellCommandChange()
         try {
-            change.load(new liquibase.parser.core.ParsedNode(null, "executeCommand")
+            change.load(new liquibase.parser.ParsedNode(null, "executeCommand")
                     .addChildren([executable: "/usr/bin/test", os: "linux,mac", timeout:"10s"])
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "args")
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-out"))
-                    .addChild(new liquibase.parser.core.ParsedNode(null, "arg").addChild(null, "value", "-test"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "args")
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-out"))
+                    .addChild(new liquibase.parser.ParsedNode(null, "arg").addChild(null, "value", "-test"))
             ), resourceSupplier.simpleResourceAccessor)
-        } catch (ParsedNodeException e) {
+        } catch (ParseException e) {
             e.printStackTrace()
         }
 
