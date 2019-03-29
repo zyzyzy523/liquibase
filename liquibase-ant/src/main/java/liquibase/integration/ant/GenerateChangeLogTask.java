@@ -2,6 +2,7 @@ package liquibase.integration.ant;
 
 import liquibase.CatalogAndSchema;
 import liquibase.Liquibase;
+import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.StandardObjectChangeFilter;
@@ -9,10 +10,8 @@ import liquibase.diff.output.changelog.DiffToChangeLog;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.integration.ant.type.ChangeLogOutputFile;
-import liquibase.serializer.ChangeLogSerializer;
-import liquibase.serializer.ChangeLogSerializerFactory;
-import liquibase.parser.json.JsonUnparser;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
+import liquibase.parser.Unparser;
+import liquibase.parser.UnparserFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -46,10 +45,10 @@ public class GenerateChangeLogTask extends BaseLiquibaseTask {
             PrintStream printStream = null;
             try {
                 FileResource outputFile = changeLogOutputFile.getOutputFile();
-                ChangeLogSerializer changeLogSerializer = changeLogOutputFile.getChangeLogSerializer();
+                Unparser unparser = changeLogOutputFile.getUnparser();
                 log("Writing change log file " + outputFile.toString(), Project.MSG_INFO);
                 printStream = new PrintStream(outputFile.getOutputStream(), true, encoding);
-                liquibase.generateChangeLog(catalogAndSchema, diffToChangeLog, printStream, changeLogSerializer);
+                liquibase.generateChangeLog(catalogAndSchema, diffToChangeLog, printStream, unparser);
             } catch (UnsupportedEncodingException e) {
                 throw new BuildException("Unable to generate a change log. Encoding [" + encoding + "] is not supported.", e);
             } catch (IOException e) {
@@ -100,17 +99,17 @@ public class GenerateChangeLogTask extends BaseLiquibaseTask {
 
 
     public void addConfiguredXml(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(ChangeLogSerializerFactory.getInstance().getSerializer("xml"));
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.xml"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 
     public void addConfiguredYaml(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(ChangeLogSerializerFactory.getInstance().getSerializer("yaml"));
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.yaml"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 
     public void addConfiguredTxt(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(new StringChangeLogSerializer());
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.txt"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 

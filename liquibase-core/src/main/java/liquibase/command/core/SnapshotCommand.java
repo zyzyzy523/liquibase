@@ -7,7 +7,6 @@ import liquibase.command.CommandValidationErrors;
 import liquibase.database.Database;
 import liquibase.database.ObjectQuotingStrategy;
 import liquibase.exception.LiquibaseException;
-import liquibase.serializer.SnapshotSerializerFactory;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.SnapshotControl;
 import liquibase.snapshot.SnapshotGeneratorFactory;
@@ -138,7 +137,8 @@ public class SnapshotCommand extends AbstractCommand<SnapshotCommand.SnapshotCom
                 format = "txt";
             }
 
-            return SnapshotSerializerFactory.getInstance().getSerializer(format).serialize(snapshot, true);
+//TODO            return Scope.getCurrentScope().getSingleton(UnparserFactory.class).unparse();SnapshotSerializerFactory.getInstance().getSerializer(format).serialize(snapshot, true);
+            return null;
         }
 
         public void merge(SnapshotCommandResult resultToMerge) {

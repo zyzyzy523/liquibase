@@ -5,9 +5,7 @@ import liquibase.Labels;
 import liquibase.change.CheckSum;
 import liquibase.exception.ParseException;
 import liquibase.parser.ParsedNode;
-import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.ReflectionSerializer;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
 import liquibase.util.ObjectUtil;
 import liquibase.util.StringUtil;
 
@@ -60,7 +58,8 @@ public abstract class AbstractSqlVisitor implements SqlVisitor {
 
     @Override
     public CheckSum generateCheckSum() {
-        return CheckSum.compute(new StringChangeLogSerializer().serialize(this, false));
+        return null;//TODO
+//        return CheckSum.compute(new StringChangeLogUnparser().serialize(this, false));
     }
 
     @Override
@@ -98,22 +97,22 @@ public abstract class AbstractSqlVisitor implements SqlVisitor {
     public void load(ParsedNode parsedNode) throws ParseException {
         for (ParsedNode childNode : parsedNode.getChildren()) {
             try {
-               if ("dbms".equals(childNode.getName())) {
+                if ("dbms".equals(childNode.getName())) {
                     this.setApplicableDbms(new HashSet<>(StringUtil.splitAndTrim((String) childNode.getValue(), ",")));
                 } else if ("applyToRollback".equals(childNode.getName())) {
-                   Boolean value = childNode.getValue(null, Boolean.class);
-                   if (value != null) {
-                       setApplyToRollback(value);
-                   }
-               } else if ("context".equals(childNode.getName()) || "contexts".equals(childNode.getName())) {
-                   setContexts(new ContextExpression((String) childNode.getValue()));
-                } else  if (ObjectUtil.hasWriteProperty(this, childNode.getName())) {
-                   Object value = childNode.getValue();
-                   if (value != null) {
-                       value = value.toString();
-                   }
-                   ObjectUtil.setProperty(this, childNode.getName(), (String) value);
-               }
+                    Boolean value = childNode.getValue(null, Boolean.class);
+                    if (value != null) {
+                        setApplyToRollback(value);
+                    }
+                } else if ("context".equals(childNode.getName()) || "contexts".equals(childNode.getName())) {
+                    setContexts(new ContextExpression((String) childNode.getValue()));
+                } else if (ObjectUtil.hasWriteProperty(this, childNode.getName())) {
+                    Object value = childNode.getValue();
+                    if (value != null) {
+                        value = value.toString();
+                    }
+                    ObjectUtil.setProperty(this, childNode.getName(), (String) value);
+                }
             } catch (Exception e) {
                 throw new ParseException("Error setting property", e, parsedNode);
             }

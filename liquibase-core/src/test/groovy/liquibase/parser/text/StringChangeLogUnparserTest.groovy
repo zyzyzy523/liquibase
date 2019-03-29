@@ -1,48 +1,30 @@
-package liquibase.serializer.core.string
+package liquibase.parser.text
 
-import liquibase.Scope
-import liquibase.changelog.ChangeSet
+
+import liquibase.change.AddColumnConfig
+import liquibase.change.ColumnConfig
+import liquibase.change.ConstraintsConfig
+import liquibase.change.DatabaseChangeProperty
+import liquibase.change.core.*
+import liquibase.change.custom.CustomChangeWrapper
+import liquibase.change.custom.CustomSqlChange
+import liquibase.change.custom.ExampleCustomSqlChange
+import liquibase.changelog.ChangeLogParameters
+import liquibase.logging.Logger
+import liquibase.resource.ResourceAccessor
+import liquibase.statement.DatabaseFunction
+import liquibase.statement.SequenceCurrentValueFunction
+import liquibase.statement.SequenceNextValueFunction
 import liquibase.test.JUnitResourceAccessor
 import spock.lang.Specification
-import spock.lang.Unroll;
+import spock.lang.Unroll
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import liquibase.change.*;
-import liquibase.change.DatabaseChangeProperty;
-import liquibase.change.core.*;
-import liquibase.change.custom.CustomChangeWrapper;
-import liquibase.change.custom.CustomSqlChange;
-import liquibase.change.custom.ExampleCustomSqlChange;
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.logging.Logger;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.ResourceAccessor;
-import liquibase.statement.DatabaseFunction;
-
-import liquibase.statement.SequenceCurrentValueFunction;
-import liquibase.statement.SequenceNextValueFunction;
-import org.junit.Test;
-
-public class StringChangeLogSerializerTest extends Specification {
+public class StringChangeLogUnparserTest extends Specification {
 
     def "serialized customChange"() throws Exception {
         when:
@@ -63,7 +45,7 @@ public class StringChangeLogSerializerTest extends Specification {
         wrapper.setParam("tableName", "table_name");
 
         then:
-        new StringChangeLogSerializer().serialize(wrapper, false) == expectedString
+        new StringChangeLogUnparser().serialize(wrapper, false) == expectedString
     }
 
     def serialized_AddColumnChange() {
@@ -71,14 +53,14 @@ public class StringChangeLogSerializerTest extends Specification {
         AddColumnChange change = new AddColumnChange();
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addColumn:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addColumn:[\n" +
                 "    columns=[]\n" +
                 "]"
 
         when:
         change.setTableName("TABLE_NAME");
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addColumn:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addColumn:[\n" +
                 "    columns=[]\n" +
                 "    tableName=\"TABLE_NAME\"\n" +
                 "]"
@@ -86,7 +68,7 @@ public class StringChangeLogSerializerTest extends Specification {
         when:
         change.setSchemaName("SCHEMA_NAME");
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addColumn:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addColumn:[\n" +
                 "    columns=[]\n" +
                 "    schemaName=\"SCHEMA_NAME\"\n" +
                 "    tableName=\"TABLE_NAME\"\n" +
@@ -97,7 +79,7 @@ public class StringChangeLogSerializerTest extends Specification {
         change.addColumn(column);
         column.setName("COLUMN_NAME");
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addColumn:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addColumn:[\n" +
                 "    columns=[\n" +
                 "        [\n" +
                 "            name=\"COLUMN_NAME\"\n" +
@@ -114,7 +96,7 @@ public class StringChangeLogSerializerTest extends Specification {
         column2.setAutoIncrement(true);
         column2.setValueNumeric(52);
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addColumn:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addColumn:[\n" +
                 "    columns=[\n" +
                 "        [\n" +
                 "            name=\"COLUMN_NAME\"\n" +
@@ -135,7 +117,7 @@ public class StringChangeLogSerializerTest extends Specification {
         AddForeignKeyConstraintChange change = new AddForeignKeyConstraintChange();
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addForeignKeyConstraint:[]"
+        new StringChangeLogUnparser().serialize(change, false) == "addForeignKeyConstraint:[]"
 
         when:
         change.setBaseTableName("TABLE_NAME");
@@ -151,7 +133,7 @@ public class StringChangeLogSerializerTest extends Specification {
         change.setReferencedColumnNames("COLA, COLB");
         change.setReferencedTableSchemaName("REF_SCHEM");
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addForeignKeyConstraint:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addForeignKeyConstraint:[\n" +
                 "    baseColumnNames=\"COL1, COL2\"\n" +
                 "    baseTableName=\"TABLE_NAME\"\n" +
                 "    baseTableSchemaName=\"BASE_SCHEM\"\n" +
@@ -172,7 +154,7 @@ public class StringChangeLogSerializerTest extends Specification {
         AddUniqueConstraintChange change = new AddUniqueConstraintChange();
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addUniqueConstraint:[]"
+        new StringChangeLogUnparser().serialize(change, false) == "addUniqueConstraint:[]"
 
         when:
         change.setTableName("TABLE_NAME");
@@ -185,7 +167,7 @@ public class StringChangeLogSerializerTest extends Specification {
         change.setTablespace("TABLESPACE1");
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "addUniqueConstraint:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "addUniqueConstraint:[\n" +
                 "    columnNames=\"COL1, COL2\"\n" +
                 "    constraintName=\"FK_TEST\"\n" +
                 "    deferrable=\"true\"\n" +
@@ -217,7 +199,7 @@ public class StringChangeLogSerializerTest extends Specification {
 //                "            columns=[]\n" +
 //                "        ]\n" +
 //                "    ]\n" +
-//                "]", new StringChangeLogSerializer().serialize(changeSet));
+//                "]", new StringChangeLogUnparser().serialize(changeSet));
 //    }
 
     def "serialized SQLFileChange"() {
@@ -225,7 +207,7 @@ public class StringChangeLogSerializerTest extends Specification {
         SQLFileChange change = new SQLFileChange();
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "sqlFile:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "sqlFile:[\n" +
                 "    splitStatements=\"true\"\n" +
                 "    stripComments=\"false\"\n]"
 
@@ -233,7 +215,7 @@ public class StringChangeLogSerializerTest extends Specification {
         change.setPath("PATH/TO/File.txt");
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "sqlFile:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "sqlFile:[\n" +
                 "    path=\"PATH/TO/File.txt\"\n" +
                 "    splitStatements=\"true\"\n" +
                 "    stripComments=\"false\"\n" +
@@ -245,14 +227,14 @@ public class StringChangeLogSerializerTest extends Specification {
         RawSQLChange change = new RawSQLChange();
 
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "sql:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "sql:[\n" +
                 "    splitStatements=\"true\"\n" +
                 "    stripComments=\"false\"\n]"
 
         when:
         change.setSql("some SQL Here");
         then:
-        new StringChangeLogSerializer().serialize(change, false) == "sql:[\n" +
+        new StringChangeLogUnparser().serialize(change, false) == "sql:[\n" +
                 "    splitStatements=\"true\"\n" +
                 "    sql=\"some SQL Here\"\n" +
                 "    stripComments=\"false\"\n" +
@@ -274,7 +256,7 @@ public class StringChangeLogSerializerTest extends Specification {
 //
 //        change.setChangeSet(new ChangeSet("test", "author", false, false, null, null, null, null))
 //
-//        String string = new StringChangeLogSerializer().serialize(change, false);
+//        String string = new StringChangeLogUnparser().serialize(change, false);
 //        assert string.indexOf("@") < 0: "@ in string.  Probably poorly serialized object reference." + string;
 //
 //        where:
@@ -372,10 +354,10 @@ public class StringChangeLogSerializerTest extends Specification {
                         throw new RuntimeException("Found " + genericsLength + " generics for " + clazz.getName() + "." + field.getName());
                     }
                 } else {
-                    fail("List not generic");
+                    org.junit.Assert.fail("List not generic");
                 }
             } else {
-                fail("Unknown field type in " + clazz.getName() + ": " + field.getType().getName());
+                org.junit.Assert.fail("Unknown field type in " + clazz.getName() + ": " + field.getType().getName());
             }
         }
 
@@ -470,7 +452,7 @@ public class StringChangeLogSerializerTest extends Specification {
         change.addColumn(new ColumnConfig().setName("VALUE").setValueNumeric(new Double(value)));
 
         then:
-        new StringChangeLogSerializer().serialize(change, true) == "insert:[\n" +
+        new StringChangeLogUnparser().serialize(change, true) == "insert:[\n" +
                 "    columns=[\n" +
                 "        [\n" +
                 "            name=\"VALUE\"\n" +

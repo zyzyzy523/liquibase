@@ -1,5 +1,0 @@
-liquibase.serializer.core.formattedsql.FormattedSqlChangeLogSerializer
-liquibase.parser.json.JsonUnparser
-liquibase.serializer.core.string.StringChangeLogSerializer
-liquibase.parser.xml.XmlUnparser
-liquibase.serializer.core.yaml.YamlChangeLogSerializer

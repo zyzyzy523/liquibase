@@ -1,5 +1,6 @@
 package liquibase.verify.change;
 
+import liquibase.ExtensibleObject;
 import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.ChangeFactory;
@@ -10,14 +11,10 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.core.Db2zDatabase;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.exception.ValidationErrors;
-import liquibase.logging.LogService;
 import liquibase.logging.LogType;
-import liquibase.serializer.LiquibaseSerializable;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
 import liquibase.sql.Sql;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
-import liquibase.test.JUnitResourceAccessor;
 import liquibase.util.StringUtil;
 import liquibase.verify.AbstractVerifyTest;
 import org.junit.Ignore;
@@ -288,8 +285,8 @@ public class VerifyChangeClassesTest extends AbstractVerifyTest {
                 serializedValue += formatParameter(obj) + ", ";
             }
             serializedValue += "]";
-        } else if (paramValue instanceof LiquibaseSerializable) {
-            serializedValue = new StringChangeLogSerializer().serialize(((LiquibaseSerializable) paramValue), true);
+        } else if (paramValue instanceof ExtensibleObject) {
+            serializedValue = ((ExtensibleObject) paramValue).describe();
         } else {
             serializedValue = paramValue.toString();
         }

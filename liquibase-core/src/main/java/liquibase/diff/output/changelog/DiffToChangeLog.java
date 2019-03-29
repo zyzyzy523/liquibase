@@ -7,24 +7,20 @@ import liquibase.configuration.GlobalConfiguration;
 import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.database.Database;
 import liquibase.database.ObjectQuotingStrategy;
-import liquibase.database.OfflineConnection;
 import liquibase.database.core.*;
 import liquibase.diff.DiffResult;
 import liquibase.diff.ObjectDifferences;
-import liquibase.diff.compare.CompareControl;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.executor.Executor;
-import liquibase.executor.ExecutorService;
 import liquibase.logging.LogType;
-import liquibase.serializer.ChangeLogSerializer;
-import liquibase.serializer.ChangeLogSerializerFactory;
+import liquibase.parser.Unparser;
+import liquibase.parser.UnparserFactory;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.structure.DatabaseObject;
 import liquibase.structure.DatabaseObjectComparator;
 import liquibase.structure.core.Column;
-import liquibase.util.DependencyUtil;
 import liquibase.util.StringUtil;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -77,26 +73,26 @@ public class DiffToChangeLog {
 
     public void print(String changeLogFile) throws ParserConfigurationException, IOException, DatabaseException {
         this.changeSetPath = changeLogFile;
-        ChangeLogSerializer changeLogSerializer = ChangeLogSerializerFactory.getInstance().getSerializer(changeLogFile);
-        this.print(changeLogFile, changeLogSerializer);
+        Unparser unparser = Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser(changeLogFile);
+        this.print(changeLogFile, unparser);
     }
 
     public void print(PrintStream out) throws ParserConfigurationException, IOException, DatabaseException {
-        this.print(out, ChangeLogSerializerFactory.getInstance().getSerializer("xml"));
+        this.print(out, Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.xml"));
     }
 
-    public void print(String changeLogFile, ChangeLogSerializer changeLogSerializer) throws ParserConfigurationException, IOException, DatabaseException {
+    public void print(String changeLogFile, Unparser unparser) throws ParserConfigurationException, IOException, DatabaseException {
         this.changeSetPath = changeLogFile;
         File file = new File(changeLogFile);
         if (!file.exists()) {
             Scope.getCurrentScope().getLog(getClass()).info(LogType.LOG, file + " does not exist, creating");
             FileOutputStream stream = new FileOutputStream(file);
-            print(new PrintStream(stream, true, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()), changeLogSerializer);
+            print(new PrintStream(stream, true, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()), unparser);
             stream.close();
         } else {
             Scope.getCurrentScope().getLog(getClass()).info(LogType.LOG, file + " exists, appending");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            print(new PrintStream(out, true, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()), changeLogSerializer);
+            print(new PrintStream(out, true, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()), unparser);
 
             String xml = new String(out.toByteArray(), LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding());
             String innerXml = xml.replaceFirst("(?ms).*<databaseChangeLog[^>]*>", "");
@@ -148,11 +144,11 @@ public class DiffToChangeLog {
      * Prints changeLog that would bring the target database to be the same as
      * the reference database
      */
-    public void print(PrintStream out, ChangeLogSerializer changeLogSerializer) throws ParserConfigurationException, IOException, DatabaseException {
+    public void print(PrintStream out, Unparser unparser) throws ParserConfigurationException, IOException, DatabaseException {
 
         List<ChangeSet> changeSets = generateChangeSets();
 
-        changeLogSerializer.write(changeSets, out);
+//TODO        unparser.unparse(changeSets, out);
 
         out.flush();
     }

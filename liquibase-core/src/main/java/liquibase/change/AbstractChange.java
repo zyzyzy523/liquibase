@@ -5,10 +5,9 @@ import liquibase.changelog.ChangeSet;
 import liquibase.database.Database;
 import liquibase.exception.*;
 import liquibase.parser.ParsedNode;
+import liquibase.parser.text.StringChangeLogUnparser;
 import liquibase.plugin.AbstractPlugin;
-import liquibase.resource.ResourceAccessor;
 import liquibase.serializer.LiquibaseSerializable;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.structure.DatabaseObject;
@@ -21,8 +20,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
-
-import static liquibase.serializer.LiquibaseSerializable.STANDARD_CHANGELOG_NAMESPACE;
 
 /**
  * Standard superclass to simplify {@link Change } implementations. You can implement Change directly, this class is
@@ -453,11 +450,11 @@ public abstract class AbstractChange extends AbstractPlugin implements Change {
     }
 
     /**
-     * Implementation generates checksum by serializing the change with {@link StringChangeLogSerializer}
+     * Implementation generates checksum by serializing the change with {@link StringChangeLogUnparser}
      */
     @Override
     public CheckSum generateCheckSum() {
-        return CheckSum.compute("TODO"); //new StringChangeLogSerializer().serialize(this, false));
+        return CheckSum.compute("TODO"); //new StringChangeLogUnparser().serialize(this, false));
     }
 
     /*

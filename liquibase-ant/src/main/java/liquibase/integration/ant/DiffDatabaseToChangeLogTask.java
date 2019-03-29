@@ -1,5 +1,6 @@
 package liquibase.integration.ant;
 
+import liquibase.Scope;
 import liquibase.diff.DiffResult;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.StandardObjectChangeFilter;
@@ -7,12 +8,9 @@ import liquibase.diff.output.changelog.DiffToChangeLog;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.integration.ant.type.ChangeLogOutputFile;
-import liquibase.serializer.ChangeLogSerializer;
-import liquibase.serializer.ChangeLogSerializerFactory;
-import liquibase.parser.json.JsonUnparser;
-import liquibase.serializer.core.string.StringChangeLogSerializer;
+import liquibase.parser.Unparser;
+import liquibase.parser.UnparserFactory;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.FileUtils;
 
@@ -38,12 +36,12 @@ public class DiffDatabaseToChangeLogTask extends AbstractDatabaseDiffTask {
             String encoding = getOutputEncoding(changeLogOutputFile);
             try {
                 FileResource outputFile = changeLogOutputFile.getOutputFile();
-                ChangeLogSerializer changeLogSerializer = changeLogOutputFile.getChangeLogSerializer();
+                Unparser unparser = changeLogOutputFile.getUnparser();
                 printStream = new PrintStream(outputFile.getOutputStream(), true, encoding);
                 DiffResult diffResult = getDiffResult();
                 DiffOutputControl diffOutputControl = getDiffOutputControl();
                 DiffToChangeLog diffToChangeLog = new DiffToChangeLog(diffResult, diffOutputControl);
-                diffToChangeLog.print(printStream, changeLogSerializer);
+                diffToChangeLog.print(printStream, unparser);
             } catch (UnsupportedEncodingException e) {
                 throw new BuildException("Unable to diff databases to change log file. Encoding [" + encoding + "] is not supported.", e);
             } catch (IOException e) {
@@ -89,17 +87,17 @@ public class DiffDatabaseToChangeLogTask extends AbstractDatabaseDiffTask {
     }
 
     public void addConfiguredXml(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(ChangeLogSerializerFactory.getInstance().getSerializer("xml"));
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.xml"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 
     public void addConfiguredYaml(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(ChangeLogSerializerFactory.getInstance().getSerializer("yaml"));
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.yaml"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 
     public void addConfiguredTxt(ChangeLogOutputFile changeLogOutputFile) {
-        changeLogOutputFile.setChangeLogSerializer(new StringChangeLogSerializer());
+        changeLogOutputFile.setUnparser(Scope.getCurrentScope().getSingleton(UnparserFactory.class).getUnparser("file.txt"));
         changeLogOutputFiles.add(changeLogOutputFile);
     }
 
@@ -143,15 +141,4 @@ public class DiffDatabaseToChangeLogTask extends AbstractDatabaseDiffTask {
         this.excludeObjects = excludeObjects;
     }
 
-    /**
-     * @deprecated Use {@link #addConfiguredXml(ChangeLogOutputFile)} instead.
-     * @param outputFile The file to write the change log to.
-     */
-    @Deprecated
-    public void setOutputFile(FileResource outputFile) {
-        log("The outputFile attribute is deprecated. Use a nested <xml>, <json>, <yaml>, or <txt> element instead.", Project.MSG_WARN);
-        ChangeLogOutputFile changeLogOutputFile = new ChangeLogOutputFile();
-        changeLogOutputFile.setOutputFile(outputFile);
-        addConfiguredXml(changeLogOutputFile);
-    }
 }

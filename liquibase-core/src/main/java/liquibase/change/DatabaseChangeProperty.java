@@ -55,7 +55,7 @@ public @interface DatabaseChangeProperty {
     String mustEqualExisting() default "";
 
     /**
-     * Format to use when serializing this Change via a {@link liquibase.serializer.ChangeLogSerializer}.
+     * Format to use when serializing this Change via a {@link liquibase.parser.Unparser}.
      */
     LiquibaseSerializable.SerializationType serializationType() default LiquibaseSerializable.SerializationType
         .NAMED_FIELD;

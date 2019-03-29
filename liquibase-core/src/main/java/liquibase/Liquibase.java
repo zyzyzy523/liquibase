@@ -31,9 +31,9 @@ import liquibase.lockservice.LockServiceFactory;
 import liquibase.logging.LogType;
 import liquibase.logging.Logger;
 import liquibase.parser.ParserFactory;
+import liquibase.parser.Unparser;
 import liquibase.resource.InputStreamList;
 import liquibase.resource.ResourceAccessor;
-import liquibase.serializer.ChangeLogSerializer;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.InvalidExampleException;
 import liquibase.snapshot.SnapshotControl;
@@ -1626,7 +1626,7 @@ public class Liquibase {
 
     @SafeVarargs
     public final void generateChangeLog(CatalogAndSchema catalogAndSchema, DiffToChangeLog changeLogWriter,
-                                  PrintStream outputStream, ChangeLogSerializer changeLogSerializer,
+                                  PrintStream outputStream, Unparser unparser,
                                   Class<? extends DatabaseObject>... snapshotTypes)
         throws DatabaseException, IOException, ParserConfigurationException {
 
@@ -1660,8 +1660,8 @@ public class Liquibase {
 
             changeLogWriter.setDiffResult(diffResult);
 
-            if(changeLogSerializer != null) {
-                changeLogWriter.print(outputStream, changeLogSerializer);
+            if(unparser != null) {
+                changeLogWriter.print(outputStream, unparser);
             } else {
                 changeLogWriter.print(outputStream);
             }

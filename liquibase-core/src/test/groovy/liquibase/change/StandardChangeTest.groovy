@@ -48,7 +48,7 @@ public abstract class StandardChangeTest extends Specification {
 //            assert CheckSum.getCurrentVersion() == checkSum.getVersion();
 //            assert checkSum.toString().startsWith(CheckSum.getCurrentVersion()+":")
 //
-//            def serialized = new StringChangeLogSerializer().serialize(change, false);
+//            def serialized = new StringChangeLogUnparser().serialize(change, false);
 //
 //            if (seenCheckSums.containsKey(checkSum.toString())) {
 //                if (!serialized.equals(seenCheckSums.get(checkSum.toString()))) {
