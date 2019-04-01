@@ -73,7 +73,7 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
 
     protected String key;
 
-    private ChangeLogParameters changeLogParameters;
+    public ChangeLogParameters changeLogParameters;
 
     /**
      * List of change objects defined in this changeset
@@ -108,12 +108,12 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
     /**
      * Runtime contexts in which the changeSet will be executed.  If null or empty, will execute regardless of contexts set
      */
-    private ContextExpression contexts;
+    public ContextExpression contexts;
 
     /**
      * "Labels" associated with this changeSet.  If null or empty, will execute regardless of contexts set
      */
-    private Labels labels;
+    public Labels labels;
 
     /**
      *
@@ -174,7 +174,7 @@ public class ChangeSet extends AbstractExtensibleObject implements ChangeLogEntr
      */
     private List<SqlVisitor> sqlVisitors = new ArrayList<>();
 
-    private ObjectQuotingStrategy objectQuotingStrategy;
+    public ObjectQuotingStrategy objectQuotingStrategy;
 
     private ChangeLog changeLog;
 

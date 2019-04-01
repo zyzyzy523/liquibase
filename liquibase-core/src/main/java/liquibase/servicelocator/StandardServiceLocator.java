@@ -1,15 +1,12 @@
 package liquibase.servicelocator;
 
 import liquibase.Scope;
-import liquibase.database.AbstractJdbcDatabase;
-import liquibase.database.DatabaseConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.ServiceNotFoundException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ServiceLoader;
 
 public class StandardServiceLocator implements ServiceLocator {
 
@@ -18,7 +15,16 @@ public class StandardServiceLocator implements ServiceLocator {
         List<T> allInstances = new ArrayList<>();
 
         for (T t : ServiceLoader.load(interfaceType, Scope.getCurrentScope().getClassLoader(true))) {
-            allInstances.add(t);
+            if (t instanceof ServiceActivator) {
+                Object actualService = ((ServiceActivator) t).activate();
+                if (actualService == null) {
+                    Scope.getCurrentScope().getLog(getClass()).info("No " + interfaceType.getName() + " plugin activated by " + t.getClass().getName());
+                } else {
+                    allInstances.add((T) actualService);
+                }
+            } else {
+                allInstances.add(t);
+            }
         }
 
         return Collections.unmodifiableList(allInstances);
