@@ -6,16 +6,12 @@ import liquibase.changelog.ChangeLog;
 import liquibase.changelog.ChangeSet;
 import liquibase.exception.ChangeLogParseException;
 import liquibase.exception.ParseException;
-import liquibase.lockservice.DatabaseChangeLogLock;
-import liquibase.logging.LogType;
 import liquibase.parser.AbstractParser;
-import liquibase.parser.ParsedNode;
 import liquibase.precondition.core.SqlPrecondition;
 import liquibase.util.SqlParser;
 import liquibase.util.StreamUtil;
 import liquibase.util.StringClauses;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -393,10 +389,5 @@ public class FormattedSqlChangeLogParser extends AbstractParser {
             throw new IOException("File does not exist: " + physicalChangeLogFile.getAbsolutePath());
         }
         return resourceAsStream;
-    }
-
-    @Override
-    public String describeOriginal(ParsedNode parsedNode) {
-        return "TODO";
     }
 }

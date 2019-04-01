@@ -2,7 +2,6 @@ package liquibase.parser.sql;
 
 import liquibase.exception.ParseException;
 import liquibase.parser.AbstractUnparser;
-import liquibase.parser.ParsedNode;
 
 import java.io.OutputStream;
 import java.util.regex.Pattern;
@@ -20,9 +19,8 @@ public class FormattedSqlChangeLogUnparser extends AbstractUnparser {
         }
     }
 
-
     @Override
-    public void unparse(ParsedNode node, OutputStream output) throws ParseException {
+    public void unparse(Object object, String outputPath, OutputStream outputStream) throws ParseException {
 //        if (object instanceof ChangeSet) {
 //            StringBuilder builder = new StringBuilder();
 //

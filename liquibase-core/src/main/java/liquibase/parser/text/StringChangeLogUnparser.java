@@ -2,7 +2,6 @@ package liquibase.parser.text;
 
 import liquibase.exception.ParseException;
 import liquibase.parser.AbstractUnparser;
-import liquibase.parser.ParsedNode;
 
 import java.io.OutputStream;
 
@@ -29,7 +28,7 @@ public class StringChangeLogUnparser extends AbstractUnparser {
     }
 
     @Override
-    public void unparse(ParsedNode node, OutputStream output) throws ParseException {
+    public void unparse(Object object, String outputPath, OutputStream outputStream) throws ParseException {
 //        try {
 //            StringBuffer buffer = new StringBuffer();
 //            buffer.append("[");

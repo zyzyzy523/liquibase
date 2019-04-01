@@ -2,7 +2,7 @@ package liquibase.parser.yaml;
 
 import liquibase.Scope;
 import liquibase.exception.ParseException;
-import liquibase.parser.AbstractUnparser;
+import liquibase.parser.structureddata.AbstractStructuredDataUnparser;
 import liquibase.parser.ParsedNode;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * Unparses yaml files using SnakeYAML.
  */
-public class YamlUnparser extends AbstractUnparser {
+public class YamlUnparser extends AbstractStructuredDataUnparser {
 
     protected Yaml yaml;
 

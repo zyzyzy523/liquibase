@@ -1,6 +1,0 @@
-liquibase.parser.mapping.core.ChangeNodeMapping
-liquibase.parser.mapping.core.ChangeLogEntryNodeMapping
-liquibase.parser.mapping.core.ChangeNodeMapping
-liquibase.parser.mapping.core.DefaultExtensibleObjectParsedNodeMapping
-liquibase.parser.mapping.core.PlainObjectParsedNodeMapping
-liquibase.parser.mapping.core.PreconditionNodeMapping

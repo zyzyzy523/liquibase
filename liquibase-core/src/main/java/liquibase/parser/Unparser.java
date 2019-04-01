@@ -8,8 +8,7 @@ import liquibase.plugin.Plugin;
 import java.io.OutputStream;
 
 /**
- * Unparsers take a {@link ParsedNode} and convert it into a file.
- * They should not do any processing or fixing of the parsedNode, just output something that directly matches the node structure.
+ * Unparsers take an object and into an OutputStream.
  *
  * @see AbstractUnparser
  * @see UnparserFactory
@@ -19,15 +18,12 @@ public interface Unparser extends Plugin, ExtensibleObject, SingletonObject {
     int getPriority(String path);
 
     /**
-     * Outputs the passed node to the output stream.
+     * Converts the object to the given outputStream.
+     * The passed outputPath is used to determine the unparser to use, so it must be set, even though all writing must go to the outputStream.
+     * <p/>
+     * Does nothing if object is null.
      */
-    void unparse(ParsedNode node, OutputStream output) throws ParseException;
+    void unparse(Object object, String outputPath, OutputStream outputStream) throws ParseException;
 
-    /**
-     * Outputs a pseudo version of the original version of the given parsedNode.
-     * Used for error messages and other times Liquibase needs to direct users to the original version of a parsed node,
-     * especially when there are no original line numbers stored.
-     */
-    String describeOriginal(ParsedNode parsedNode);
 
 }

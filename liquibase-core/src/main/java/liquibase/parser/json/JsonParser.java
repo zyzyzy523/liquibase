@@ -5,7 +5,7 @@ import liquibase.Scope;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
 import liquibase.parser.ParsedNode;
-import liquibase.parser.yaml.AbstractParsedNodeParser;
+import liquibase.parser.structureddata.AbstractStructuredDataParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import java.io.Reader;
  *
  * @see ParsedNodeTypeAdapter
  */
-public class JsonParser extends AbstractParsedNodeParser {
+public class JsonParser extends AbstractStructuredDataParser {
 
     @Override
     public int getPriority(String relativeTo, String path, Class objectType) {

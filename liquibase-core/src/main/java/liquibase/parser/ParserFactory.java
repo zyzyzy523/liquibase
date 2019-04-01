@@ -2,7 +2,7 @@ package liquibase.parser;
 
 import liquibase.Scope;
 import liquibase.exception.ParseException;
-import liquibase.parser.preprocessor.ParsedNodePreprocessor;
+import liquibase.parser.structureddata.preprocessor.ParsedNodePreprocessor;
 import liquibase.plugin.AbstractPluginFactory;
 
 /**

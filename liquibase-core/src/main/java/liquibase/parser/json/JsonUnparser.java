@@ -2,9 +2,8 @@ package liquibase.parser.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import liquibase.Scope;
 import liquibase.exception.ParseException;
-import liquibase.parser.AbstractUnparser;
+import liquibase.parser.structureddata.AbstractStructuredDataUnparser;
 import liquibase.parser.ParsedNode;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.io.OutputStreamWriter;
  *
  * @see ParsedNodeTypeAdapter
  */
-public class JsonUnparser extends AbstractUnparser {
+public class JsonUnparser extends AbstractStructuredDataUnparser {
 
     @Override
     public int getPriority(String path) {

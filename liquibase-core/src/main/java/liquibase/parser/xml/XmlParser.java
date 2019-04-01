@@ -4,7 +4,7 @@ import liquibase.Scope;
 import liquibase.exception.ParseException;
 import liquibase.logging.Logger;
 import liquibase.parser.ParsedNode;
-import liquibase.parser.yaml.AbstractParsedNodeParser;
+import liquibase.parser.structureddata.AbstractStructuredDataParser;
 import liquibase.util.StringUtil;
 import org.xml.sax.*;
 import org.xml.sax.ext.EntityResolver2;
@@ -21,7 +21,7 @@ import java.util.Deque;
  * Standard parser for XML files. Expects files to have a .xml extension.
  * Find entities using {@link XmlEntityResolver} before looking for them on the network.
  */
-public class XmlParser extends AbstractParsedNodeParser {
+public class XmlParser extends AbstractStructuredDataParser {
 
     public static final String LIQUIBASE_SCHEMA_VERSION = "3.6";
 

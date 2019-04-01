@@ -1,0 +1,6 @@
+liquibase.parser.structureddata.mapping.core.ChangeNodeMapping
+liquibase.parser.structureddata.mapping.core.ChangeLogEntryNodeMapping
+liquibase.parser.structureddata.mapping.core.ChangeNodeMapping
+liquibase.parser.structureddata.mapping.core.DefaultExtensibleObjectParsedNodeMapping
+liquibase.parser.structureddata.mapping.core.PlainObjectParsedNodeMapping
+liquibase.parser.structureddata.mapping.core.PreconditionNodeMapping

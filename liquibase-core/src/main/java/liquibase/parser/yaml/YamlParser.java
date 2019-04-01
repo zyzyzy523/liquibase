@@ -3,6 +3,7 @@ package liquibase.parser.yaml;
 import liquibase.Scope;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ParseException;
+import liquibase.parser.structureddata.AbstractStructuredDataParser;
 import liquibase.parser.ParsedNode;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 /**
  * Parses yaml files using SnakeYAML.
  */
-public class YamlParser extends AbstractParsedNodeParser {
+public class YamlParser extends AbstractStructuredDataParser {
 
     @Override
     public int getPriority(String relativeTo, String path, Class objectType) {

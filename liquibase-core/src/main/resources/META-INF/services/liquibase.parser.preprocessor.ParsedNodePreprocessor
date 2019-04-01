@@ -1,3 +1,0 @@
-liquibase.parser.preprocessor.core.changelog.ChangeLogPreprocessor
-liquibase.parser.preprocessor.core.changelog.ChangeSetPreprocessor
-liquibase.parser.preprocessor.core.changelog.PreconditionsPreprocessor

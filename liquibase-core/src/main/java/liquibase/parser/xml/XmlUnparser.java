@@ -2,7 +2,7 @@ package liquibase.parser.xml;
 
 import liquibase.Scope;
 import liquibase.exception.ParseException;
-import liquibase.parser.AbstractUnparser;
+import liquibase.parser.structureddata.AbstractStructuredDataUnparser;
 import liquibase.parser.ParsedNode;
 import liquibase.util.StringUtil;
 
@@ -18,7 +18,7 @@ import java.util.TreeSet;
 /**
  * Standard {@link liquibase.parser.Unparser} for XML files. Expects files to have an .xml extension.
  */
-public class XmlUnparser extends AbstractUnparser {
+public class XmlUnparser extends AbstractStructuredDataUnparser {
 
     @Override
     public int getPriority(String path) {

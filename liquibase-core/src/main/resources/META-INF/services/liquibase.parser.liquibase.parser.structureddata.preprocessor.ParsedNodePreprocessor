@@ -1,0 +1,3 @@
+liquibase.parser.structureddata.preprocessor.core.changelog.ChangeLogPreprocessor
+liquibase.parser.structureddata.preprocessor.core.changelog.ChangeSetPreprocessor
+liquibase.parser.structureddata.preprocessor.core.changelog.PreconditionsPreprocessor

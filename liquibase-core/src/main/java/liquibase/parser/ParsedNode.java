@@ -22,7 +22,7 @@ import java.util.*;
  * In order to maintain parent/children references, these objects are created and managed through methods and cannot be constructed directly.
  *
  * @see Parser
- * @see liquibase.parser.mapping.ParsedNodeMapping
+ * @see liquibase.parser.structureddata.mapping.ParsedNodeMapping
  */
 public class ParsedNode extends AbstractExtensibleObject {
 

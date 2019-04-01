@@ -16,12 +16,9 @@ public interface Parser extends Plugin, ExtensibleObject, SingletonObject {
 
     int getPriority(String relativeTo, String path, Class objectType);
 
+    /**
+     * Parses a source into a specified object.
+     */
     <ObjectType> ObjectType parse(String relativeTo, String sourcePath, Class<ObjectType> objectType) throws ParseException;
 
-    /**
-     * Outputs a pseudo version of the original version of the given parsedNode.
-     * Used for error messages and other times Liquibase needs to direct users to the original version of a parsed node,
-     * especially when there are no original line numbers stored.
-     */
-    String describeOriginal(ParsedNode parsedNode);
 }
