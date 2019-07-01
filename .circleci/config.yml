@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 jobs:
   build:
     working_directory: ~/liquibase
@@ -92,7 +92,6 @@ jobs:
             cp liquibase-debian/target/*.deb ${CIRCLE_ARTIFACTS}
       - store_artifacts:
           path: /home/circleci/circle_artifacts
-          destination: artifacts
       - save_cache:
           paths:
             - ~/.m2
