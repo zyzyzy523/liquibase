@@ -442,6 +442,7 @@
                         <reportFormat>plain</reportFormat>
                         <printSummary>false</printSummary>
                         <skipTests>${skipUTs}</skipTests>
+                        <useSystemClassLoader>false</useSystemClassLoader>
                         <systemPropertyVariables>
                             <jacoco-agent.destfile>${jacoco.ut.execution.data.file}</jacoco-agent.destfile>
                         </systemPropertyVariables>
