@@ -79,6 +79,7 @@ jobs:
               find . -type f -regex ".*/target/surefire-reports/.*xml"
               echo "found tests:"
               ls -l "${CIRCLE_TEST_REPORTS}/failsafe/"
+              find . -type f -regex ".*\.dumpstream$" -exec cat {} \;
           when: always
 
       - store_test_results:
