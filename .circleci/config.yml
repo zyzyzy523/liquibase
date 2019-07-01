@@ -25,7 +25,7 @@ jobs:
     steps:
       - run:
           name: Install 3rd party software
-#          command: |
+          command: |
 #            # So that we can fetch .deb packages from Microsoft, who only deliver by https:
             sudo apt-get install -y apt-transport-https rpm
 #
