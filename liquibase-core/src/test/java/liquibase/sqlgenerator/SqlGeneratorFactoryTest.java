@@ -111,6 +111,7 @@ public class SqlGeneratorFactoryTest {
 
         factory.register(new AddAutoIncrementGeneratorHsqlH2());
 
+        assertEquals(1, factory.getGenerators().size());
         assertEquals(1, factory.getGenerators(statement, database).size());
     }
 
