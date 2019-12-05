@@ -10,14 +10,28 @@ public class SetColumnRemarksStatement extends AbstractSqlStatement {
     private String columnName;
     private String remarks;
     private String columnDataType;
+    private Object defaultValue;
 
-    public SetColumnRemarksStatement(String catalogName, String schemaName, String tableName, String columnName, String remarks, String columnDataType) {
+
+
+    public SetColumnRemarksStatement(String catalogName,
+                                     String schemaName,
+                                     String tableName,
+                                     String columnName,
+                                     String remarks,
+                                     String columnDataType,
+                                     Object defaultValue) {
         this.catalogName = catalogName;
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.columnName = columnName;
         this.remarks = remarks;
         this.columnDataType = columnDataType;
+        this.defaultValue = defaultValue;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 
     public String getColumnDataType() {

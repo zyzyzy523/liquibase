@@ -50,7 +50,7 @@
     </scm>
 
     <properties>
-        <liquibase.base.version>3.8.2.RC1</liquibase.base.version>
+        <liquibase.base.version>3.8.2.RC2</liquibase.base.version>
         <liquibase.version.qualifier></liquibase.version.qualifier>
         <liquibase.version.snapshot></liquibase.version.snapshot>
         <liquibase.version>${liquibase.base.version}</liquibase.version>
@@ -296,4 +296,14 @@
 
         </pluginManagement>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/103499-release-yChX4Y/</url>
+        </repository>
+        <snapshotRepository>
+            <id>rdc-snapshots</id>
+            <url>https://repo.rdc.aliyun.com/repository/103499-snapshot-Mk5ks1/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

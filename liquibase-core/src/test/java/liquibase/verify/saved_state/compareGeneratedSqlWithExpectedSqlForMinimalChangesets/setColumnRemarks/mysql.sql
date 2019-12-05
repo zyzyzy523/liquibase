@@ -1,6 +1,6 @@
 -- Database: mysql
+-- Change Parameter: columnDataType=int
 -- Change Parameter: columnName=id
 -- Change Parameter: remarks=A String
 -- Change Parameter: tableName=person
--- Change Parameter: columnDataType=int
-ALTER TABLE person MODIFY COLUMN id int COMMENT 'A String'
+ALTER TABLE person MODIFY COLUMN id INT COMMENT 'A String';

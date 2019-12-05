@@ -192,12 +192,12 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <url>http://116.228.77.183:25296/nexus/content/repositories/releases</url>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/103499-release-yChX4Y/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>http://116.228.77.183:25296/nexus/content/repositories/snapshots</url>
+            <id>rdc-snapshots</id>
+            <url>https://repo.rdc.aliyun.com/repository/103499-snapshot-Mk5ks1/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
