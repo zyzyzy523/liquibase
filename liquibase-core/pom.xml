@@ -108,6 +108,24 @@
             <!-- need to build javadocs for other module javadocs to reference -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <attach>false</attach>
@@ -192,12 +210,12 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>rdc-releases</id>
-            <url>https://repo.rdc.aliyun.com/repository/103499-release-yChX4Y/</url>
+            <id>polars-ecf-maven</id>
+            <url>https://polars-maven.pkg.coding.net/repository/ecf/maven/</url>
         </repository>
         <snapshotRepository>
-            <id>rdc-snapshots</id>
-            <url>https://repo.rdc.aliyun.com/repository/103499-snapshot-Mk5ks1/</url>
+            <id>polars-ecf-maven</id>
+            <url>https://polars-maven.pkg.coding.net/repository/ecf/maven/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

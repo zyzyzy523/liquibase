@@ -50,7 +50,7 @@
     </scm>
 
     <properties>
-        <liquibase.base.version>3.8.2.RC2</liquibase.base.version>
+        <liquibase.base.version>3.8.2.RC3</liquibase.base.version>
         <liquibase.version.qualifier></liquibase.version.qualifier>
         <liquibase.version.snapshot></liquibase.version.snapshot>
         <liquibase.version>${liquibase.base.version}</liquibase.version>
