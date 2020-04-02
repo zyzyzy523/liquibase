@@ -199,7 +199,7 @@ public class UniqueConstraintSnapshotGenerator extends JdbcSnapshotGenerator {
                     }
                     sql += "ORDER BY " +
                             "[ic].[key_ordinal]";
-            } else if (database instanceof OracleDatabase) {
+            } else if (database instanceof OracleDatabase || (database instanceof DmDatabase)) {
                 sql = "select ucc.owner as constraint_container, ucc.constraint_name as constraint_name, ucc.column_name, f.validated as constraint_validate " +
                         "from all_cons_columns ucc " +
                         "INNER JOIN all_constraints f " +

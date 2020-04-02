@@ -119,6 +119,12 @@ public class ClobType extends LiquibaseDataType {
             if (originalDefinition.toLowerCase(Locale.US).startsWith("text")) {
                 return new DatabaseDataType("TEXT");
             }
+        } else if (database instanceof DmDatabase) {
+            if (originalDefinition.toLowerCase(Locale.US).startsWith("text")) {
+                return new DatabaseDataType("TEXT");
+            } else {
+                return new DatabaseDataType("LONGVARCHAR");
+            }
         }
         return super.toDatabaseDataType(database);
     }

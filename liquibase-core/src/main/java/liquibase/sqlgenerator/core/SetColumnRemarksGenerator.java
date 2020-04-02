@@ -2,10 +2,12 @@ package liquibase.sqlgenerator.core;
 
 import liquibase.database.Database;
 import liquibase.database.core.*;
+import liquibase.datatype.DataTypeFactory;
 import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
+import liquibase.statement.DatabaseFunction;
 import liquibase.statement.core.SetColumnRemarksStatement;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.Table;
@@ -25,7 +27,7 @@ public class SetColumnRemarksGenerator extends AbstractSqlGenerator<SetColumnRem
     public boolean supports(SetColumnRemarksStatement statement, Database database) {
         return (database instanceof OracleDatabase) || (database instanceof PostgresDatabase) || (database instanceof
             AbstractDb2Database) || (database instanceof MSSQLDatabase) || (database instanceof H2Database) || (database
-            instanceof SybaseASADatabase) || (database instanceof MySQLDatabase);
+            instanceof SybaseASADatabase) || (database instanceof MySQLDatabase) || (database instanceof DmDatabase);
     }
 
     @Override
@@ -34,6 +36,9 @@ public class SetColumnRemarksGenerator extends AbstractSqlGenerator<SetColumnRem
         validationErrors.checkRequiredField("tableName", setColumnRemarksStatement.getTableName());
         validationErrors.checkRequiredField("columnName", setColumnRemarksStatement.getColumnName());
         validationErrors.checkDisallowedField("catalogName", setColumnRemarksStatement.getCatalogName(), database, MSSQLDatabase.class);
+        if (database instanceof MySQLDatabase) {
+            validationErrors.checkRequiredField("columnDataType", StringUtils.trimToNull(setColumnRemarksStatement.getColumnDataType()));
+        }
         return validationErrors;
     }
 
@@ -43,8 +48,23 @@ public class SetColumnRemarksGenerator extends AbstractSqlGenerator<SetColumnRem
         String remarksEscaped = database.escapeStringForDatabase(StringUtils.trimToEmpty(statement.getRemarks()));
 
         if (database instanceof MySQLDatabase) {
-            return new Sql[]{new UnparsedSql("ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " COMMENT = '" + remarksEscaped
-                    + "'", getAffectedColumn(statement))};
+            Object defaultValue = statement.getDefaultValue();
+            String defaultSql = "";
+            if (null != defaultValue) {
+                if (defaultValue instanceof DatabaseFunction) {
+                    defaultSql = " DEFAULT " +
+                            DataTypeFactory.getInstance().fromObject(defaultValue, database).objectToSql(defaultValue, database);
+                } else {
+                    defaultSql = " DEFAULT " +
+                            DataTypeFactory.getInstance().fromDescription(statement.getColumnDataType(), database).objectToSql(defaultValue, database);
+                }
+            }
+            // generate mysql sql  ALTER TABLE cat.user MODIFY COLUMN id int DEFAULT 1001  COMMENT 'A String'
+            return new Sql[]{new UnparsedSql("ALTER TABLE " + database.escapeTableName(
+                    statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " MODIFY COLUMN "
+                    + database.escapeColumnName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), statement.getColumnName()) + " "
+                    + DataTypeFactory.getInstance().fromDescription(statement.getColumnDataType(), database).toDatabaseDataType(database)
+                    + defaultSql + " COMMENT '" + remarksEscaped + "'", getAffectedColumn(statement))};
         } else if (database instanceof MSSQLDatabase) {
             String schemaName = statement.getSchemaName();
             if (schemaName == null) {

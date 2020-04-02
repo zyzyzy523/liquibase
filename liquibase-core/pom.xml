@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-base</artifactId>
-        <version>${liquibase.version}</version>
+        <version>3.8.2.RC4-SNAPSHOT</version>
         <relativePath>../base.pom.xml</relativePath>
     </parent>
 
@@ -105,30 +105,24 @@
         </resources>
 
         <plugins>
-            <!-- need to build javadocs for other module javadocs to reference -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <attach>false</attach>
-                    <author>false</author>
-                    <doctitle>Liquibase ${project.version} API</doctitle>
-                    <quiet>true</quiet>
-                    <doclint>none</doclint>
-                    <encoding>UTF-8</encoding>
-                    <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <id>custom-javadoc</id>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>javadoc</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M4</version>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -147,47 +141,16 @@
                 </executions>
             </plugin>
 
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>org.liquibase.core</Bundle-SymbolicName>
-                        <Import-Package>
-                            javax.servlet.*;version="[2.6,4)";resolution:=optional,
-                            javax.sql.*,
-                            org.osgi.*,
-                            org.yaml.snakeyaml.*,
-                            *;resolution:=optional
-                        </Import-Package>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>polars-ecf-maven</id>
+            <url>https://polars-maven.pkg.coding.net/repository/ecf/maven/</url>
+        </repository>
+        <snapshotRepository>
+            <id>polars-ecf-maven</id>
+            <url>https://polars-maven.pkg.coding.net/repository/ecf/maven/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

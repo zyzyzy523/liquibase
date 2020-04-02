@@ -185,9 +185,11 @@ public class AddColumnChange extends AbstractChange implements ChangeWithColumns
       for (ColumnConfig column : getColumns()) {
           String columnRemarks = StringUtils.trimToNull(column.getRemarks());
           if (columnRemarks != null) {
-              SetColumnRemarksStatement remarksStatement = new SetColumnRemarksStatement(catalogName, schemaName, tableName, column.getName(), columnRemarks);
+              SetColumnRemarksStatement remarksStatement = new SetColumnRemarksStatement(catalogName, schemaName, tableName, column.getName(), columnRemarks, column.getType(), column.getDefaultValueObject());
               if (SqlGeneratorFactory.getInstance().supports(remarksStatement, database)) {
-                  sql.add(remarksStatement);
+                  if (!(database instanceof MySQLDatabase)) {
+                      sql.add(remarksStatement);
+                  }
               }
           }
       }

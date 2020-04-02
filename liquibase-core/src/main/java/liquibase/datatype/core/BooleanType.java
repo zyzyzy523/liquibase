@@ -32,6 +32,8 @@ public class BooleanType extends LiquibaseDataType {
             return new DatabaseDataType("BIT", 1);
         } else if (database instanceof OracleDatabase) {
             return new DatabaseDataType("NUMBER", 1);
+        } else if (database instanceof DmDatabase) {
+            return new DatabaseDataType("INT");
         } else if ((database instanceof SybaseASADatabase) || (database instanceof SybaseDatabase)) {
             return new DatabaseDataType("BIT");
         } else if (database instanceof DerbyDatabase) {
@@ -107,7 +109,7 @@ public class BooleanType extends LiquibaseDataType {
 			return !((DB2Database) database).supportsBooleanDataType();
     	}
         return (database instanceof Db2zDatabase) || (database instanceof DB2Database) || (database instanceof FirebirdDatabase) || (database instanceof
-            MSSQLDatabase) || (database instanceof MySQLDatabase) || (database instanceof OracleDatabase) ||
+            MSSQLDatabase) || (database instanceof MySQLDatabase) || (database instanceof OracleDatabase) || (database instanceof DmDatabase) ||
             (database instanceof SQLiteDatabase) || (database instanceof SybaseASADatabase) || (database instanceof
             SybaseDatabase);
     }
