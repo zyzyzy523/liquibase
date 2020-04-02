@@ -1539,7 +1539,22 @@ public class JdbcDatabaseSnapshot extends DatabaseSnapshot {
                         if (tableName != null) {
                             sql += " and systable.table_name = '" + tableName + "'";
                         }
-                    } else {
+                    } else if (database instanceof DmDatabase) {
+                        // dm
+                        sql = "select uc.owner AS CONSTRAINT_SCHEM, uc.constraint_name, uc.table_name,uc.status,uc.deferrable,uc.deferred,ui.tablespace_name, ui.index_name, ui.owner as INDEX_CATALOG, uc.VALIDATED as VALIDATED, ac.COLUMN_NAME as COLUMN_NAME " +
+                                "from all_constraints uc " +
+                                "join all_indexes ui on uc.index_name = ui.index_name and uc.owner=ui.table_owner and uc.table_name=ui.table_name " +
+                                "LEFT JOIN all_cons_columns ac ON ac.OWNER = uc.OWNER AND ac.TABLE_NAME = uc.TABLE_NAME AND ac.CONSTRAINT_NAME = uc.CONSTRAINT_NAME "+
+                                "where uc.constraint_type='U' ";
+                        if (tableName != null || getAllCatalogsStringScratchData() == null) {
+                            sql += "and uc.owner = '" + jdbcSchemaName + "'";
+                        } else {
+                            sql += "and uc.owner IN ('" + jdbcSchemaName + "', " + getAllCatalogsStringScratchData() + ")";
+                        }
+                        if (tableName != null) {
+                            sql += " and uc.table_name = '" + tableName + "'";
+                        }
+                    }else {
                         sql = "select CONSTRAINT_NAME, CONSTRAINT_TYPE, TABLE_NAME "
                                 + "from " + database.getSystemSchema() + ".constraints "
                                 + "where constraint_schema='" + jdbcSchemaName + "' "

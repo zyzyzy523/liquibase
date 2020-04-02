@@ -53,11 +53,11 @@ public class SetNullableGenerator extends AbstractSqlGenerator<SetNullableStatem
 
         String nullableString = statement.isNullable()?" NULL":" NOT NULL";
 
-        if ((database instanceof OracleDatabase) && (statement.getConstraintName() != null)) {
+        if ((database instanceof OracleDatabase || database instanceof DmDatabase) && (statement.getConstraintName() != null)) {
             nullableString += !statement.isValidate() ? " ENABLE NOVALIDATE " : "";
             sql = "ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " MODIFY " + database.escapeColumnName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), statement.getColumnName()) + " CONSTRAINT " + statement.getConstraintName() + nullableString;
         } else if ((database instanceof OracleDatabase) || (database instanceof SybaseDatabase) || (database
-            instanceof SybaseASADatabase)) {
+            instanceof SybaseASADatabase) || (database instanceof DmDatabase)) {
             nullableString += (database instanceof OracleDatabase)&&(!statement.isValidate()) ? " ENABLE NOVALIDATE " : "";
             sql = "ALTER TABLE " + database.escapeTableName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName()) + " MODIFY " + database.escapeColumnName(statement.getCatalogName(), statement.getSchemaName(), statement.getTableName(), statement.getColumnName()) + nullableString;
         } else if (database instanceof MSSQLDatabase) {
