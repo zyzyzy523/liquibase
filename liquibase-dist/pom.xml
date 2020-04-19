@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-root</artifactId>
-        <version>${liquibase.version}</version>
+        <version>3.8.8.RC1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>${liquibase.version}</version>
+            <version>3.8.8.RC1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -67,7 +67,7 @@
     </dependencies>
 
     <build>
-        <finalName>liquibase-${liquibase.version}</finalName>
+        <finalName>liquibase-3.8.8.RC1-SNAPSHOT</finalName>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/archive</directory>
@@ -141,7 +141,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <finalName>liquibase-${liquibase.version}</finalName>
+                    <finalName>liquibase-3.8.8.RC1-SNAPSHOT</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptors>
@@ -174,11 +174,11 @@
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
-                            <deb>${project.build.directory}/liquibase-${liquibase.version}.deb</deb>
+                            <deb>${project.build.directory}/liquibase-3.8.8.RC1-SNAPSHOT.deb</deb>
                             <attach>false</attach>
                             <dataSet>
                                 <data>
-                                    <src>${project.build.directory}/liquibase-${liquibase.version}</src>
+                                    <src>${project.build.directory}/liquibase-3.8.8.RC1-SNAPSHOT</src>
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
@@ -243,13 +243,13 @@
                 <dependency>
                     <groupId>com.datical.lb</groupId>
                     <artifactId>liquibase-pro</artifactId>
-                    <version>${liquibase.version}</version>
+                    <version>3.8.8.RC1-SNAPSHOT</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.datical.lb</groupId>
                     <artifactId>licensing-keymgr</artifactId>
-                    <version>${liquibase.version}</version>
+                    <version>3.8.8.RC1-SNAPSHOT</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -289,7 +289,7 @@
                                     <directory>/opt/liquibase</directory>
                                     <sources>
                                         <source>
-                                            <location>${project.build.directory}/liquibase-${liquibase.version}
+                                            <location>${project.build.directory}/liquibase-3.8.8.RC1-SNAPSHOT
                                             </location>
                                         </source>
                                     </sources>

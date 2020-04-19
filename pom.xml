@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-base</artifactId>
-        <version>${liquibase.version}</version>
+        <version>3.8.8.RC1-SNAPSHOT</version>
         <relativePath>base.pom.xml</relativePath>
     </parent>
 
     <artifactId>liquibase-root</artifactId>
-    <version>${liquibase.version}</version>
+    <version>3.8.8.RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -44,7 +44,7 @@
                 </executions>
                 <configuration>
                     <outputDirectory>${project.build.directory}</outputDirectory>
-                    <finalName>liquibase-${liquibase.version}</finalName>
+                    <finalName>liquibase-3.8.8.RC1-SNAPSHOT</finalName>
                     <attach>true</attach>
                     <excludes>
                         <exclude>com/datical/**</exclude>

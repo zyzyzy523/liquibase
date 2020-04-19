@@ -1,8 +1,8 @@
-Liquibase Version ${liquibase.version}
+Liquibase Version 3.8.8.RC1-SNAPSHOT
 
 Introduction
 --------------------------------------------
-Thanks for downloading and installing Liquibase ${liquibase.version} from Datical.
+Thanks for downloading and installing Liquibase 3.8.8.RC1-SNAPSHOT from Datical.
 By using the installer, you already have all the dependencies, directories, config, 
 and properties files to get started exploring the Liquibase examples provided.
 
