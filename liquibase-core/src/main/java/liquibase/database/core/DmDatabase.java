@@ -829,7 +829,7 @@ public class DmDatabase extends AbstractJdbcDatabase {
             "MULTISET",
             "ELSE",
             "TRANSACTION_ACTIVE",
-            "LANGUAGE",
+            /*"LANGUAGE",*/
             "PERCENT_RANK",
             "ENUM",
             "NATIONAL",
